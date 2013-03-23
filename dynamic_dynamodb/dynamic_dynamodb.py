@@ -260,7 +260,12 @@ class DynamicDynamoDB:
         """
         self._ensure_dynamodb_connection()
         table = self._ddb_connection.get_table(self.table_name)
-        table.update_throughput(int(read_units, int(write_units)))
+        self.logger.info(
+            'Updating read provisioning to: {0:d}'.format(read_units))
+        self.logger.info(
+            'Updating write provisioning to: {0:d}'.format(write_units))
+        if not self.dry_run:
+            table.update_throughput(int(read_units, int(write_units)))
 
 
 def main():
