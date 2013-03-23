@@ -22,6 +22,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import time
 import logging
 import datetime
 import argparse
@@ -94,10 +95,22 @@ class DynamicDynamoDB:
 
     def run(self):
         """ Public method for starting scaling """
+        try:
+            while True:
+                self.ensure_proper_provisioning()
+                time.sleep(60)
+        except KeyboardInterrupt:
+            self.logger.info('Caught termination signal. Exiting.')
+
+    def ensure_proper_provisioning(self):
+        """ Public method running once to check the current provisioning
+
+        This method is called by run() in order to check provisioning over time
+        """
         read_usage = self._get_consumed_reads_percentage()
         write_usage = self._get_consumed_writes_percentage()
-        self.logger.info('{0:d}%% reads consumed'.format(read_usage))
-        self.logger.info('{0:d}%% writes consumed'.format(write_usage))
+        self.logger.info('{0:d}% reads consumed'.format(read_usage))
+        self.logger.info('{0:d}% writes consumed'.format(write_usage))
 
         throughput = {
             'update_needed': False,
@@ -188,7 +201,7 @@ class DynamicDynamoDB:
         self._ensure_cloudwatch_connection()
         self._ensure_dynamodb_connection()
 
-        table = self._ddb_connection.get_table(self.table_name)
+        table = self.ddb_connection.get_table(self.table_name)
 
         metrics = self.cw_connection.get_metric_statistics(
             300,
@@ -214,7 +227,7 @@ class DynamicDynamoDB:
         self._ensure_cloudwatch_connection()
         self._ensure_dynamodb_connection()
 
-        table = self._ddb_connection.get_table(self.table_name)
+        table = self.ddb_connection.get_table(self.table_name)
 
         metrics = self.cw_connection.get_metric_statistics(
             300,
@@ -238,7 +251,7 @@ class DynamicDynamoDB:
         :returns: int -- Provisioned read units
         """
         self._ensure_dynamodb_connection()
-        table = self._ddb_connection.get_table(self.table_name)
+        table = self.ddb_connection.get_table(self.table_name)
         return int(table.read_units)
 
     def _get_provisioned_write_units(self):
@@ -247,24 +260,24 @@ class DynamicDynamoDB:
         :returns: int -- Provisioned write units
         """
         self._ensure_dynamodb_connection()
-        table = self._ddb_connection.get_table(self.table_name)
+        table = self.ddb_connection.get_table(self.table_name)
         return int(table.write_units)
 
     def _update_throughput(self, read_units, write_units):
         """ Update throughput on the DynamoDB table
 
         :type read_units: int
-        :param read_units: New read unit provisioing
+        :param read_units: New read unit provisioning
         :type write_units: int
-        :param write_units: New write unit provisioing
+        :param write_units: New write unit provisioning
         """
         self._ensure_dynamodb_connection()
-        table = self._ddb_connection.get_table(self.table_name)
+        table = self.ddb_connection.get_table(self.table_name)
         self.logger.info(
             'Updating read provisioning to: {0:d}'.format(read_units))
         self.logger.info(
             'Updating write provisioning to: {0:d}'.format(write_units))
-        if not self.dry_run:
+        if False:
             table.update_throughput(int(read_units, int(write_units)))
 
 
