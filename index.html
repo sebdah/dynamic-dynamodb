@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Dynamic-dynamodb by sebdah</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/sebdah/dynamic-dynamodb">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/sebdah/dynamic-dynamodb/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/sebdah/dynamic-dynamodb/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Dynamic-dynamodb</h1>
+          <p>Auto-provisioning tool for DynamoDB</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/sebdah">sebdah</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>dynamic-dynamodb</h1>
+
+<p>Auto-provisioning for DynamoDB. This project is under active development and will be released to master (i.e. a stable version within the near future).</p>
+
+<h2>Usage</h2>
+
+<p>This example will configure Dynamic DynamoDB to:</p>
+
+<ul>
+<li>Scale up your DynamoDB table when the consumed reads 90% of the total provisioned reads</li>
+<li>Scale up your DynamoDB table when the consumed writes 90% of the total provisioned writes</li>
+<li>Scale up your reads with 50%</li>
+<li>Scale up your writes with 40%</li>
+<li>Scale down your DynamoDB table when the consumed reads 30% of the total provisioned reads</li>
+<li>Scale down your DynamoDB table when the consumed writes 40% of the total provisioned writes</li>
+<li>Scale down your reads with 40%</li>
+<li>Scale down your writes with 70%</li>
+<li>Check for changes every 5 minutes</li>
+</ul><p>Command:</p>
+
+<pre><code>dynamic-dynamodb --table-name my-table \
+                 --reads-upper-threshold 90 \
+                 --reads-lower-threshold 30 \
+                 --increase-reads-with 50 \
+                 --decrease-reads-with 40 \
+                 --writes-upper-threshold 90 \
+                 --writes-lower-threshold 40 \
+                 --increase-writes-with 40 \
+                 --decrease-writes-with 70 \
+                 --check-interval 300
+</code></pre>
+
+<h2>Full --help output</h2>
+
+<pre><code>usage: dynamic-dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+                        [-r REGION] -t TABLE_NAME
+                        [--reads-upper-threshold READS_UPPER_THRESHOLD]
+                        [--reads-lower-threshold READS_LOWER_THRESHOLD]
+                        [--increase-reads-with INCREASE_READS_WITH]
+                        [--decrease-reads-with DECREASE_READS_WITH]
+                        [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
+                        [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
+                        [--increase-writes-with INCREASE_WRITES_WITH]
+                        [--decrease-writes-with DECREASE_WRITES_WITH]
+
+Dynamic DynamoDB - Auto provisioning AWS DynamoDB
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --dry-run             Run without making any changes to your DynamoDB
+                        database
+  --check-interval CHECK_INTERVAL
+                        How many seconds should we wait between the checks
+                        (default: 300)
+
+DynamoDB settings:
+  -r REGION, --region REGION
+                        AWS region to operate in
+  -t TABLE_NAME, --table-name TABLE_NAME
+                        How many percent should we decrease the read units
+                        with?
+
+Read units scaling properties:
+  --reads-upper-threshold READS_UPPER_THRESHOLD
+                        Scale up the reads with --increase-reads-with percent
+                        if the currently consumed read units reaches this many
+                        percent (default: 90)
+  --reads-lower-threshold READS_LOWER_THRESHOLD
+                        Scale down the reads with --decrease-reads-with
+                        percent if the currently consumed read units is as low
+                        as this percentage (default: 30)
+  --increase-reads-with INCREASE_READS_WITH
+                        How many percent should we increase the read units
+                        with? (default: 50)
+  --decrease-reads-with DECREASE_READS_WITH
+                        How many percent should we decrease the read units
+                        with? (default: 50)
+
+Write units scaling properties:
+  --writes-upper-threshold WRITES_UPPER_THRESHOLD
+                        Scale up the writes with --increase-writes-with
+                        percent if the currently consumed write units reaches
+                        this many percent (default: 90)
+  --writes-lower-threshold WRITES_LOWER_THRESHOLD
+                        Scale down the writes with --decrease-writes-with
+                        percent if the currently consumed write units is as
+                        low as this percentage (default: 30)
+  --increase-writes-with INCREASE_WRITES_WITH
+                        How many percent should we increase the write units
+                        with? (default: 50)
+  --decrease-writes-with DECREASE_WRITES_WITH
+                        How many percent should we decrease the write units
+                        with? (default: 50)
+</code></pre>
+
+<h2>Reporting bugs</h2>
+
+<p>Please help me by providing feedback and bug reports. You can file bugs in the project's <a href="https://github.com/sebdah/dynamic-dynamodb/issues">GitHub Issues page</a>.</p>
+
+<p>Provide as much details as possible to make bug fixing as swift as possible.</p>
+
+<h2>Git strategy</h2>
+
+<p>This project uses <a href="https://github.com/nvie/gitflow">git-flow</a> for handling branching and releasing in Git. See the following <a href="http://nvie.com/posts/a-successful-git-branching-model/">blog post</a> for more details on how it works.</p>
+
+<h2>Release information</h2>
+
+<p><strong>0.1.4 (2013-03-24)</strong></p>
+
+<ul>
+<li>Initial release</li>
+</ul><h2>Releasing to PyPI</h2>
+
+<pre><code>make release
+</code></pre>
+
+<h2>Author</h2>
+
+<p>This project is maintained by <a href="http://www.sebastiandahlgren.se">Sebastian Dahlgren</a> (<a href="https://github.com/sebdah">GitHub</a> | <a href="https://twitter.com/sebdah">Twitter</a> | <a href="www.linkedin.com/in/sebastiandahlgren">LinkedIn</a>)</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-37516009-3");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
