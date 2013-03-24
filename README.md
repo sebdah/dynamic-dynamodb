@@ -115,8 +115,7 @@ Release information
 Releasing to PyPI
 -----------------
 
-    python setup.py register
-    python setup.py sdist upload
+    make release
 
 Author
 ------
