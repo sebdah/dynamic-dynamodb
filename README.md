@@ -20,30 +20,30 @@ This example will configure Dynamic DynamoDB to:
 
 Command:
 
-    dynamic_dynamodb.py --table-name my-table \
-                        --reads-upper-threshold 90 \
-                        --reads-lower-threshold 30 \
-                        --increase-reads-with 50 \
-                        --decrease-reads-with 40 \
-                        --writes-upper-threshold 90 \
-                        --writes-lower-threshold 40 \
-                        --increase-writes-with 40 \
-                        --decrease-writes-with 70 \
-                        --check-interval 300
+    dynamic-dynamodb --table-name my-table \
+                     --reads-upper-threshold 90 \
+                     --reads-lower-threshold 30 \
+                     --increase-reads-with 50 \
+                     --decrease-reads-with 40 \
+                     --writes-upper-threshold 90 \
+                     --writes-lower-threshold 40 \
+                     --increase-writes-with 40 \
+                     --decrease-writes-with 70 \
+                     --check-interval 300
 
 Full --help output
 ------------------
 
-    usage: dynamic_dynamodb.py [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
-                               [-r REGION] -t TABLE_NAME
-                               [--reads-upper-threshold READS_UPPER_THRESHOLD]
-                               [--reads-lower-threshold READS_LOWER_THRESHOLD]
-                               [--increase-reads-with INCREASE_READS_WITH]
-                               [--decrease-reads-with DECREASE_READS_WITH]
-                               [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
-                               [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
-                               [--increase-writes-with INCREASE_WRITES_WITH]
-                               [--decrease-writes-with DECREASE_WRITES_WITH]
+    usage: dynamic-dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+                            [-r REGION] -t TABLE_NAME
+                            [--reads-upper-threshold READS_UPPER_THRESHOLD]
+                            [--reads-lower-threshold READS_LOWER_THRESHOLD]
+                            [--increase-reads-with INCREASE_READS_WITH]
+                            [--decrease-reads-with DECREASE_READS_WITH]
+                            [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
+                            [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
+                            [--increase-writes-with INCREASE_WRITES_WITH]
+                            [--decrease-writes-with DECREASE_WRITES_WITH]
 
     Dynamic DynamoDB - Auto provisioning AWS DynamoDB
 
