@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='dynamic-dynamodb',
-    version='0.1.0',
+    version='0.1.0-beta',
     license='Apache License, Version 2.0',
     description='Automatic provisioning for AWS DynamoDB tables',
     author='Sebastian Dahlgren',
