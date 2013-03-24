@@ -112,5 +112,7 @@ Author
 This project is maintained by [Sebastian Dahlgren](http://www.sebastiandahlgren.se).
 
 GitHub: [sebdah](https://github.com/sebdah)
+
 Twitter: [@sebdah](https://twitter.com/sebdah)
+
 LinkedIn: [Public profile](www.linkedin.com/in/sebastiandahlgren)
