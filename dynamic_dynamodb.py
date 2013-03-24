@@ -27,8 +27,10 @@ import time
 import logging
 import datetime
 import argparse
+
 from boto import dynamodb
 from boto.ec2 import cloudwatch
+from boto.exception import DynamoDBResponseError
 
 
 class DynamicDynamoDB:
@@ -169,9 +171,15 @@ class DynamicDynamoDB:
 
         # Handle throughput updates
         if throughput['update_needed']:
+            self.logger.info(
+                'Changing provisioning to {0.d} reads and {1:d} writes'.format(
+                    throughput['read_units'],
+                    throughput['write_units']))
             self._update_throughput(
                 throughput['read_units'],
                 throughput['write_units'])
+        else:
+            self.logger.info('No need to change provisioning')
 
     def _calculate_decrease_reads(self, original_provisioning, percent):
         """ Decrease the original_provisioning with percent %
@@ -336,12 +344,19 @@ class DynamicDynamoDB:
         """
         self._ensure_dynamodb_connection()
         table = self.ddb_connection.get_table(self.table_name)
-        self.logger.info(
-            'Updating read provisioning to: {0:d}'.format(read_units))
-        self.logger.info(
-            'Updating write provisioning to: {0:d}'.format(write_units))
-        if False:
-            table.update_throughput(int(read_units, int(write_units)))
+        if not self.dry_run:
+            try:
+                table.update_throughput(int(read_units), int(write_units))
+                self.logger.info('Provisioning updated')
+            except DynamoDBResponseError as error:
+                dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
+                if dynamodb_error == 'LimitExceededException':
+                    self.logger.warning(
+                        'Maximum provisioning increase at 100% exceeded. '
+                        'Do not increase database sizes to more than 100%')
+                else:
+                    raise
+
 
 
 def main():
