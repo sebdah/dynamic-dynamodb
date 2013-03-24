@@ -22,6 +22,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
+VERSION = '0.1.0-SNAPSHOT'
+
+import sys
 import math
 import time
 import logging
@@ -41,7 +45,7 @@ class DynamicDynamoDB:
                 increase_reads_with, decrease_reads_with,
                 writes_upper_threshold, writes_lower_threshold,
                 increase_writes_with, decrease_writes_with,
-                dry_run=True):
+                check_interval=60, dry_run=True):
         """ Constructor setting the basic configuration
 
         :type region: str
@@ -64,6 +68,8 @@ class DynamicDynamoDB:
         :param increase_writes_with: How many percent to scale up writes with
         :type decrease_writes_with: int
         :param decrease_writes_with: How many percent to scale down writes with
+        :type check_interval: int
+        :param check_interval: How many seconds to wait between checks
         :type dry_run: bool
         :param dry_run: Set to False if we should make actual changes
         """
@@ -77,6 +83,7 @@ class DynamicDynamoDB:
         self.writes_lower_threshold = writes_lower_threshold
         self.increase_writes_with = increase_writes_with
         self.decrease_writes_with = decrease_writes_with
+        self.check_interval = check_interval
         self.dry_run = dry_run
 
         #
@@ -99,7 +106,7 @@ class DynamicDynamoDB:
         try:
             while True:
                 self.ensure_proper_provisioning()
-                time.sleep(60)
+                time.sleep(self.check_interval)
         except KeyboardInterrupt:
             self.logger.info('Caught termination signal. Exiting.')
 
@@ -289,6 +296,10 @@ def main():
     parser.add_argument('--dry-run',
         action='store_true',
         help='Run without making any changes to your DynamoDB database')
+    parser.add_argument('--check-interval',
+        type=int,
+        default=60,
+        help='How many seconds should we wait between the checks (default: 60)')
     dynamodb_ag = parser.add_argument_group('DynamoDB settings')
     dynamodb_ag.add_argument('-r', '--region',
         default='us-east-1',
@@ -300,44 +311,48 @@ def main():
     r_scaling_ag.add_argument('--reads-upper-threshold',
         default=90,
         type=int,
-        help="""\
-Scale up the reads with --increase-reads-with percent if the currently
-consumed read units reaches this many percent""")
+        help="""Scale up the reads with --increase-reads-with percent if
+                the currently consumed read units reaches this many
+                percent (default: 90)""")
     r_scaling_ag.add_argument('--reads-lower-threshold',
         default=30,
         type=int,
-        help="""\
-Scale down the reads with --decrease-reads-with percent if the currently
-consumed read units is as low as this percentage""")
+        help="""Scale down the reads with --decrease-reads-with percent if the
+                currently consumed read units is as low as this
+                percentage (default: 30)""")
     r_scaling_ag.add_argument('--increase-reads-with',
         default=50,
         type=int,
-        help='How many percent should we increase the read units with?')
+        help="""How many percent should we increase the read
+                units with? (default: 50)""")
     r_scaling_ag.add_argument('--decrease-reads-with',
         default=50,
         type=int,
-        help='How many percent should we decrease the read units with?')
+        help="""How many percent should we decrease the
+                read units with? (default: 50)""")
     w_scaling_ag = parser.add_argument_group('Write units scaling properties')
     w_scaling_ag.add_argument('--writes-upper-threshold',
         default=90,
         type=int,
-        help="""\
-Scale up the writes with --increase-writes-with percent if the currently
-consumed write units reaches this many percent""")
+        help="""Scale up the writes with --increase-writes-with percent
+                if the currently consumed write units reaches this
+                many percent (default: 90)""")
     w_scaling_ag.add_argument('--writes-lower-threshold',
         default=30,
         type=int,
-        help="""\
-Scale down the writes with --decrease-writes-with percent if the currently
-consumed write units is as low as this percentage""")
+        help="""Scale down the writes with --decrease-writes-with percent
+                if the currently consumed write units is as low as this
+                percentage (default: 30)""")
     w_scaling_ag.add_argument('--increase-writes-with',
         default=50,
         type=int,
-        help='How many percent should we increase the write units with?')
+        help="""How many percent should we increase the write
+                units with? (default: 50)""")
     w_scaling_ag.add_argument('--decrease-writes-with',
         default=50,
         type=int,
-        help='How many percent should we decrease the write units with?')
+        help="""How many percent should we decrease the write
+                units with? (default: 50)""")
     args = parser.parse_args()
 
     dynamic_ddb = DynamicDynamoDB(
@@ -351,7 +366,8 @@ consumed write units is as low as this percentage""")
         args.writes_lower_threshold,
         args.increase_writes_with,
         args.decrease_writes_with,
-        args.dry_run)
+        check_interval=args.check_interval,
+        dry_run=args.dry_run)
     dynamic_ddb.run()
 
 if __name__ == '__main__':
