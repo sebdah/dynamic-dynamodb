@@ -94,6 +94,13 @@ Full --help output
                             How many percent should we decrease the write units
                             with? (default: 50)
 
+Reporting bugs
+--------------
+
+Please help me by providing feedback and bug reports. You can file bugs in the project's [GitHub Issues page](https://github.com/sebdah/dynamic-dynamodb/issues).
+
+Provide as much details as possible to make bug fixing as swift as possible.
+
 Git strategy
 ------------
 
@@ -103,3 +110,7 @@ Author
 ------
 
 This project is maintained by [Sebastian Dahlgren](http://www.sebastiandahlgren.se).
+
+GitHub: [sebdah](https://github.com/sebdah)
+Twitter: [@sebdah](https://twitter.com/sebdah)
+LinkedIn: [Public profile](www.linkedin.com/in/sebastiandahlgren)
