@@ -38,11 +38,15 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
         </div>
 
-        <h1>dynamic-dynamodb</h1>
+        <h1>Dynamic DynamoDB</h1>
 
-<p>Auto-provisioning for DynamoDB. This project is under active development and will be released to master (i.e. a stable version within the near future).</p>
+<p>AWS hosted NoSQL solution DynamoDB is a great service, but it falls short when it comes to automatic scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.</p>
 
-<h2>Usage</h2>
+<p>All you need to do is to tell Dynamic DynamoDB at which point and how much you want to scale up or down your DynamoDB. For example, if the consumed read capacity reaches 90%, it might be a good idea to scale up the read provisioning slightly to meet the flood of requests to your service.</p>
+
+<p>See an example of how to configure Dynamic DynamoDB under <strong>Basic usage</strong> or checkout <code>dynamic-dynamodb --help</code>.</p>
+
+<h2>Basic usage</h2>
 
 <p>This example will configure Dynamic DynamoDB to:</p>
 
@@ -78,10 +82,14 @@
                         [--reads-lower-threshold READS_LOWER_THRESHOLD]
                         [--increase-reads-with INCREASE_READS_WITH]
                         [--decrease-reads-with DECREASE_READS_WITH]
+                        [--min-provisioned-reads MIN_PROVISIONED_READS]
+                        [--max-provisioned-reads MAX_PROVISIONED_READS]
                         [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
                         [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
                         [--increase-writes-with INCREASE_WRITES_WITH]
                         [--decrease-writes-with DECREASE_WRITES_WITH]
+                        [--min-provisioned-writes MIN_PROVISIONED_WRITES]
+                        [--max-provisioned-writes MAX_PROVISIONED_WRITES]
 
 Dynamic DynamoDB - Auto provisioning AWS DynamoDB
 
@@ -115,6 +123,10 @@ Read units scaling properties:
   --decrease-reads-with DECREASE_READS_WITH
                         How many percent should we decrease the read units
                         with? (default: 50)
+  --min-provisioned-reads MIN_PROVISIONED_READS
+                        Minimum number of provisioned reads
+  --max-provisioned-reads MAX_PROVISIONED_READS
+                        Maximum number of provisioned reads
 
 Write units scaling properties:
   --writes-upper-threshold WRITES_UPPER_THRESHOLD
@@ -131,6 +143,10 @@ Write units scaling properties:
   --decrease-writes-with DECREASE_WRITES_WITH
                         How many percent should we decrease the write units
                         with? (default: 50)
+  --min-provisioned-writes MIN_PROVISIONED_WRITES
+                        Minimum number of provisioned writes
+  --max-provisioned-writes MAX_PROVISIONED_WRITES
+                        Maximum number of provisioned writes
 </code></pre>
 
 <h2>Reporting bugs</h2>
