@@ -38,77 +38,77 @@ Command:
 Full --help output
 ------------------
 
-  usage: dynamic-dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
-                          [-r REGION] -t TABLE_NAME
-                          [--reads-upper-threshold READS_UPPER_THRESHOLD]
-                          [--reads-lower-threshold READS_LOWER_THRESHOLD]
-                          [--increase-reads-with INCREASE_READS_WITH]
-                          [--decrease-reads-with DECREASE_READS_WITH]
-                          [--min-provisioned-reads MIN_PROVISIONED_READS]
-                          [--max-provisioned-reads MAX_PROVISIONED_READS]
-                          [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
-                          [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
-                          [--increase-writes-with INCREASE_WRITES_WITH]
-                          [--decrease-writes-with DECREASE_WRITES_WITH]
-                          [--min-provisioned-writes MIN_PROVISIONED_WRITES]
-                          [--max-provisioned-writes MAX_PROVISIONED_WRITES]
+    usage: dynamic-dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+                            [-r REGION] -t TABLE_NAME
+                            [--reads-upper-threshold READS_UPPER_THRESHOLD]
+                            [--reads-lower-threshold READS_LOWER_THRESHOLD]
+                            [--increase-reads-with INCREASE_READS_WITH]
+                            [--decrease-reads-with DECREASE_READS_WITH]
+                            [--min-provisioned-reads MIN_PROVISIONED_READS]
+                            [--max-provisioned-reads MAX_PROVISIONED_READS]
+                            [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
+                            [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
+                            [--increase-writes-with INCREASE_WRITES_WITH]
+                            [--decrease-writes-with DECREASE_WRITES_WITH]
+                            [--min-provisioned-writes MIN_PROVISIONED_WRITES]
+                            [--max-provisioned-writes MAX_PROVISIONED_WRITES]
 
-  Dynamic DynamoDB - Auto provisioning AWS DynamoDB
+    Dynamic DynamoDB - Auto provisioning AWS DynamoDB
 
-  optional arguments:
-    -h, --help            show this help message and exit
-    --dry-run             Run without making any changes to your DynamoDB
-                          database
-    --check-interval CHECK_INTERVAL
-                          How many seconds should we wait between the checks
-                          (default: 300)
+    optional arguments:
+      -h, --help            show this help message and exit
+      --dry-run             Run without making any changes to your DynamoDB
+                            database
+      --check-interval CHECK_INTERVAL
+                            How many seconds should we wait between the checks
+                            (default: 300)
 
-  DynamoDB settings:
-    -r REGION, --region REGION
-                          AWS region to operate in
-    -t TABLE_NAME, --table-name TABLE_NAME
-                          How many percent should we decrease the read units
-                          with?
+    DynamoDB settings:
+      -r REGION, --region REGION
+                            AWS region to operate in
+      -t TABLE_NAME, --table-name TABLE_NAME
+                            How many percent should we decrease the read units
+                            with?
 
-  Read units scaling properties:
-    --reads-upper-threshold READS_UPPER_THRESHOLD
-                          Scale up the reads with --increase-reads-with percent
-                          if the currently consumed read units reaches this many
-                          percent (default: 90)
-    --reads-lower-threshold READS_LOWER_THRESHOLD
-                          Scale down the reads with --decrease-reads-with
-                          percent if the currently consumed read units is as low
-                          as this percentage (default: 30)
-    --increase-reads-with INCREASE_READS_WITH
-                          How many percent should we increase the read units
-                          with? (default: 50)
-    --decrease-reads-with DECREASE_READS_WITH
-                          How many percent should we decrease the read units
-                          with? (default: 50)
-    --min-provisioned-reads MIN_PROVISIONED_READS
-                          Minimum number of provisioned reads
-    --max-provisioned-reads MAX_PROVISIONED_READS
-                          Maximum number of provisioned reads
+    Read units scaling properties:
+      --reads-upper-threshold READS_UPPER_THRESHOLD
+                            Scale up the reads with --increase-reads-with percent
+                            if the currently consumed read units reaches this many
+                            percent (default: 90)
+      --reads-lower-threshold READS_LOWER_THRESHOLD
+                            Scale down the reads with --decrease-reads-with
+                            percent if the currently consumed read units is as low
+                            as this percentage (default: 30)
+      --increase-reads-with INCREASE_READS_WITH
+                            How many percent should we increase the read units
+                            with? (default: 50)
+      --decrease-reads-with DECREASE_READS_WITH
+                            How many percent should we decrease the read units
+                            with? (default: 50)
+      --min-provisioned-reads MIN_PROVISIONED_READS
+                            Minimum number of provisioned reads
+      --max-provisioned-reads MAX_PROVISIONED_READS
+                            Maximum number of provisioned reads
 
-  Write units scaling properties:
-    --writes-upper-threshold WRITES_UPPER_THRESHOLD
-                          Scale up the writes with --increase-writes-with
-                          percent if the currently consumed write units reaches
-                          this many percent (default: 90)
-    --writes-lower-threshold WRITES_LOWER_THRESHOLD
-                          Scale down the writes with --decrease-writes-with
-                          percent if the currently consumed write units is as
-                          low as this percentage (default: 30)
-    --increase-writes-with INCREASE_WRITES_WITH
-                          How many percent should we increase the write units
-                          with? (default: 50)
-    --decrease-writes-with DECREASE_WRITES_WITH
-                          How many percent should we decrease the write units
-                          with? (default: 50)
-    --min-provisioned-writes MIN_PROVISIONED_WRITES
-                          Minimum number of provisioned writes
-    --max-provisioned-writes MAX_PROVISIONED_WRITES
-                          Maximum number of provisioned writes
+    Write units scaling properties:
+      --writes-upper-threshold WRITES_UPPER_THRESHOLD
+                            Scale up the writes with --increase-writes-with
+                            percent if the currently consumed write units reaches
+                            this many percent (default: 90)
+      --writes-lower-threshold WRITES_LOWER_THRESHOLD
+                            Scale down the writes with --decrease-writes-with
+                            percent if the currently consumed write units is as
+                            low as this percentage (default: 30)
+      --increase-writes-with INCREASE_WRITES_WITH
+                            How many percent should we increase the write units
+                            with? (default: 50)
+      --decrease-writes-with DECREASE_WRITES_WITH
+                            How many percent should we decrease the write units
+                            with? (default: 50)
+      --min-provisioned-writes MIN_PROVISIONED_WRITES
+                            Minimum number of provisioned writes
+      --max-provisioned-writes MAX_PROVISIONED_WRITES
+                            Maximum number of provisioned writes
 
 Reporting bugs
 --------------
