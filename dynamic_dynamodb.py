@@ -172,7 +172,7 @@ class DynamicDynamoDB:
         # Handle throughput updates
         if throughput['update_needed']:
             self.logger.info(
-                'Changing provisioning to {0.d} reads and {1:d} writes'.format(
+                'Changing provisioning to {0:d} reads and {1:d} writes'.format(
                     throughput['read_units'],
                     throughput['write_units']))
             self._update_throughput(
@@ -344,6 +344,12 @@ class DynamicDynamoDB:
         """
         self._ensure_dynamodb_connection()
         table = self.ddb_connection.get_table(self.table_name)
+
+        if table.status != 'ACTIVE':
+            self.logger.warning(
+                'Not performing throughput changes when table '
+                'is in {0} state'.format(table.status))
+
         if not self.dry_run:
             try:
                 table.update_throughput(int(read_units), int(write_units))
