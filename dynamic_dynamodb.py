@@ -135,7 +135,9 @@ class DynamicDynamoDB:
         }
 
         # Check if we should update read provisioning
-        if read_usage_percent >= self.reads_upper_threshold:
+        if read_usage_percent == 0:
+            self.logger.info('Scale down is not performed when usage is at 0%')
+        elif read_usage_percent >= self.reads_upper_threshold:
             new_value = self._calculate_increase_reads(
                 throughput['read_units'],
                 self.increase_reads_with)
@@ -150,7 +152,9 @@ class DynamicDynamoDB:
             throughput['read_units'] = new_value
 
         # Check if we should update write provisioning
-        if write_usage_percent >= self.writes_upper_threshold:
+        if write_usage_percent == 0:
+            self.logger.info('Scale down is not performed when usage is at 0%')
+        elif write_usage_percent >= self.writes_upper_threshold:
             new_value = self._calculate_increase_writes(
                 throughput['write_units'],
                 self.increase_reads_with)
@@ -260,9 +264,10 @@ class DynamicDynamoDB:
             unit=None)
 
         if len(metrics) == 0:
-            return 0
+            consumed_reads = 0
+        else:
+            consumed_reads = int(math.ceil(float(metrics[0]['Sum'])/float(300)))
 
-        consumed_reads = int(math.ceil(float(metrics[0]['Sum'])/float(300)))
         consumed_reads_percent = int(math.ceil(
             float(consumed_reads) / float(table.read_units) * 100))
         self.logger.info('Consumed reads: {0:d}'.format(consumed_reads))
@@ -291,9 +296,11 @@ class DynamicDynamoDB:
             unit=None)
 
         if len(metrics) == 0:
-            return 0
+            consumed_writes = 0
+        else:
+            consumed_writes = int(math.ceil(
+                float(metrics[0]['Sum'])/float(300)))
 
-        consumed_writes = int(math.ceil(float(metrics[0]['Sum'])/float(300)))
         consumed_writes_percent = int(math.ceil(
             float(consumed_writes) / float(table.write_units) * 100))
         self.logger.info('Consumed writes: {0:d}'.format(consumed_writes))
