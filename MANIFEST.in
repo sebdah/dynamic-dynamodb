@@ -1,0 +1,2 @@
+include dynamic_dynamodb.py
+include setup.py

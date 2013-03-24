@@ -366,6 +366,3 @@ def main():
         check_interval=args.check_interval,
         dry_run=args.dry_run)
     dynamic_ddb.run()
-
-if __name__ == '__main__':
-    main()

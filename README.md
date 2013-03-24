@@ -109,7 +109,7 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
-**0.1.0-beta (2013-03-24)**
+**0.1.4 (2013-03-24)**
 - Initial release
 
 Releasing to PyPI
