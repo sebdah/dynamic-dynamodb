@@ -44,7 +44,7 @@ class DynamicDynamoDB:
                 increase_reads_with, decrease_reads_with,
                 writes_upper_threshold, writes_lower_threshold,
                 increase_writes_with, decrease_writes_with,
-                check_interval=60, dry_run=True):
+                check_interval=300, dry_run=True):
         """ Constructor setting the basic configuration
 
         :type region: str
@@ -297,8 +297,9 @@ def main():
         help='Run without making any changes to your DynamoDB database')
     parser.add_argument('--check-interval',
         type=int,
-        default=60,
-        help='How many seconds should we wait between the checks (default: 60)')
+        default=300,
+        help="""How many seconds should we wait between
+                the checks (default: 300)""")
     dynamodb_ag = parser.add_argument_group('DynamoDB settings')
     dynamodb_ag.add_argument('-r', '--region',
         default='us-east-1',
