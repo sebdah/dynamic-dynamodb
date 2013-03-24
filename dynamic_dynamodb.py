@@ -33,6 +33,9 @@ from boto.ec2 import cloudwatch
 from boto.exception import DynamoDBResponseError
 
 
+# pylint: disable=R0902
+# pylint: disable=R0913
+# pylint: disable=R0914
 class DynamicDynamoDB:
     """ Class handling connections and scaling """
     cw_connection = None
@@ -81,6 +84,26 @@ class DynamicDynamoDB:
         :type dry_run: bool
         :param dry_run: Set to False if we should make actual changes
         """
+        self.dry_run = dry_run
+
+        #
+        # Logging configuration
+        #
+        self.logger = logging.getLogger('dynamic-dynamodb')
+        self.logger.setLevel(logging.DEBUG)
+        if self.dry_run:
+            stdout_formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - dryrun - %(levelname)s - %(message)s')
+        else:
+            stdout_formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(stdout_formatter)
+        self.logger.addHandler(console_handler)
+
+        #
+        # Handel parameters
+        #
         if int(increase_reads_with) > 100:
             self.logger.error(
                 'You can not increase the table throughput with more '
@@ -108,22 +131,6 @@ class DynamicDynamoDB:
         self.min_provisioned_writes = min_provisioned_writes
         self.max_provisioned_writes = max_provisioned_writes
         self.check_interval = int(check_interval)
-        self.dry_run = dry_run
-
-        #
-        # Logging configuration
-        #
-        self.logger = logging.getLogger('dynamic-dynamodb')
-        self.logger.setLevel(logging.DEBUG)
-        if self.dry_run:
-            stdout_formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - dryrun - %(levelname)s - %(message)s')
-        else:
-            stdout_formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(stdout_formatter)
-        self.logger.addHandler(console_handler)
 
     def run(self):
         """ Public method for starting scaling """
@@ -394,7 +401,7 @@ def main():
     dynamodb_ag = parser.add_argument_group('DynamoDB settings')
     dynamodb_ag.add_argument('-r', '--region',
         default='us-east-1',
-        help='AWS region to operate in'),
+        help='AWS region to operate in')
     dynamodb_ag.add_argument('-t', '--table-name',
         required=True,
         help='How many percent should we decrease the read units with?')
