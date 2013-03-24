@@ -4,7 +4,7 @@
 """
 Dynamic DynamoDB
 
-Auto provisioning functionality for Amazon Web Service DynamoDB databases.
+Auto provisioning functionality for Amazon Web Service DynamoDB tables.
 
 
 APACHE LICENSE 2.0
@@ -81,6 +81,18 @@ class DynamicDynamoDB:
         :type dry_run: bool
         :param dry_run: Set to False if we should make actual changes
         """
+        if int(increase_reads_with) > 100:
+            self.logger.error(
+                'You can not increase the table throughput with more '
+                'than 100% at a time. Setting --increase-reads-with to 100.')
+            increase_reads_with = 100
+
+        if int(increase_writes_with) > 100:
+            self.logger.error(
+                'You can not increase the table throughput with more '
+                'than 100% at a time. Setting --increase-writes-with to 100.')
+            increase_writes_with = 100
+
         self.region = region
         self.table_name = table_name
         self.reads_upper_threshold = int(reads_upper_threshold)
@@ -360,8 +372,8 @@ class DynamicDynamoDB:
                 dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
                 if dynamodb_error == 'LimitExceededException':
                     self.logger.warning(
-                        'Maximum provisioning increase at 100% exceeded. '
-                        'Do not increase database sizes to more than 100%')
+                        'Scaling limit exeeded. '
+                        'The table can only be scaled down twice per day.')
                 else:
                     raise
 
@@ -373,7 +385,7 @@ def main():
         description='Dynamic DynamoDB - Auto provisioning AWS DynamoDB')
     parser.add_argument('--dry-run',
         action='store_true',
-        help='Run without making any changes to your DynamoDB database')
+        help='Run without making any changes to your DynamoDB table')
     parser.add_argument('--check-interval',
         type=int,
         default=300,
@@ -403,7 +415,7 @@ def main():
         default=50,
         type=int,
         help="""How many percent should we increase the read
-                units with? (default: 50)""")
+                units with? (default: 50, max: 100)""")
     r_scaling_ag.add_argument('--decrease-reads-with',
         default=50,
         type=int,
@@ -432,7 +444,7 @@ def main():
         default=50,
         type=int,
         help="""How many percent should we increase the write
-                units with? (default: 50)""")
+                units with? (default: 50, max: 100)""")
     w_scaling_ag.add_argument('--decrease-writes-with',
         default=50,
         type=int,
