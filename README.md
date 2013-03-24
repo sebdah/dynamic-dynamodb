@@ -106,6 +106,18 @@ Git strategy
 
 This project uses [git-flow](https://github.com/nvie/gitflow) for handling branching and releasing in Git. See the following [blog post](http://nvie.com/posts/a-successful-git-branching-model/) for more details on how it works.
 
+Release information
+-------------------
+
+**0.1.0a**
+- Alpha release testing release flow etc
+
+Releasing to PyPI
+-----------------
+
+    python setup.py register
+    python setup.py sdist upload
+
 Author
 ------
 
