@@ -3,7 +3,7 @@ Setup script for PyPi
 """
 
 from distutils.core import setup
-setup(name='scrapy-mongodb',
+setup(name='dynamic-dynamodb',
     version='0.1.0a',
     license='Apache License, Version 2.0',
     description='Automatic provisioning for AWS DynamoDB tables',
