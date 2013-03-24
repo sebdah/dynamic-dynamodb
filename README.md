@@ -3,6 +3,96 @@ dynamic-dynamodb
 
 Auto-provisioning for DynamoDB. This project is under active development and will be released to master (i.e. a stable version within the near future).
 
+Usage
+-----
+
+This example will configure Dynamic DynamoDB to:
+
+* Scale up your DynamoDB table when the consumed reads 90% of the total provisioned reads
+* Scale up your DynamoDB table when the consumed writes 90% of the total provisioned writes
+* Scale up your reads with 50%
+* Scale up your writes with 40%
+* Scale down your DynamoDB table when the consumed reads 30% of the total provisioned reads
+* Scale down your DynamoDB table when the consumed writes 40% of the total provisioned writes
+* Scale down your reads with 40%
+* Scale down your writes with 70%
+* Check for changes every 5 minutes
+
+    dynamic_dynamodb.py --table-name my-table \
+                        --reads-upper-threshold 90 \
+                        --reads-lower-threshold 30 \
+                        --increase-reads-with 50 \
+                        --decrease-reads-with 40 \
+                        --writes-upper-threshold 90 \
+                        --writes-lower-threshold 40 \
+                        --increase-writes-with 40 \
+                        --decrease-writes-with 70 \
+                        --check-interval 300
+
+
+--help
+------
+
+    usage: dynamic_dynamodb.py [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+                               [-r REGION] -t TABLE_NAME
+                               [--reads-upper-threshold READS_UPPER_THRESHOLD]
+                               [--reads-lower-threshold READS_LOWER_THRESHOLD]
+                               [--increase-reads-with INCREASE_READS_WITH]
+                               [--decrease-reads-with DECREASE_READS_WITH]
+                               [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
+                               [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
+                               [--increase-writes-with INCREASE_WRITES_WITH]
+                               [--decrease-writes-with DECREASE_WRITES_WITH]
+
+    Dynamic DynamoDB - Auto provisioning AWS DynamoDB
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --dry-run             Run without making any changes to your DynamoDB
+                            database
+      --check-interval CHECK_INTERVAL
+                            How many seconds should we wait between the checks
+                            (default: 300)
+
+    DynamoDB settings:
+      -r REGION, --region REGION
+                            AWS region to operate in
+      -t TABLE_NAME, --table-name TABLE_NAME
+                            How many percent should we decrease the read units
+                            with?
+
+    Read units scaling properties:
+      --reads-upper-threshold READS_UPPER_THRESHOLD
+                            Scale up the reads with --increase-reads-with percent
+                            if the currently consumed read units reaches this many
+                            percent (default: 90)
+      --reads-lower-threshold READS_LOWER_THRESHOLD
+                            Scale down the reads with --decrease-reads-with
+                            percent if the currently consumed read units is as low
+                            as this percentage (default: 30)
+      --increase-reads-with INCREASE_READS_WITH
+                            How many percent should we increase the read units
+                            with? (default: 50)
+      --decrease-reads-with DECREASE_READS_WITH
+                            How many percent should we decrease the read units
+                            with? (default: 50)
+
+    Write units scaling properties:
+      --writes-upper-threshold WRITES_UPPER_THRESHOLD
+                            Scale up the writes with --increase-writes-with
+                            percent if the currently consumed write units reaches
+                            this many percent (default: 90)
+      --writes-lower-threshold WRITES_LOWER_THRESHOLD
+                            Scale down the writes with --decrease-writes-with
+                            percent if the currently consumed write units is as
+                            low as this percentage (default: 30)
+      --increase-writes-with INCREASE_WRITES_WITH
+                            How many percent should we increase the write units
+                            with? (default: 50)
+      --decrease-writes-with DECREASE_WRITES_WITH
+                            How many percent should we decrease the write units
+                            with? (default: 50)
+
 Git strategy
 ------------
 
