@@ -1,10 +1,14 @@
-dynamic-dynamodb
+Dynamic DynamoDB
 ================
 
-Auto-provisioning for DynamoDB. This project is under active development and will be released to master (i.e. a stable version within the near future).
+AWS hosted NoSQL solution DynamoDB is a great service, but it falls short when it comes to automatic scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
-Usage
------
+All you need to do is to tell Dynamic DynamoDB at which point and how much you want to scale up or down your DynamoDB. For example, if the consumed read capacity reaches 90%, it might be a good idea to scale up the read provisioning slightly to meet the flood of requests to your service.
+
+See an example of how to configure Dynamic DynamoDB under **Basic usage** or checkout `dynamic-dynamodb --help`.
+
+Basic usage
+-----------
 
 This example will configure Dynamic DynamoDB to:
 
@@ -40,10 +44,14 @@ Full --help output
                             [--reads-lower-threshold READS_LOWER_THRESHOLD]
                             [--increase-reads-with INCREASE_READS_WITH]
                             [--decrease-reads-with DECREASE_READS_WITH]
+                            [--min-provisioned-reads MIN_PROVISIONED_READS]
+                            [--max-provisioned-reads MAX_PROVISIONED_READS]
                             [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
                             [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
                             [--increase-writes-with INCREASE_WRITES_WITH]
                             [--decrease-writes-with DECREASE_WRITES_WITH]
+                            [--min-provisioned-writes MIN_PROVISIONED_WRITES]
+                            [--max-provisioned-writes MAX_PROVISIONED_WRITES]
 
     Dynamic DynamoDB - Auto provisioning AWS DynamoDB
 
@@ -77,6 +85,10 @@ Full --help output
       --decrease-reads-with DECREASE_READS_WITH
                             How many percent should we decrease the read units
                             with? (default: 50)
+      --min-provisioned-reads MIN_PROVISIONED_READS
+                            Minimum number of provisioned reads
+      --max-provisioned-reads MAX_PROVISIONED_READS
+                            Maximum number of provisioned reads
 
     Write units scaling properties:
       --writes-upper-threshold WRITES_UPPER_THRESHOLD
@@ -93,6 +105,10 @@ Full --help output
       --decrease-writes-with DECREASE_WRITES_WITH
                             How many percent should we decrease the write units
                             with? (default: 50)
+      --min-provisioned-writes MIN_PROVISIONED_WRITES
+                            Minimum number of provisioned writes
+      --max-provisioned-writes MAX_PROVISIONED_WRITES
+                            Maximum number of provisioned writes
 
 Reporting bugs
 --------------

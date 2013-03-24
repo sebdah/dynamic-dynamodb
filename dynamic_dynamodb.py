@@ -4,7 +4,7 @@
 """
 Dynamic DynamoDB
 
-Auto provisioning functionality for Amazon Web Service DynamoDB databases.
+Auto provisioning functionality for Amazon Web Service DynamoDB tables.
 
 
 APACHE LICENSE 2.0
@@ -27,10 +27,15 @@ import time
 import logging
 import datetime
 import argparse
+
 from boto import dynamodb
 from boto.ec2 import cloudwatch
+from boto.exception import DynamoDBResponseError
 
 
+# pylint: disable=R0902
+# pylint: disable=R0913
+# pylint: disable=R0914
 class DynamicDynamoDB:
     """ Class handling connections and scaling """
     cw_connection = None
@@ -41,6 +46,8 @@ class DynamicDynamoDB:
                 increase_reads_with, decrease_reads_with,
                 writes_upper_threshold, writes_lower_threshold,
                 increase_writes_with, decrease_writes_with,
+                min_provisioned_reads=None, max_provisioned_reads=None,
+                min_provisioned_writes=None, max_provisioned_writes=None,
                 check_interval=300, dry_run=True):
         """ Constructor setting the basic configuration
 
@@ -56,6 +63,10 @@ class DynamicDynamoDB:
         :param increase_reads_with: How many percent to scale up reads with
         :type decrease_reads_with: int
         :param decrease_reads_with: How many percent to scale down reads with
+        :type min_provisioned_reads: int
+        :param min_provisioned_reads: Minimum number of provisioned reads
+        :type max_provisioned_reads: int
+        :param max_provisioned_reads: Maximum number of provisioned reads
         :type writes_upper_threshold: int
         :param writes_upper_threshold: Usage percent when we should scale up
         :type writes_lower_threshold: int
@@ -64,22 +75,15 @@ class DynamicDynamoDB:
         :param increase_writes_with: How many percent to scale up writes with
         :type decrease_writes_with: int
         :param decrease_writes_with: How many percent to scale down writes with
+        :type min_provisioned_writes: int
+        :param min_provisioned_writes: Minimum number of provisioned writes
+        :type max_provisioned_writes: int
+        :param max_provisioned_writes: Maximum number of provisioned writes
         :type check_interval: int
         :param check_interval: How many seconds to wait between checks
         :type dry_run: bool
         :param dry_run: Set to False if we should make actual changes
         """
-        self.region = region
-        self.table_name = table_name
-        self.reads_upper_threshold = reads_upper_threshold
-        self.reads_lower_threshold = reads_lower_threshold
-        self.increase_reads_with = increase_reads_with
-        self.decrease_reads_with = decrease_reads_with
-        self.writes_upper_threshold = writes_upper_threshold
-        self.writes_lower_threshold = writes_lower_threshold
-        self.increase_writes_with = increase_writes_with
-        self.decrease_writes_with = decrease_writes_with
-        self.check_interval = check_interval
         self.dry_run = dry_run
 
         #
@@ -97,11 +101,44 @@ class DynamicDynamoDB:
         console_handler.setFormatter(stdout_formatter)
         self.logger.addHandler(console_handler)
 
+        #
+        # Handel parameters
+        #
+        if int(increase_reads_with) > 100:
+            self.logger.error(
+                'You can not increase the table throughput with more '
+                'than 100% at a time. Setting --increase-reads-with to 100.')
+            increase_reads_with = 100
+
+        if int(increase_writes_with) > 100:
+            self.logger.error(
+                'You can not increase the table throughput with more '
+                'than 100% at a time. Setting --increase-writes-with to 100.')
+            increase_writes_with = 100
+
+        self.region = region
+        self.table_name = table_name
+        self.reads_upper_threshold = int(reads_upper_threshold)
+        self.reads_lower_threshold = int(reads_lower_threshold)
+        self.increase_reads_with = int(increase_reads_with)
+        self.decrease_reads_with = int(decrease_reads_with)
+        self.writes_upper_threshold = int(writes_upper_threshold)
+        self.writes_lower_threshold = int(writes_lower_threshold)
+        self.increase_writes_with = int(increase_writes_with)
+        self.decrease_writes_with = int(decrease_writes_with)
+        self.min_provisioned_reads = min_provisioned_reads
+        self.max_provisioned_reads = max_provisioned_reads
+        self.min_provisioned_writes = min_provisioned_writes
+        self.max_provisioned_writes = max_provisioned_writes
+        self.check_interval = int(check_interval)
+
     def run(self):
         """ Public method for starting scaling """
         try:
             while True:
                 self.ensure_proper_provisioning()
+                self.logger.info('Waiting {0:d}s until checking again'.format(
+                    self.check_interval))
                 time.sleep(self.check_interval)
         except KeyboardInterrupt:
             self.logger.info('Caught termination signal. Exiting.')
@@ -121,29 +158,33 @@ class DynamicDynamoDB:
         }
 
         # Check if we should update read provisioning
-        if read_usage_percent >= self.reads_upper_threshold:
-            new_value = self._calculate_increase(
+        if read_usage_percent == 0:
+            self.logger.info('Scale down is not performed when usage is at 0%')
+        elif read_usage_percent >= self.reads_upper_threshold:
+            new_value = self._calculate_increase_reads(
                 throughput['read_units'],
                 self.increase_reads_with)
             throughput['update_needed'] = True
             throughput['read_units'] = new_value
 
         elif read_usage_percent <= self.reads_lower_threshold:
-            new_value = self._calculate_decrease(
+            new_value = self._calculate_decrease_reads(
                 throughput['read_units'],
                 self.increase_reads_with)
             throughput['update_needed'] = True
             throughput['read_units'] = new_value
 
         # Check if we should update write provisioning
-        if write_usage_percent >= self.writes_upper_threshold:
-            new_value = self._calculate_increase(
+        if write_usage_percent == 0:
+            self.logger.info('Scale down is not performed when usage is at 0%')
+        elif write_usage_percent >= self.writes_upper_threshold:
+            new_value = self._calculate_increase_writes(
                 throughput['write_units'],
                 self.increase_reads_with)
             throughput['update_needed'] = True
             throughput['write_units'] = new_value
         elif write_usage_percent <= self.writes_lower_threshold:
-            new_value = self._calculate_decrease(
+            new_value = self._calculate_decrease_writes(
                 throughput['write_units'],
                 self.increase_reads_with)
             throughput['update_needed'] = True
@@ -151,11 +192,17 @@ class DynamicDynamoDB:
 
         # Handle throughput updates
         if throughput['update_needed']:
+            self.logger.info(
+                'Changing provisioning to {0:d} reads and {1:d} writes'.format(
+                    throughput['read_units'],
+                    throughput['write_units']))
             self._update_throughput(
                 throughput['read_units'],
                 throughput['write_units'])
+        else:
+            self.logger.info('No need to change provisioning')
 
-    def _calculate_decrease(self, original_provisioning, percent):
+    def _calculate_decrease_reads(self, original_provisioning, percent):
         """ Decrease the original_provisioning with percent %
 
         :type original_provisioning: int
@@ -164,9 +211,13 @@ class DynamicDynamoDB:
         :param percent: How many percent should we decrease with
         :returns: int -- New provisioning value
         """
-        return int(float(original_provisioning)*(float(percent)/100))
+        decrease = int(float(original_provisioning)*(float(percent)/100))
+        if self.min_provisioned_reads:
+            if decrease < self.min_provisioned_reads:
+                return self.min_provisioned_reads
+        return decrease
 
-    def _calculate_increase(self, original_provisioning, percent):
+    def _calculate_increase_reads(self, original_provisioning, percent):
         """ Increase the original_provisioning with percent %
 
         :type original_provisioning: int
@@ -175,7 +226,41 @@ class DynamicDynamoDB:
         :param percent: How many percent should we increase with
         :returns: int -- New provisioning value
         """
-        return int(float(original_provisioning)*(float(percent)/100+1))
+        increase = int(float(original_provisioning)*(float(percent)/100+1))
+        if self.max_provisioned_reads:
+            if increase > self.max_provisioned_reads:
+                return self.max_provisioned_reads
+        return increase
+
+    def _calculate_decrease_writes(self, original_provisioning, percent):
+        """ Decrease the original_provisioning with percent %
+
+        :type original_provisioning: int
+        :param original_provisioning: The current provisioning
+        :type percent: int
+        :param percent: How many percent should we decrease with
+        :returns: int -- New provisioning value
+        """
+        decrease = int(float(original_provisioning)*(float(percent)/100))
+        if self.min_provisioned_writes:
+            if decrease < self.min_provisioned_writes:
+                return self.min_provisioned_writes
+        return decrease
+
+    def _calculate_increase_writes(self, original_provisioning, percent):
+        """ Increase the original_provisioning with percent %
+
+        :type original_provisioning: int
+        :param original_provisioning: The current provisioning
+        :type percent: int
+        :param percent: How many percent should we increase with
+        :returns: int -- New provisioning value
+        """
+        increase = int(float(original_provisioning)*(float(percent)/100+1))
+        if self.max_provisioned_writes:
+            if increase > self.max_provisioned_writes:
+                return self.max_provisioned_writes
+        return increase
 
     def _ensure_cloudwatch_connection(self):
         """ Make sure that we have a CloudWatch connection """
@@ -208,9 +293,10 @@ class DynamicDynamoDB:
             unit=None)
 
         if len(metrics) == 0:
-            return 0
+            consumed_reads = 0
+        else:
+            consumed_reads = int(math.ceil(float(metrics[0]['Sum'])/float(300)))
 
-        consumed_reads = int(math.ceil(float(metrics[0]['Sum'])/float(300)))
         consumed_reads_percent = int(math.ceil(
             float(consumed_reads) / float(table.read_units) * 100))
         self.logger.info('Consumed reads: {0:d}'.format(consumed_reads))
@@ -239,9 +325,11 @@ class DynamicDynamoDB:
             unit=None)
 
         if len(metrics) == 0:
-            return 0
+            consumed_writes = 0
+        else:
+            consumed_writes = int(math.ceil(
+                float(metrics[0]['Sum'])/float(300)))
 
-        consumed_writes = int(math.ceil(float(metrics[0]['Sum'])/float(300)))
         consumed_writes_percent = int(math.ceil(
             float(consumed_writes) / float(table.write_units) * 100))
         self.logger.info('Consumed writes: {0:d}'.format(consumed_writes))
@@ -277,12 +365,25 @@ class DynamicDynamoDB:
         """
         self._ensure_dynamodb_connection()
         table = self.ddb_connection.get_table(self.table_name)
-        self.logger.info(
-            'Updating read provisioning to: {0:d}'.format(read_units))
-        self.logger.info(
-            'Updating write provisioning to: {0:d}'.format(write_units))
-        if False:
-            table.update_throughput(int(read_units, int(write_units)))
+
+        if table.status != 'ACTIVE':
+            self.logger.warning(
+                'Not performing throughput changes when table '
+                'is in {0} state'.format(table.status))
+
+        if not self.dry_run:
+            try:
+                table.update_throughput(int(read_units), int(write_units))
+                self.logger.info('Provisioning updated')
+            except DynamoDBResponseError as error:
+                dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
+                if dynamodb_error == 'LimitExceededException':
+                    self.logger.warning(
+                        'Scaling limit exeeded. '
+                        'The table can only be scaled down twice per day.')
+                else:
+                    raise
+
 
 
 def main():
@@ -291,7 +392,7 @@ def main():
         description='Dynamic DynamoDB - Auto provisioning AWS DynamoDB')
     parser.add_argument('--dry-run',
         action='store_true',
-        help='Run without making any changes to your DynamoDB database')
+        help='Run without making any changes to your DynamoDB table')
     parser.add_argument('--check-interval',
         type=int,
         default=300,
@@ -300,7 +401,7 @@ def main():
     dynamodb_ag = parser.add_argument_group('DynamoDB settings')
     dynamodb_ag.add_argument('-r', '--region',
         default='us-east-1',
-        help='AWS region to operate in'),
+        help='AWS region to operate in')
     dynamodb_ag.add_argument('-t', '--table-name',
         required=True,
         help='How many percent should we decrease the read units with?')
@@ -321,12 +422,18 @@ def main():
         default=50,
         type=int,
         help="""How many percent should we increase the read
-                units with? (default: 50)""")
+                units with? (default: 50, max: 100)""")
     r_scaling_ag.add_argument('--decrease-reads-with',
         default=50,
         type=int,
         help="""How many percent should we decrease the
                 read units with? (default: 50)""")
+    r_scaling_ag.add_argument('--min-provisioned-reads',
+        type=int,
+        help="""Minimum number of provisioned reads""")
+    r_scaling_ag.add_argument('--max-provisioned-reads',
+        type=int,
+        help="""Maximum number of provisioned reads""")
     w_scaling_ag = parser.add_argument_group('Write units scaling properties')
     w_scaling_ag.add_argument('--writes-upper-threshold',
         default=90,
@@ -344,12 +451,18 @@ def main():
         default=50,
         type=int,
         help="""How many percent should we increase the write
-                units with? (default: 50)""")
+                units with? (default: 50, max: 100)""")
     w_scaling_ag.add_argument('--decrease-writes-with',
         default=50,
         type=int,
         help="""How many percent should we decrease the write
                 units with? (default: 50)""")
+    w_scaling_ag.add_argument('--min-provisioned-writes',
+        type=int,
+        help="""Minimum number of provisioned writes""")
+    w_scaling_ag.add_argument('--max-provisioned-writes',
+        type=int,
+        help="""Maximum number of provisioned writes""")
     args = parser.parse_args()
 
     dynamic_ddb = DynamicDynamoDB(
@@ -363,6 +476,13 @@ def main():
         args.writes_lower_threshold,
         args.increase_writes_with,
         args.decrease_writes_with,
+        args.min_provisioned_reads,
+        args.max_provisioned_reads,
+        args.min_provisioned_writes,
+        args.max_provisioned_writes,
         check_interval=args.check_interval,
         dry_run=args.dry_run)
     dynamic_ddb.run()
+
+if __name__ == '__main__':
+    main()
