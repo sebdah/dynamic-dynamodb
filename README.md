@@ -7,6 +7,7 @@ Usage
 -----
 
 This example will configure Dynamic DynamoDB to:
+
 - Scale up your DynamoDB table when the consumed reads 90% of the total provisioned reads
 - Scale up your DynamoDB table when the consumed writes 90% of the total provisioned writes
 - Scale up your reads with 50%
@@ -17,6 +18,7 @@ This example will configure Dynamic DynamoDB to:
 - Scale down your writes with 70%
 - Check for changes every 5 minutes
 
+Command:
 
     dynamic_dynamodb.py --table-name my-table \
                         --reads-upper-threshold 90 \
