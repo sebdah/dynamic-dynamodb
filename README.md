@@ -1,9 +1,11 @@
 Dynamic DynamoDB
 ================
 
-Amazon Web Services DynamoDB hosted NoSQL solition, but it falls short when it comes to automatic scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
+AWS hosted NoSQL solution DynamoDB is a great service, but it falls short when it comes to automatic scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
 All you need to do is to tell Dynamic DynamoDB at which point and how much you want to scale up or down your DynamoDB. For example, if the consumed read capacity reaches 90%, it might be a good idea to scale up the read provisioning slightly to meet the flood of requests to your service.
+
+See an example of how to configure Dynamic DynamoDB under **Basic usage** or checkout `dynamic-dynamodb --help`.
 
 Basic usage
 -----------
