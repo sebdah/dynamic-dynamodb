@@ -35,6 +35,13 @@ Command:
                      --decrease-writes-with 70 \
                      --check-interval 300
 
+Installation instructions
+-------------------------
+
+The easiest way to install Dynamic DynamoDB is through PyPI:
+
+    pip install dynamic-dynamodb
+
 Full --help output
 ------------------
 
