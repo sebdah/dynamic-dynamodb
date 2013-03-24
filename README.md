@@ -31,8 +31,8 @@ Command:
                         --decrease-writes-with 70 \
                         --check-interval 300
 
---help
-------
+Full --help output
+------------------
 
     usage: dynamic_dynamodb.py [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
                                [-r REGION] -t TABLE_NAME
