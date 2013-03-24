@@ -1,10 +1,12 @@
-dynamic-dynamodb
+Dynamic DynamoDB
 ================
 
-Auto-provisioning for DynamoDB. This project is under active development and will be released to master (i.e. a stable version within the near future).
+Amazon Web Services DynamoDB hosted NoSQL solition, but it falls short when it comes to automatic scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
-Usage
------
+All you need to do is to tell Dynamic DynamoDB at which point and how much you want to scale up or down your DynamoDB. For example, if the consumed read capacity reaches 90%, it might be a good idea to scale up the read provisioning slightly to meet the flood of requests to your service.
+
+Basic usage
+-----------
 
 This example will configure Dynamic DynamoDB to:
 
