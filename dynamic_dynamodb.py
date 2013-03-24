@@ -118,6 +118,8 @@ class DynamicDynamoDB:
         try:
             while True:
                 self.ensure_proper_provisioning()
+                self.logger.info('Waiting {0:d}s until checking again'.format(
+                    self.check_interval))
                 time.sleep(self.check_interval)
         except KeyboardInterrupt:
             self.logger.info('Caught termination signal. Exiting.')
