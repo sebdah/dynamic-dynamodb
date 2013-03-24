@@ -1,11 +1,11 @@
 """
 Setup script for PyPi
 """
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 setup(name='dynamic-dynamodb',
-    version='0.1.0-beta',
+    version='0.1.1',
     license='Apache License, Version 2.0',
     description='Automatic provisioning for AWS DynamoDB tables',
     author='Sebastian Dahlgren',
@@ -13,7 +13,9 @@ setup(name='dynamic-dynamodb',
     url='http://sebdah.github.com/dynamic-dynamodb/',
     keywords="dynamodb aws provisioning amazon web services",
     platforms=['Any'],
-    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+    py_modules=['dynamic_dynamodb'],
+    include_package_data=True,
+    zip_safe=False,
     install_requires=[
         'boto >= 2.6.0'
     ],
@@ -26,7 +28,7 @@ setup(name='dynamic-dynamodb',
     ],
     entry_points={
         'console_scripts': [
-            'dynamic-dynamodb = dynamic_dynamodb.dynamic_dynamodb:main',
+            'dynamic-dynamodb = dynamic_dynamodb:main',
         ]
     }
 )
