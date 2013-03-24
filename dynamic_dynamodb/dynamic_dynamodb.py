@@ -25,7 +25,6 @@ limitations under the License.
 
 VERSION = '0.1.0-SNAPSHOT'
 
-import sys
 import math
 import time
 import logging
