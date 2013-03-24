@@ -4,7 +4,7 @@ Setup script for PyPi
 from setuptools import setup
 
 setup(name='dynamic-dynamodb',
-    version='0.2.0-SNAPSHOT',
+    version='0.2.0',
     license='Apache License, Version 2.0',
     description='Automatic provisioning for AWS DynamoDB tables',
     author='Sebastian Dahlgren',
