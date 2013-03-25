@@ -1,2 +1,2 @@
-include dynamic_dynamodb.py
+recursive-include dynamic_dynamodb *
 include setup.py

@@ -1,7 +1,6 @@
-"""
-Setup script for PyPi
-"""
-from setuptools import setup
+""" Setup script for PyPI """
+from setuptools import setup, find_packages
+
 
 setup(name='dynamic-dynamodb',
     version='0.3.0-SNAPSHOT',
@@ -13,6 +12,7 @@ setup(name='dynamic-dynamodb',
     keywords="dynamodb aws provisioning amazon web services",
     platforms=['Any'],
     py_modules=['dynamic_dynamodb'],
+    packages=find_packages('dynamic_dynamodb'),
     include_package_data=True,
     zip_safe=False,
     install_requires=[
@@ -27,7 +27,7 @@ setup(name='dynamic-dynamodb',
     ],
     entry_points={
         'console_scripts': [
-            'dynamic-dynamodb = dynamic_dynamodb:main',
+            'dynamic-dynamodb = dynamic_dynamodb.main:main',
         ]
     }
 )
