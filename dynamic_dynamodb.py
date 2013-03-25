@@ -33,6 +33,8 @@ from boto import dynamodb
 from boto.ec2 import cloudwatch
 from boto.exception import DynamoDBResponseError
 
+from ConfigParser import SafeConfigParser
+
 
 # pylint: disable=R0902
 # pylint: disable=R0913
@@ -410,6 +412,8 @@ def main():
     """ Main function handling option parsing etc """
     parser = argparse.ArgumentParser(
         description='Dynamic DynamoDB - Auto provisioning AWS DynamoDB')
+    parser.add_argument('-c', '--config',
+        help='Read configuration from a configuration file')
     parser.add_argument('--dry-run',
         action='store_true',
         help='Run without making any changes to your DynamoDB table')
@@ -497,26 +501,78 @@ def main():
         parser.print_help()
         sys.exit(1)
 
+    if args.config:
+        # Read the configuration file
+        config = SafeConfigParser()
+        config.optionxform = lambda option: option
+        config.read(args.config)
+
+        region = config.get('global', 'region')
+        check_interval = config.get('global', 'check-interval')
+        aws_access_key_id = config.get('global', 'aws-access-key-id')
+        aws_secret_access_key = config.get('global', 'aws-secret-access-key-id')
+
+        # Find the first table definition
+        for current_section in config.sections():
+            current_section = current_section.lsplit(':', 1)
+            if current_section[0] != 'table':
+                continue
+            section = current_section[1].strip()
+            break
+
+        reads_upper_threshold = config.get(section, 'reads-upper-threshold')
+        reads_lower_threshold = config.get(section, 'reads-lower-threshold')
+        increase_reads_with = config.get(section, 'increase-reads-with')
+        decrease_reads_with = config.get(section, 'decrease-reads-with')
+        writes_upper_threshold = config.get(section, 'writes-upper-threshold')
+        writes_lower_threshold = config.get(section, 'writes-lower-threshold')
+        increase_writes_with = config.get(section, 'increase-writes-with')
+        decrease_writes_with = config.get(section, 'decrease-writes-with')
+        min_provisioned_reads = config.get(section, 'min-provisioned-reads')
+        max_provisioned_reads = config.get(section, 'max-provisioned-reads')
+        min_provisioned_writes = config.get(section, 'min-provisioned-writes')
+        max_provisioned_writes = config.get(section, 'max-provisioned-writes')
+
+    else:
+        # Handle command line arguments
+        region = args.region
+        table_name = args.table_name
+        reads_upper_threshold = args.reads_upper_threshold
+        reads_lower_threshold = args.reads_lower_threshold
+        increase_reads_with = args.increase_reads_with
+        decrease_reads_with = args.decrease_reads_with
+        writes_upper_threshold = args.writes_upper_threshold
+        writes_lower_threshold = args.writes_lower_threshold
+        increase_writes_with = args.increase_writes_with
+        decrease_writes_with = args.decrease_writes_with
+        min_provisioned_reads = args.min_provisioned_reads
+        max_provisioned_reads = args.max_provisioned_reads
+        min_provisioned_writes = args.min_provisioned_writes
+        max_provisioned_writes = args.max_provisioned_writes
+        check_interval = args.check_interval
+        dry_run = args.dry_run
+        aws_access_key_id = args.aws_access_key_id
+        aws_secret_access_key = args.aws_secret_access_key
 
     dynamic_ddb = DynamicDynamoDB(
-        args.region,
-        args.table_name,
-        args.reads_upper_threshold,
-        args.reads_lower_threshold,
-        args.increase_reads_with,
-        args.decrease_reads_with,
-        args.writes_upper_threshold,
-        args.writes_lower_threshold,
-        args.increase_writes_with,
-        args.decrease_writes_with,
-        args.min_provisioned_reads,
-        args.max_provisioned_reads,
-        args.min_provisioned_writes,
-        args.max_provisioned_writes,
-        check_interval=args.check_interval,
-        dry_run=args.dry_run,
-        aws_access_key_id=args.aws_access_key_id,
-        aws_secret_access_key=args.aws_secret_access_key)
+        region,
+        table_name,
+        reads_upper_threshold,
+        reads_lower_threshold,
+        increase_reads_with,
+        decrease_reads_with,
+        writes_upper_threshold,
+        writes_lower_threshold,
+        increase_writes_with,
+        decrease_writes_with,
+        min_provisioned_reads,
+        max_provisioned_reads,
+        min_provisioned_writes,
+        max_provisioned_writes,
+        check_interval=check_interval,
+        dry_run=dry_run,
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key)
     dynamic_ddb.run()
 
 if __name__ == '__main__':
