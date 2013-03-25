@@ -28,12 +28,11 @@ import time
 import logging
 import datetime
 import argparse
+import ConfigParser
 
 from boto import dynamodb
 from boto.ec2 import cloudwatch
 from boto.exception import DynamoDBResponseError
-
-from ConfigParser import SafeConfigParser
 
 
 # pylint: disable=R0902
@@ -407,7 +406,6 @@ class DynamicDynamoDB:
                     raise
 
 
-
 def main():
     """ Main function handling option parsing etc """
     parser = argparse.ArgumentParser(
@@ -433,7 +431,6 @@ def main():
         default='us-east-1',
         help='AWS region to operate in (default: us-east-1')
     dynamodb_ag.add_argument('-t', '--table-name',
-        required=True,
         help='How many percent should we decrease the read units with?')
     r_scaling_ag = parser.add_argument_group('Read units scaling properties')
     r_scaling_ag.add_argument('--reads-upper-threshold',
@@ -502,78 +499,139 @@ def main():
         sys.exit(1)
 
     if args.config:
-        # Read the configuration file
-        config = SafeConfigParser()
-        config.optionxform = lambda option: option
-        config.read(args.config)
-
-        region = config.get('global', 'region')
-        check_interval = config.get('global', 'check-interval')
-        aws_access_key_id = config.get('global', 'aws-access-key-id')
-        aws_secret_access_key = config.get('global', 'aws-secret-access-key-id')
-
-        # Find the first table definition
-        for current_section in config.sections():
-            current_section = current_section.lsplit(':', 1)
-            if current_section[0] != 'table':
-                continue
-            section = current_section[1].strip()
-            break
-
-        reads_upper_threshold = config.get(section, 'reads-upper-threshold')
-        reads_lower_threshold = config.get(section, 'reads-lower-threshold')
-        increase_reads_with = config.get(section, 'increase-reads-with')
-        decrease_reads_with = config.get(section, 'decrease-reads-with')
-        writes_upper_threshold = config.get(section, 'writes-upper-threshold')
-        writes_lower_threshold = config.get(section, 'writes-lower-threshold')
-        increase_writes_with = config.get(section, 'increase-writes-with')
-        decrease_writes_with = config.get(section, 'decrease-writes-with')
-        min_provisioned_reads = config.get(section, 'min-provisioned-reads')
-        max_provisioned_reads = config.get(section, 'max-provisioned-reads')
-        min_provisioned_writes = config.get(section, 'min-provisioned-writes')
-        max_provisioned_writes = config.get(section, 'max-provisioned-writes')
-
+        config = parse_configuration_file(args.config)
     else:
+        if not args.table_name:
+            print 'argument -t/--table-name is required'
+            parser.print_help()
+            sys.exit(1)
+
+        config = {}
+
         # Handle command line arguments
-        region = args.region
-        table_name = args.table_name
-        reads_upper_threshold = args.reads_upper_threshold
-        reads_lower_threshold = args.reads_lower_threshold
-        increase_reads_with = args.increase_reads_with
-        decrease_reads_with = args.decrease_reads_with
-        writes_upper_threshold = args.writes_upper_threshold
-        writes_lower_threshold = args.writes_lower_threshold
-        increase_writes_with = args.increase_writes_with
-        decrease_writes_with = args.decrease_writes_with
-        min_provisioned_reads = args.min_provisioned_reads
-        max_provisioned_reads = args.max_provisioned_reads
-        min_provisioned_writes = args.min_provisioned_writes
-        max_provisioned_writes = args.max_provisioned_writes
-        check_interval = args.check_interval
-        dry_run = args.dry_run
-        aws_access_key_id = args.aws_access_key_id
-        aws_secret_access_key = args.aws_secret_access_key
+        config['region'] = args.region
+        config['table-name'] = args.table_name
+        config['reads-upper-threshold'] = args.reads_upper_threshold
+        config['reads-lower-threshold'] = args.reads_lower_threshold
+        config['increase-reads-with'] = args.increase_reads_with
+        config['decrease-reads-with'] = args.decrease_reads_with
+        config['writes-upper-threshold'] = args.writes_upper_threshold
+        config['writes-lower-threshold'] = args.writes_lower_threshold
+        config['increase-writes-with'] = args.increase_writes_with
+        config['decrease-writes-with'] = args.decrease_writes_with
+        config['min-provisioned-reads'] = args.min_provisioned_reads
+        config['max-provisioned-reads'] = args.max_provisioned_reads
+        config['min-provisioned-writes'] = args.min_provisioned_writes
+        config['max-provisioned-writes'] = args.max_provisioned_writes
+        config['check-interval'] = args.check_interval
+        config['aws-access-key-id'] = args.aws_access_key_id
+        config['aws-secret-access-key'] = args.aws_secret_access_key
+
+    # Options that can only be seet on command line:
+    config['dry-run'] = args.dry_run
 
     dynamic_ddb = DynamicDynamoDB(
-        region,
-        table_name,
-        reads_upper_threshold,
-        reads_lower_threshold,
-        increase_reads_with,
-        decrease_reads_with,
-        writes_upper_threshold,
-        writes_lower_threshold,
-        increase_writes_with,
-        decrease_writes_with,
-        min_provisioned_reads,
-        max_provisioned_reads,
-        min_provisioned_writes,
-        max_provisioned_writes,
-        check_interval=check_interval,
-        dry_run=dry_run,
-        aws_access_key_id=aws_access_key_id,
-        aws_secret_access_key=aws_secret_access_key)
+        config['region'],
+        config['table-name'],
+        config['reads-upper-threshold'],
+        config['reads-lower-threshold'],
+        config['increase-reads-with'],
+        config['decrease-reads-with'],
+        config['writes-upper-threshold'],
+        config['writes-lower-threshold'],
+        config['increase-writes-with'],
+        config['decrease-writes-with'],
+        config['min-provisioned-reads'],
+        config['max-provisioned-reads'],
+        config['min-provisioned-writes'],
+        config['max-provisioned-writes'],
+        check_interval=config['check-interval'],
+        dry_run=config['dry-run'],
+        aws_access_key_id=config['aws-access-key-id'],
+        aws_secret_access_key=config['aws-secret-access-key'])
     dynamic_ddb.run()
+
+
+def parse_configuration_file(config_path):
+    """ Parse a configuration file
+
+    :type config_path: str
+    :param config_path: Path to the configuration file
+    """
+    # Read the configuration file
+    config_file = ConfigParser.SafeConfigParser()
+    config_file.optionxform = lambda option: option
+    config_file.read(config_path)
+
+    # Config dict
+    config = {}
+
+    # Find the first table definition
+    section = None
+    for current_section in config_file.sections():
+        if current_section.rsplit(':', 1)[0] != 'table':
+            continue
+        section = current_section
+        config['table-name'] = current_section.rsplit(':', 1)[1].strip()
+        break
+
+    if not section:
+        print 'Could not find a [table: <table_name>] section in {0}'.format(
+            config_path)
+        sys.exit(1)
+
+    # Global options to consider
+    global_options = [
+        ('region', True),
+        ('check-interval', True),
+        ('aws-access-key-id', False),
+        ('aws-secret-access-key', False),
+    ]
+
+    # Populate the global options
+    for option, required in global_options:
+        try:
+            config[option] = config_file.get('global', option)
+        except ConfigParser.NoOptionError:
+            if required:
+                print 'Missing [global] option "{0}" in {1}'.format(
+                    option, config_path)
+                sys.exit(1)
+            else:
+                config[option] = None
+        except ConfigParser.NoSectionError:
+            print 'Missing section [global] in {0}'.format(config_path)
+            sys.exit(1)
+
+    # Table options to consider
+    table_options = [
+        ('reads-upper-threshold', True),
+        ('reads-lower-threshold', True),
+        ('increase-reads-with', True),
+        ('decrease-reads-with', True),
+        ('writes-upper-threshold', True),
+        ('writes-lower-threshold', True),
+        ('increase-writes-with', True),
+        ('decrease-writes-with', True),
+        ('min-provisioned-reads', False),
+        ('max-provisioned-reads', False),
+        ('min-provisioned-writes', False),
+        ('max-provisioned-writes', False)
+    ]
+
+    # Populate the global options
+    for option, required in table_options:
+        try:
+            config[option] = config_file.get(section, option)
+        except ConfigParser.NoOptionError:
+            if required:
+                print 'Missing [{0}] option "{1}" in {2}'.format(
+                    section, option, config_path)
+                sys.exit(1)
+            else:
+                config[option] = None
+
+    return config
 
 if __name__ == '__main__':
     main()
