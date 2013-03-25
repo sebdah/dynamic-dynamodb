@@ -401,7 +401,7 @@ def main():
     dynamodb_ag = parser.add_argument_group('DynamoDB settings')
     dynamodb_ag.add_argument('-r', '--region',
         default='us-east-1',
-        help='AWS region to operate in')
+        help='AWS region to operate in (default: us-east-1')
     dynamodb_ag.add_argument('-t', '--table-name',
         required=True,
         help='How many percent should we decrease the read units with?')

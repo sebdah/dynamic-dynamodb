@@ -72,7 +72,7 @@ Full --help output
 
     DynamoDB settings:
       -r REGION, --region REGION
-                            AWS region to operate in
+                            AWS region to operate in (default: us-east-1)
       -t TABLE_NAME, --table-name TABLE_NAME
                             How many percent should we decrease the read units
                             with?
