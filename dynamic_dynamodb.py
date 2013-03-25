@@ -22,6 +22,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import sys
 import math
 import time
 import logging
@@ -48,7 +49,8 @@ class DynamicDynamoDB:
                 increase_writes_with, decrease_writes_with,
                 min_provisioned_reads=None, max_provisioned_reads=None,
                 min_provisioned_writes=None, max_provisioned_writes=None,
-                check_interval=300, dry_run=True):
+                check_interval=300, dry_run=True,
+                aws_access_key_id=None, aws_secret_access_key=None):
         """ Constructor setting the basic configuration
 
         :type region: str
@@ -83,6 +85,10 @@ class DynamicDynamoDB:
         :param check_interval: How many seconds to wait between checks
         :type dry_run: bool
         :param dry_run: Set to False if we should make actual changes
+        :type aws_access_key_id: str
+        :param aws_access_key_id: AWS access key to use
+        :type aws_secret_access_key: str
+        :param aws_secret_access_key: AWS secret key to use
         """
         self.dry_run = dry_run
 
@@ -131,6 +137,8 @@ class DynamicDynamoDB:
         self.min_provisioned_writes = min_provisioned_writes
         self.max_provisioned_writes = max_provisioned_writes
         self.check_interval = int(check_interval)
+        self.aws_access_key_id = aws_access_key_id
+        self.aws_secret_access_key = aws_secret_access_key
 
     def run(self):
         """ Public method for starting scaling """
@@ -265,12 +273,24 @@ class DynamicDynamoDB:
     def _ensure_cloudwatch_connection(self):
         """ Make sure that we have a CloudWatch connection """
         if not self.cw_connection:
-            self.cw_connection = cloudwatch.connect_to_region(self.region)
+            if self.aws_access_key_id and self.aws_secret_access_key:
+                self.cw_connection = cloudwatch.connect_to_region(
+                    self.region,
+                    aws_access_key_id=self.aws_access_key_id,
+                    aws_secret_access_key=self.aws_secret_access_key)
+            else:
+                self.cw_connection = cloudwatch.connect_to_region(self.region)
 
     def _ensure_dynamodb_connection(self):
         """ Make sure that we have a CloudWatch connection """
         if not self.ddb_connection:
-            self.ddb_connection = dynamodb.connect_to_region(self.region)
+            if self.aws_access_key_id and self.aws_secret_access_key:
+                self.ddb_connection = dynamodb.connect_to_region(
+                    self.region,
+                    aws_access_key_id=self.aws_access_key_id,
+                    aws_secret_access_key=self.aws_secret_access_key)
+            else:
+                self.ddb_connection = dynamodb.connect_to_region(self.region)
 
     def _get_consumed_reads_percentage(self):
         """ Get the percentage of consumed reads
@@ -398,6 +418,12 @@ def main():
         default=300,
         help="""How many seconds should we wait between
                 the checks (default: 300)""")
+    parser.add_argument('--aws-access-key-id',
+        default=None,
+        help="Override Boto configuration with the following AWS access key")
+    parser.add_argument('--aws-secret-access-key',
+        default=None,
+        help="Override Boto configuration with the following AWS secret key")
     dynamodb_ag = parser.add_argument_group('DynamoDB settings')
     dynamodb_ag.add_argument('-r', '--region',
         default='us-east-1',
@@ -465,6 +491,13 @@ def main():
         help="""Maximum number of provisioned writes""")
     args = parser.parse_args()
 
+    if args.aws_access_key_id and not args.aws_secret_access_key:
+        print ('Both --aws-access-key-id and --aws-secret-access-key must '
+            'be specified.')
+        parser.print_help()
+        sys.exit(1)
+
+
     dynamic_ddb = DynamicDynamoDB(
         args.region,
         args.table_name,
@@ -481,7 +514,9 @@ def main():
         args.min_provisioned_writes,
         args.max_provisioned_writes,
         check_interval=args.check_interval,
-        dry_run=args.dry_run)
+        dry_run=args.dry_run,
+        aws_access_key_id=args.aws_access_key_id,
+        aws_secret_access_key=args.aws_secret_access_key)
     dynamic_ddb.run()
 
 if __name__ == '__main__':
