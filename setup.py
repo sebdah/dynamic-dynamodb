@@ -1,5 +1,4 @@
 """ Setup script for PyPI """
-#from setuptools import setup
 from distutils.core import setup
 
 
