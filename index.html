@@ -4,49 +4,45 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Dynamic DynamoDB by sebdah</title>
+
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
+    <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/sebdah/dynamic-dynamodb">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/sebdah/dynamic-dynamodb/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/sebdah/dynamic-dynamodb/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
-
     <div class="wrapper">
-
+      <header>
+        <h1>Dynamic DynamoDB</h1>
+        <p>Auto-provisioning tool for DynamoDB</p>
+        <p class="view"><a href="https://github.com/sebdah/dynamic-dynamodb">View the Project on GitHub <small>sebdah/dynamic-dynamodb</small></a></p>
+        <ul>
+          <li><a href="https://github.com/sebdah/dynamic-dynamodb/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/sebdah/dynamic-dynamodb/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/sebdah/dynamic-dynamodb">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
       <section>
-        <div id="title">
-          <h1>Dynamic DynamoDB</h1>
-          <p>Auto-provisioning tool for DynamoDB</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/sebdah">sebdah</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
-        </div>
-
         <h1>Dynamic DynamoDB</h1>
 
-<p>AWS hosted NoSQL solution DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.</p>
+<p>AWS DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.</p>
 
 <p>All you need to do is to tell Dynamic DynamoDB at which point and how much you want to scale up or down your DynamoDB. An example is in place. Let’s say you have way more traffic on your database during sales hours 4pm - 10pm. DynamicDB can monitor the increased throughput on your DynamoDB instance (via CloudWatch) and provision more throughput as needed. When the load is reducing Dynamic DynamoDB will sence that and automatically reduce your provisioning.</p>
 
 <p>See an example of how to configure Dynamic DynamoDB under <strong>Basic usage</strong> or checkout <code>dynamic-dynamodb --help</code>.</p>
 
-<h2>Basic usage</h2>
+<h2>Features in short</h2>
+
+<ul>
+<li>Scale up and down DynamoDB automatically</li>
+<li>Restrict scaling to certain time slots</li>
+<li>Gives you control over how much reads and writes you want to scale up and down with</li>
+<li>Dynamic DynamoDB has support for max and min limits so that you always knows how much money you spend at most and how much capacity you can be guaranteed</li>
+</ul><h2>Basic usage</h2>
 
 <p>This example will configure Dynamic DynamoDB to:</p>
 
@@ -81,9 +77,40 @@
 <pre><code>pip install dynamic-dynamodb
 </code></pre>
 
+<h2>Example configuration file</h2>
+
+<pre><code>[global]
+#aws-access-key-id: AWS_ACCESS_KEY
+#aws-secret-access-key-id: AWS_SECRET_KEY
+region: us-east-1
+check-interval: 300
+
+[table: my_table]
+# Read provisioning configuration
+reads-upper-threshold: 90
+reads-lower-threshold: 30
+increase-reads-with: 50
+decrease-reads-with: 50
+#min-provisioned-reads: 100
+#max-provisioned-reads: 500
+
+# Write provisioning configuration
+writes-upper-threshold: 90
+writes-lower-threshold: 30
+increase-writes-with: 50
+decrease-writes-with: 50
+#min-provisioned-writes: 100
+#max-provisioned-writes: 500
+
+# Maintenance windows (in UTC)
+maintenance-windows: 22:00-23:59,00:00-06:00
+</code></pre>
+
 <h2>Full --help output</h2>
 
-<pre><code>usage: dynamic-dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+<pre><code>usage: dynamic_dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+                        [--aws-access-key-id AWS_ACCESS_KEY_ID]
+                        [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
                         [-r REGION] -t TABLE_NAME
                         [--reads-upper-threshold READS_UPPER_THRESHOLD]
                         [--reads-lower-threshold READS_LOWER_THRESHOLD]
@@ -102,15 +129,20 @@ Dynamic DynamoDB - Auto provisioning AWS DynamoDB
 
 optional arguments:
   -h, --help            show this help message and exit
-  --dry-run             Run without making any changes to your DynamoDB
-                        database
+  --dry-run             Run without making any changes to your DynamoDB table
   --check-interval CHECK_INTERVAL
                         How many seconds should we wait between the checks
                         (default: 300)
+  --aws-access-key-id AWS_ACCESS_KEY_ID
+                        Override Boto configuration with the following AWS
+                        access key
+  --aws-secret-access-key AWS_SECRET_ACCESS_KEY
+                        Override Boto configuration with the following AWS
+                        secret key
 
 DynamoDB settings:
   -r REGION, --region REGION
-                        AWS region to operate in
+                        AWS region to operate in (default: us-east-1
   -t TABLE_NAME, --table-name TABLE_NAME
                         How many percent should we decrease the read units
                         with?
@@ -126,7 +158,7 @@ Read units scaling properties:
                         as this percentage (default: 30)
   --increase-reads-with INCREASE_READS_WITH
                         How many percent should we increase the read units
-                        with? (default: 50)
+                        with? (default: 50, max: 100)
   --decrease-reads-with DECREASE_READS_WITH
                         How many percent should we decrease the read units
                         with? (default: 50)
@@ -146,7 +178,7 @@ Write units scaling properties:
                         low as this percentage (default: 30)
   --increase-writes-with INCREASE_WRITES_WITH
                         How many percent should we increase the write units
-                        with? (default: 50)
+                        with? (default: 50, max: 100)
   --decrease-writes-with DECREASE_WRITES_WITH
                         How many percent should we decrease the write units
                         with? (default: 50)
@@ -168,7 +200,15 @@ Write units scaling properties:
 
 <h2>Release information</h2>
 
-<p><strong>0.2.0 (2013-03-24)</strong></p>
+<p><strong>0.3.0 (2013-03-27)</strong></p>
+
+<p>This release contains support for configuration files, custom AWS access keys and configurable maintenance windows. The maintenance feature will restrict Dynamic DynamoDB to change your provisioning only during specific time slots.</p>
+
+<ul>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/6">Add support for configuration files (#6)</a></li>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/5">Configure AWS credentials on command line (#5)</a></li>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/1">Support for maintenance windows (#1)</a></li>
+</ul><p><strong>0.2.0 (2013-03-24)</strong></p>
 
 <ul>
 <li>First public release</li>
@@ -185,8 +225,11 @@ Write units scaling properties:
 
 <p>This project is maintained by <a href="http://www.sebastiandahlgren.se">Sebastian Dahlgren</a> (<a href="https://github.com/sebdah">GitHub</a> | <a href="https://twitter.com/sebdah">Twitter</a> | <a href="www.linkedin.com/in/sebastiandahlgren">LinkedIn</a>)</p>
       </section>
-
     </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/sebdah">sebdah</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
