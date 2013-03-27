@@ -3,7 +3,7 @@ from distutils.core import setup
 
 
 setup(name='dynamic-dynamodb',
-    version='0.3.0',
+    version='0.4.0-SNAPSHOT',
     license='Apache License, Version 2.0',
     description='Automatic provisioning for AWS DynamoDB tables',
     author='Sebastian Dahlgren',
