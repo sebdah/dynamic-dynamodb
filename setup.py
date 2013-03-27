@@ -1,5 +1,6 @@
 """ Setup script for PyPI """
-from setuptools import setup, find_packages
+#from setuptools import setup
+from distutils.core import setup
 
 
 setup(name='dynamic-dynamodb',
@@ -11,8 +12,8 @@ setup(name='dynamic-dynamodb',
     url='http://sebdah.github.com/dynamic-dynamodb/',
     keywords="dynamodb aws provisioning amazon web services",
     platforms=['Any'],
-    py_modules=['dynamic_dynamodb'],
-    packages=find_packages('dynamic_dynamodb'),
+    packages=['dynamic_dynamodb'],
+    scripts=['dynamic-dynamodb'],
     include_package_data=True,
     zip_safe=False,
     install_requires=[
@@ -24,10 +25,5 @@ setup(name='dynamic-dynamodb',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python'
-    ],
-    entry_points={
-        'console_scripts': [
-            'dynamic-dynamodb = dynamic_dynamodb.main:main',
-        ]
-    }
+    ]
 )

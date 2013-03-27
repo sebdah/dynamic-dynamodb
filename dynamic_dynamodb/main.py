@@ -252,6 +252,3 @@ def parse_configuration_file(config_path):
                 config[option] = None
 
     return config
-
-if __name__ == '__main__':
-    main()
