@@ -1,5 +1,5 @@
 """ Setup script for PyPI """
-from distutils.core import setup
+from setuptools import setup
 
 
 setup(name='dynamic-dynamodb',
