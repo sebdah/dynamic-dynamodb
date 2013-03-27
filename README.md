@@ -1,11 +1,19 @@
 Dynamic DynamoDB
 ================
 
-AWS hosted NoSQL solution DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
+AWS DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
 All you need to do is to tell Dynamic DynamoDB at which point and how much you want to scale up or down your DynamoDB. An example is in place. Let’s say you have way more traffic on your database during sales hours 4pm - 10pm. DynamicDB can monitor the increased throughput on your DynamoDB instance (via CloudWatch) and provision more throughput as needed. When the load is reducing Dynamic DynamoDB will sence that and automatically reduce your provisioning.
 
 See an example of how to configure Dynamic DynamoDB under **Basic usage** or checkout `dynamic-dynamodb --help`.
+
+Features in short
+-----------------
+
+- Scale up and down DynamoDB automatically
+- Restrict scaling to certain time slots
+- Gives you control over how much reads and writes you want to scale up and down with
+- Dynamic DynamoDB has support for max and min limits so that you always knows how much money you spend at most and how much capacity you can be guaranteed
 
 Basic usage
 -----------
@@ -51,7 +59,7 @@ Example configuration file
     region: us-east-1
     check-interval: 300
 
-    [table: prod-sessions-201302]
+    [table: my_table]
     # Read provisioning configuration
     reads-upper-threshold: 90
     reads-lower-threshold: 30
@@ -167,6 +175,14 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
+**0.3.0 (2013-03-27)**
+
+This release contains support for configuration files, custom AWS access keys and configurable maintenance windows. The maintenance feature will restrict Dynamic DynamoDB to change your provisioning only during specific time slots.
+
+- [Add support for configuration files (#6)](https://github.com/sebdah/dynamic-dynamodb/issues/6)
+- [Configure AWS credentials on command line (#5)](https://github.com/sebdah/dynamic-dynamodb/issues/5)
+- [Support for maintenance windows (#1)](https://github.com/sebdah/dynamic-dynamodb/issues/1)
 
 **0.2.0 (2013-03-24)**
 - First public release
