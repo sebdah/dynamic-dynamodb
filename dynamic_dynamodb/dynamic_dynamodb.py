@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Dynamic DynamoDB
 
@@ -26,7 +25,6 @@ import math
 import time
 import logging
 import datetime
-import argparse
 
 from boto import dynamodb
 from boto.ec2 import cloudwatch
@@ -48,7 +46,9 @@ class DynamicDynamoDB:
                 increase_writes_with, decrease_writes_with,
                 min_provisioned_reads=None, max_provisioned_reads=None,
                 min_provisioned_writes=None, max_provisioned_writes=None,
-                check_interval=300, dry_run=True):
+                check_interval=300, dry_run=True,
+                aws_access_key_id=None, aws_secret_access_key=None,
+                maintenance_windows=None):
         """ Constructor setting the basic configuration
 
         :type region: str
@@ -83,6 +83,12 @@ class DynamicDynamoDB:
         :param check_interval: How many seconds to wait between checks
         :type dry_run: bool
         :param dry_run: Set to False if we should make actual changes
+        :type aws_access_key_id: str
+        :param aws_access_key_id: AWS access key to use
+        :type aws_secret_access_key: str
+        :param aws_secret_access_key: AWS secret key to use
+        :type maintenance_windows: str
+        :param maintenance_windows: Example '00:00-01:00,10:00-11:00'
         """
         self.dry_run = dry_run
 
@@ -131,6 +137,9 @@ class DynamicDynamoDB:
         self.min_provisioned_writes = min_provisioned_writes
         self.max_provisioned_writes = max_provisioned_writes
         self.check_interval = int(check_interval)
+        self.aws_access_key_id = aws_access_key_id
+        self.aws_secret_access_key = aws_secret_access_key
+        self.maintenance_windows = maintenance_windows
 
     def run(self):
         """ Public method for starting scaling """
@@ -265,12 +274,24 @@ class DynamicDynamoDB:
     def _ensure_cloudwatch_connection(self):
         """ Make sure that we have a CloudWatch connection """
         if not self.cw_connection:
-            self.cw_connection = cloudwatch.connect_to_region(self.region)
+            if self.aws_access_key_id and self.aws_secret_access_key:
+                self.cw_connection = cloudwatch.connect_to_region(
+                    self.region,
+                    aws_access_key_id=self.aws_access_key_id,
+                    aws_secret_access_key=self.aws_secret_access_key)
+            else:
+                self.cw_connection = cloudwatch.connect_to_region(self.region)
 
     def _ensure_dynamodb_connection(self):
         """ Make sure that we have a CloudWatch connection """
         if not self.ddb_connection:
-            self.ddb_connection = dynamodb.connect_to_region(self.region)
+            if self.aws_access_key_id and self.aws_secret_access_key:
+                self.ddb_connection = dynamodb.connect_to_region(
+                    self.region,
+                    aws_access_key_id=self.aws_access_key_id,
+                    aws_secret_access_key=self.aws_secret_access_key)
+            else:
+                self.ddb_connection = dynamodb.connect_to_region(self.region)
 
     def _get_consumed_reads_percentage(self):
         """ Get the percentage of consumed reads
@@ -355,6 +376,35 @@ class DynamicDynamoDB:
         table = self.ddb_connection.get_table(self.table_name)
         return int(table.write_units)
 
+    def _is_maintenance_window(self):
+        """ Checks that the current time is within the maintenance window
+
+        :returns: bool -- True if within maintenance window
+        """
+        # If no maintenance windows are defined
+        if self.maintenance_windows is None:
+            return True
+
+        # Example string '00:00-01:00,10:00-11:00'
+        maintenance_windows = []
+        for window in self.maintenance_windows.split(','):
+            try:
+                start, end = window.split('-', 1)
+            except ValueError:
+                self.logger.error('Malformatted maintenance window')
+                return False
+
+            maintenance_windows.append((start, end))
+
+        now = datetime.datetime.utcnow().strftime('%H%M')
+        for maintenance_window in maintenance_windows:
+            start = ''.join(maintenance_window[0].split(':'))
+            end = ''.join(maintenance_window[1].split(':'))
+            if now >= start and now <= end:
+                return True
+
+        return False
+
     def _update_throughput(self, read_units, write_units):
         """ Update throughput on the DynamoDB table
 
@@ -365,6 +415,14 @@ class DynamicDynamoDB:
         """
         self._ensure_dynamodb_connection()
         table = self.ddb_connection.get_table(self.table_name)
+
+        if self.maintenance_windows:
+            if not self._is_maintenance_window():
+                self.logger.warning(
+                    'Current time is outside maintenance window')
+                return
+            else:
+                self.logger.info('Current time is within maintenance window')
 
         if table.status != 'ACTIVE':
             self.logger.warning(
@@ -383,106 +441,3 @@ class DynamicDynamoDB:
                         'The table can only be scaled down twice per day.')
                 else:
                     raise
-
-
-
-def main():
-    """ Main function handling option parsing etc """
-    parser = argparse.ArgumentParser(
-        description='Dynamic DynamoDB - Auto provisioning AWS DynamoDB')
-    parser.add_argument('--dry-run',
-        action='store_true',
-        help='Run without making any changes to your DynamoDB table')
-    parser.add_argument('--check-interval',
-        type=int,
-        default=300,
-        help="""How many seconds should we wait between
-                the checks (default: 300)""")
-    dynamodb_ag = parser.add_argument_group('DynamoDB settings')
-    dynamodb_ag.add_argument('-r', '--region',
-        default='us-east-1',
-        help='AWS region to operate in')
-    dynamodb_ag.add_argument('-t', '--table-name',
-        required=True,
-        help='How many percent should we decrease the read units with?')
-    r_scaling_ag = parser.add_argument_group('Read units scaling properties')
-    r_scaling_ag.add_argument('--reads-upper-threshold',
-        default=90,
-        type=int,
-        help="""Scale up the reads with --increase-reads-with percent if
-                the currently consumed read units reaches this many
-                percent (default: 90)""")
-    r_scaling_ag.add_argument('--reads-lower-threshold',
-        default=30,
-        type=int,
-        help="""Scale down the reads with --decrease-reads-with percent if the
-                currently consumed read units is as low as this
-                percentage (default: 30)""")
-    r_scaling_ag.add_argument('--increase-reads-with',
-        default=50,
-        type=int,
-        help="""How many percent should we increase the read
-                units with? (default: 50, max: 100)""")
-    r_scaling_ag.add_argument('--decrease-reads-with',
-        default=50,
-        type=int,
-        help="""How many percent should we decrease the
-                read units with? (default: 50)""")
-    r_scaling_ag.add_argument('--min-provisioned-reads',
-        type=int,
-        help="""Minimum number of provisioned reads""")
-    r_scaling_ag.add_argument('--max-provisioned-reads',
-        type=int,
-        help="""Maximum number of provisioned reads""")
-    w_scaling_ag = parser.add_argument_group('Write units scaling properties')
-    w_scaling_ag.add_argument('--writes-upper-threshold',
-        default=90,
-        type=int,
-        help="""Scale up the writes with --increase-writes-with percent
-                if the currently consumed write units reaches this
-                many percent (default: 90)""")
-    w_scaling_ag.add_argument('--writes-lower-threshold',
-        default=30,
-        type=int,
-        help="""Scale down the writes with --decrease-writes-with percent
-                if the currently consumed write units is as low as this
-                percentage (default: 30)""")
-    w_scaling_ag.add_argument('--increase-writes-with',
-        default=50,
-        type=int,
-        help="""How many percent should we increase the write
-                units with? (default: 50, max: 100)""")
-    w_scaling_ag.add_argument('--decrease-writes-with',
-        default=50,
-        type=int,
-        help="""How many percent should we decrease the write
-                units with? (default: 50)""")
-    w_scaling_ag.add_argument('--min-provisioned-writes',
-        type=int,
-        help="""Minimum number of provisioned writes""")
-    w_scaling_ag.add_argument('--max-provisioned-writes',
-        type=int,
-        help="""Maximum number of provisioned writes""")
-    args = parser.parse_args()
-
-    dynamic_ddb = DynamicDynamoDB(
-        args.region,
-        args.table_name,
-        args.reads_upper_threshold,
-        args.reads_lower_threshold,
-        args.increase_reads_with,
-        args.decrease_reads_with,
-        args.writes_upper_threshold,
-        args.writes_lower_threshold,
-        args.increase_writes_with,
-        args.decrease_writes_with,
-        args.min_provisioned_reads,
-        args.max_provisioned_reads,
-        args.min_provisioned_writes,
-        args.max_provisioned_writes,
-        check_interval=args.check_interval,
-        dry_run=args.dry_run)
-    dynamic_ddb.run()
-
-if __name__ == '__main__':
-    main()
