@@ -47,7 +47,8 @@ class DynamicDynamoDB:
                 min_provisioned_reads=None, max_provisioned_reads=None,
                 min_provisioned_writes=None, max_provisioned_writes=None,
                 check_interval=300, dry_run=True,
-                aws_access_key_id=None, aws_secret_access_key=None):
+                aws_access_key_id=None, aws_secret_access_key=None,
+                maintenance_windows=None):
         """ Constructor setting the basic configuration
 
         :type region: str
@@ -86,6 +87,8 @@ class DynamicDynamoDB:
         :param aws_access_key_id: AWS access key to use
         :type aws_secret_access_key: str
         :param aws_secret_access_key: AWS secret key to use
+        :type maintenance_windows: str
+        :param maintenance_windows: Example '00:00-01:00,10:00-11:00'
         """
         self.dry_run = dry_run
 
@@ -136,6 +139,7 @@ class DynamicDynamoDB:
         self.check_interval = int(check_interval)
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
+        self.maintenance_windows = maintenance_windows
 
     def run(self):
         """ Public method for starting scaling """
@@ -372,6 +376,35 @@ class DynamicDynamoDB:
         table = self.ddb_connection.get_table(self.table_name)
         return int(table.write_units)
 
+    def _is_maintenance_window(self):
+        """ Checks that the current time is within the maintenance window
+
+        :returns: bool -- True if within maintenance window
+        """
+        # If no maintenance windows are defined
+        if self.maintenance_windows is None:
+            return True
+
+        # Example string '00:00-01:00,10:00-11:00'
+        maintenance_windows = []
+        for window in self.maintenance_windows.split(','):
+            try:
+                start, end = window.split('-', 1)
+            except ValueError:
+                self.logger.error('Malformatted maintenance window')
+                return False
+
+            maintenance_windows.append((start, end))
+
+        now = datetime.datetime.utcnow().strftime('%H%M')
+        for maintenance_window in maintenance_windows:
+            start = ''.join(maintenance_window[0].split(':'))
+            end = ''.join(maintenance_window[1].split(':'))
+            if now >= start and now <= end:
+                return True
+
+        return False
+
     def _update_throughput(self, read_units, write_units):
         """ Update throughput on the DynamoDB table
 
@@ -382,6 +415,14 @@ class DynamicDynamoDB:
         """
         self._ensure_dynamodb_connection()
         table = self.ddb_connection.get_table(self.table_name)
+
+        if self.maintenance_windows:
+            if not self._is_maintenance_window():
+                self.logger.warning(
+                    'Current time is outside maintenance window')
+                return
+            else:
+                self.logger.info('Current time is within maintenance window')
 
         if table.status != 'ACTIVE':
             self.logger.warning(

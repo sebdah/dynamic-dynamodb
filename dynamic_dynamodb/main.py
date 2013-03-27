@@ -146,6 +146,7 @@ def main():
         config['check-interval'] = args.check_interval
         config['aws-access-key-id'] = args.aws_access_key_id
         config['aws-secret-access-key'] = args.aws_secret_access_key
+        config['maintenance-windows'] = None
 
     # Options that can only be seet on command line:
     config['dry-run'] = args.dry_run
@@ -168,7 +169,8 @@ def main():
         check_interval=config['check-interval'],
         dry_run=config['dry-run'],
         aws_access_key_id=config['aws-access-key-id'],
-        aws_secret_access_key=config['aws-secret-access-key'])
+        aws_secret_access_key=config['aws-secret-access-key'],
+        maintenance_windows=config['maintenance-windows'])
     dynamic_ddb.run()
 
 
@@ -236,10 +238,11 @@ def parse_configuration_file(config_path):
         ('min-provisioned-reads', False),
         ('max-provisioned-reads', False),
         ('min-provisioned-writes', False),
-        ('max-provisioned-writes', False)
+        ('max-provisioned-writes', False),
+        ('maintenance-windows', False)
     ]
 
-    # Populate the global options
+    # Populate the table options
     for option, required in table_options:
         try:
             config[option] = config_file.get(section, option)

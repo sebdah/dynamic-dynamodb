@@ -51,7 +51,7 @@ Example configuration file
     region: us-east-1
     check-interval: 300
 
-    [table: my-table]
+    [table: prod-sessions-201302]
     # Read provisioning configuration
     reads-upper-threshold: 90
     reads-lower-threshold: 30
@@ -67,6 +67,9 @@ Example configuration file
     decrease-writes-with: 50
     #min-provisioned-writes: 100
     #max-provisioned-writes: 500
+
+    # Maintenance windows (in UTC)
+    maintenance-windows: 22:00-23:59,00:00-06:00
 
 Full --help output
 ------------------
