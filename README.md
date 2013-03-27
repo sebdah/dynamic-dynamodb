@@ -42,6 +42,32 @@ The easiest way to install Dynamic DynamoDB is through PyPI:
 
     pip install dynamic-dynamodb
 
+Example configuration file
+--------------------------
+
+    [global]
+    #aws-access-key-id: AWS_ACCESS_KEY
+    #aws-secret-access-key-id: AWS_SECRET_KEY
+    region: us-east-1
+    check-interval: 300
+
+    [table: my-table]
+    # Read provisioning configuration
+    reads-upper-threshold: 90
+    reads-lower-threshold: 30
+    increase-reads-with: 50
+    decrease-reads-with: 50
+    #min-provisioned-reads: 100
+    #max-provisioned-reads: 500
+
+    # Write provisioning configuration
+    writes-upper-threshold: 90
+    writes-lower-threshold: 30
+    increase-writes-with: 50
+    decrease-writes-with: 50
+    #min-provisioned-writes: 100
+    #max-provisioned-writes: 500
+
 Full --help output
 ------------------
 
