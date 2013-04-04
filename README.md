@@ -201,6 +201,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**0.3.1 (2013-04-04)**
+
+- Bug fix: [ValueError: Unknown format code 'd' for object of type 'str' (#10)](https://github.com/sebdah/dynamic-dynamodb/issues/10)
+
 **0.3.0 (2013-03-27)**
 
 This release contains support for configuration files, custom AWS access keys and configurable maintenance windows. The maintenance feature will restrict Dynamic DynamoDB to change your provisioning only during specific time slots.
