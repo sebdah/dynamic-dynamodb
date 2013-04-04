@@ -203,8 +203,8 @@ class DynamicDynamoDB:
         if throughput['update_needed']:
             self.logger.info(
                 'Changing provisioning to {0:d} reads and {1:d} writes'.format(
-                    throughput['read_units'],
-                    throughput['write_units']))
+                    int(throughput['read_units']),
+                    int(throughput['write_units'])))
             self._update_throughput(
                 throughput['read_units'],
                 throughput['write_units'])
