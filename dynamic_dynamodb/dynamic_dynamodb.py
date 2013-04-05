@@ -44,8 +44,8 @@ class DynamicDynamoDB:
                 increase_reads_with, decrease_reads_with,
                 writes_upper_threshold, writes_lower_threshold,
                 increase_writes_with, decrease_writes_with,
-                min_provisioned_reads=None, max_provisioned_reads=None,
-                min_provisioned_writes=None, max_provisioned_writes=None,
+                min_provisioned_reads=0, max_provisioned_reads=0,
+                min_provisioned_writes=0, max_provisioned_writes=0,
                 check_interval=300, dry_run=True,
                 aws_access_key_id=None, aws_secret_access_key=None,
                 maintenance_windows=None):
@@ -179,7 +179,7 @@ class DynamicDynamoDB:
         elif read_usage_percent <= self.reads_lower_threshold:
             new_value = self._calculate_decrease_reads(
                 throughput['read_units'],
-                self.increase_reads_with)
+                self.decrease_reads_with)
             throughput['update_needed'] = True
             throughput['read_units'] = new_value
 
@@ -195,7 +195,7 @@ class DynamicDynamoDB:
         elif write_usage_percent <= self.writes_lower_threshold:
             new_value = self._calculate_decrease_writes(
                 throughput['write_units'],
-                self.increase_reads_with)
+                self.decrease_reads_with)
             throughput['update_needed'] = True
             throughput['write_units'] = new_value
 
@@ -221,10 +221,11 @@ class DynamicDynamoDB:
         :returns: int -- New provisioning value
         """
         decrease = int(float(original_provisioning)*(float(percent)/100))
-        if self.min_provisioned_reads:
-            if decrease < self.min_provisioned_reads:
+        new_reads = self._get_provisioned_read_units() - decrease
+        if self.min_provisioned_reads > 0:
+            if new_reads < self.min_provisioned_reads:
                 return self.min_provisioned_reads
-        return decrease
+        return new_reads
 
     def _calculate_increase_reads(self, original_provisioning, percent):
         """ Increase the original_provisioning with percent %
@@ -236,10 +237,11 @@ class DynamicDynamoDB:
         :returns: int -- New provisioning value
         """
         increase = int(float(original_provisioning)*(float(percent)/100+1))
-        if self.max_provisioned_reads:
-            if increase > self.max_provisioned_reads:
+        new_reads = self._get_provisioned_read_units() + increase
+        if self.max_provisioned_reads > 0:
+            if new_reads > self.max_provisioned_reads:
                 return self.max_provisioned_reads
-        return increase
+        return new_reads
 
     def _calculate_decrease_writes(self, original_provisioning, percent):
         """ Decrease the original_provisioning with percent %
@@ -251,10 +253,11 @@ class DynamicDynamoDB:
         :returns: int -- New provisioning value
         """
         decrease = int(float(original_provisioning)*(float(percent)/100))
-        if self.min_provisioned_writes:
-            if decrease < self.min_provisioned_writes:
+        new_writes = self._get_provisioned_write_units() - decrease
+        if self.min_provisioned_writes > 0:
+            if new_writes < self.min_provisioned_writes:
                 return self.min_provisioned_writes
-        return decrease
+        return new_writes
 
     def _calculate_increase_writes(self, original_provisioning, percent):
         """ Increase the original_provisioning with percent %
@@ -266,10 +269,11 @@ class DynamicDynamoDB:
         :returns: int -- New provisioning value
         """
         increase = int(float(original_provisioning)*(float(percent)/100+1))
-        if self.max_provisioned_writes:
-            if increase > self.max_provisioned_writes:
+        new_writes = self._get_provisioned_write_units() + increase
+        if self.max_provisioned_writes > 0:
+            if new_writes > self.max_provisioned_writes:
                 return self.max_provisioned_writes
-        return increase
+        return new_writes
 
     def _ensure_cloudwatch_connection(self):
         """ Make sure that we have a CloudWatch connection """
@@ -301,8 +305,6 @@ class DynamicDynamoDB:
         self._ensure_cloudwatch_connection()
         self._ensure_dynamodb_connection()
 
-        table = self.ddb_connection.get_table(self.table_name)
-
         metrics = self.cw_connection.get_metric_statistics(
             300,
             datetime.datetime.utcnow()-datetime.timedelta(minutes=15),
@@ -311,7 +313,7 @@ class DynamicDynamoDB:
             'AWS/DynamoDB',
             ['Sum'],
             dimensions={'TableName': self.table_name},
-            unit=None)
+            unit='Count')
 
         if len(metrics) == 0:
             consumed_reads = 0
@@ -319,9 +321,9 @@ class DynamicDynamoDB:
             consumed_reads = int(math.ceil(float(metrics[0]['Sum'])/float(300)))
 
         consumed_reads_percent = int(math.ceil(
-            float(consumed_reads) / float(table.read_units) * 100))
+            float(consumed_reads) / float(self._get_provisioned_read_units()) * 100))
         self.logger.info('Consumed reads: {0:d}'.format(consumed_reads))
-        self.logger.info('Provisioned reads: {0:d}'.format(table.read_units))
+        self.logger.info('Provisioned reads: {0:d}'.format(int(self._get_provisioned_read_units())))
         self.logger.info('Read usage: {0:d}%'.format(consumed_reads_percent))
         return consumed_reads_percent
 
@@ -333,8 +335,6 @@ class DynamicDynamoDB:
         self._ensure_cloudwatch_connection()
         self._ensure_dynamodb_connection()
 
-        table = self.ddb_connection.get_table(self.table_name)
-
         metrics = self.cw_connection.get_metric_statistics(
             300,
             datetime.datetime.utcnow()-datetime.timedelta(minutes=15),
@@ -343,7 +343,7 @@ class DynamicDynamoDB:
             'AWS/DynamoDB',
             ['Sum'],
             dimensions={'TableName': self.table_name},
-            unit=None)
+            unit='Count')
 
         if len(metrics) == 0:
             consumed_writes = 0
@@ -352,9 +352,9 @@ class DynamicDynamoDB:
                 float(metrics[0]['Sum'])/float(300)))
 
         consumed_writes_percent = int(math.ceil(
-            float(consumed_writes) / float(table.write_units) * 100))
+            float(consumed_writes) / float(self._get_provisioned_write_units()) * 100))
         self.logger.info('Consumed writes: {0:d}'.format(consumed_writes))
-        self.logger.info('Provisioned writes: {0:d}'.format(table.write_units))
+        self.logger.info('Provisioned writes: {0:d}'.format(int(self._get_provisioned_write_units())))
         self.logger.info('Write usage: {0:d}%'.format(consumed_writes_percent))
         return consumed_writes_percent
 
