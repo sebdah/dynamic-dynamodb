@@ -201,6 +201,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**0.3.2 (2013-04-05)**
+
+- Bug fix: [Improper scaling under certain circumstances (#13)](https://github.com/sebdah/dynamic-dynamodb/issues/13)
+
 **0.3.1 (2013-04-04)**
 
 - Bug fix: [ValueError: Unknown format code 'd' for object of type 'str' (#10)](https://github.com/sebdah/dynamic-dynamodb/issues/10)
