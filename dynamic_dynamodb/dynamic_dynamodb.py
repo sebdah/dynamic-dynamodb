@@ -189,13 +189,13 @@ class DynamicDynamoDB:
         elif write_usage_percent >= self.writes_upper_threshold:
             new_value = self._calculate_increase_writes(
                 throughput['write_units'],
-                self.increase_reads_with)
+                self.increase_writes_with)
             throughput['update_needed'] = True
             throughput['write_units'] = new_value
         elif write_usage_percent <= self.writes_lower_threshold:
             new_value = self._calculate_decrease_writes(
                 throughput['write_units'],
-                self.decrease_reads_with)
+                self.decrease_writes_with)
             throughput['update_needed'] = True
             throughput['write_units'] = new_value
 
