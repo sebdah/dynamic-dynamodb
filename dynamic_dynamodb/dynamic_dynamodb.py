@@ -21,6 +21,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import sys
 import math
 import time
 import logging
@@ -399,7 +400,16 @@ class DynamicDynamoDB:
         :returns: int -- Provisioned read units
         """
         self._ensure_dynamodb_connection()
-        table = self.ddb_connection.get_table(self.table_name)
+        try:
+            table = self.ddb_connection.get_table(self.table_name)
+        except DynamoDBResponseError as error:
+            dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
+            if dynamodb_error == 'ResourceNotFoundException':
+                self.logger.error('Table {0} not found'.format(self.table_name))
+                sys.exit(1)
+            else:
+                raise
+
         return int(table.read_units)
 
     def _get_provisioned_write_units(self):
@@ -408,7 +418,15 @@ class DynamicDynamoDB:
         :returns: int -- Provisioned write units
         """
         self._ensure_dynamodb_connection()
-        table = self.ddb_connection.get_table(self.table_name)
+        try:
+            table = self.ddb_connection.get_table(self.table_name)
+        except DynamoDBResponseError as error:
+            dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
+            if dynamodb_error == 'ResourceNotFoundException':
+                self.logger.error('Table {0} not found'.format(self.table_name))
+                sys.exit(1)
+            else:
+                raise
         return int(table.write_units)
 
     def _is_maintenance_window(self):
@@ -449,7 +467,15 @@ class DynamicDynamoDB:
         :param write_units: New write unit provisioning
         """
         self._ensure_dynamodb_connection()
-        table = self.ddb_connection.get_table(self.table_name)
+        try:
+            table = self.ddb_connection.get_table(self.table_name)
+        except DynamoDBResponseError as error:
+            dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
+            if dynamodb_error == 'ResourceNotFoundException':
+                self.logger.error('Table {0} not found'.format(self.table_name))
+                sys.exit(1)
+            else:
+                raise
 
         if self.maintenance_windows:
             if not self._is_maintenance_window():
