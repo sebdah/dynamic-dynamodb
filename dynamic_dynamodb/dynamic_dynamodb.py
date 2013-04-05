@@ -38,14 +38,18 @@ class DynamicDynamoDB:
     """ Class handling connections and scaling """
     cw_connection = None
     ddb_connection = None
+    min_provisioned_reads = 0
+    max_provisioned_reads = 0
+    min_provisioned_writes = 0
+    max_provisioned_writes = 0
 
     def __init__(self, region, table_name,
                 reads_upper_threshold, reads_lower_threshold,
                 increase_reads_with, decrease_reads_with,
                 writes_upper_threshold, writes_lower_threshold,
                 increase_writes_with, decrease_writes_with,
-                min_provisioned_reads=0, max_provisioned_reads=0,
-                min_provisioned_writes=0, max_provisioned_writes=0,
+                min_provisioned_reads=None, max_provisioned_reads=None,
+                min_provisioned_writes=None, max_provisioned_writes=None,
                 check_interval=300, dry_run=True,
                 aws_access_key_id=None, aws_secret_access_key=None,
                 maintenance_windows=None):
@@ -132,14 +136,19 @@ class DynamicDynamoDB:
         self.writes_lower_threshold = int(writes_lower_threshold)
         self.increase_writes_with = int(increase_writes_with)
         self.decrease_writes_with = int(decrease_writes_with)
-        self.min_provisioned_reads = min_provisioned_reads
-        self.max_provisioned_reads = max_provisioned_reads
-        self.min_provisioned_writes = min_provisioned_writes
-        self.max_provisioned_writes = max_provisioned_writes
         self.check_interval = int(check_interval)
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
         self.maintenance_windows = maintenance_windows
+
+        if min_provisioned_reads:
+            self.min_provisioned_reads = int(min_provisioned_reads)
+        if max_provisioned_reads:
+            self.max_provisioned_reads = int(max_provisioned_reads)
+        if min_provisioned_writes:
+            self.min_provisioned_writes = int(min_provisioned_writes)
+        if max_provisioned_writes:
+            self.max_provisioned_writes = int(max_provisioned_writes)
 
     def run(self):
         """ Public method for starting scaling """
@@ -224,6 +233,9 @@ class DynamicDynamoDB:
         new_reads = self._get_provisioned_read_units() - decrease
         if self.min_provisioned_reads > 0:
             if new_reads < self.min_provisioned_reads:
+                self.logger.info(
+                    'Reached provisioned reads min limit: {0:d}'.format(
+                        int(self.min_provisioned_reads)))
                 return self.min_provisioned_reads
         return new_reads
 
@@ -240,6 +252,9 @@ class DynamicDynamoDB:
         new_reads = self._get_provisioned_read_units() + increase
         if self.max_provisioned_reads > 0:
             if new_reads > self.max_provisioned_reads:
+                self.logger.info(
+                    'Reached provisioned reads max limit: {0:d}'.format(
+                        int(self.max_provisioned_reads)))
                 return self.max_provisioned_reads
         return new_reads
 
@@ -256,6 +271,9 @@ class DynamicDynamoDB:
         new_writes = self._get_provisioned_write_units() - decrease
         if self.min_provisioned_writes > 0:
             if new_writes < self.min_provisioned_writes:
+                self.logger.info(
+                    'Reached provisioned writes min limit: {0:d}'.format(
+                        int(self.min_provisioned_writes)))
                 return self.min_provisioned_writes
         return new_writes
 
@@ -272,6 +290,9 @@ class DynamicDynamoDB:
         new_writes = self._get_provisioned_write_units() + increase
         if self.max_provisioned_writes > 0:
             if new_writes > self.max_provisioned_writes:
+                self.logger.info(
+                    'Reached provisioned writes max limit: {0:d}'.format(
+                        int(self.max_provisioned_writes)))
                 return self.max_provisioned_writes
         return new_writes
 
