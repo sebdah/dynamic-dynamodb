@@ -201,6 +201,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**0.3.3 (2013-04-05)**
+
+- Bug fix: [Mixup of read and writes provisioing in scaling (#14)](https://github.com/sebdah/dynamic-dynamodb/issues/14)
+
 **0.3.2 (2013-04-05)**
 
 - Bug fix: [Improper scaling under certain circumstances (#13)](https://github.com/sebdah/dynamic-dynamodb/issues/13)
