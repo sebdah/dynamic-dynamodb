@@ -107,7 +107,7 @@ Example configuration file
 Full --help output
 ------------------
 
-    usage: dynamic_dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+    usage: dynamic-dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
                             [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
                             [-r REGION] -t TABLE_NAME
