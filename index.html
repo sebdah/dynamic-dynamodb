@@ -4,29 +4,40 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Dynamic DynamoDB by sebdah</title>
-
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
   </head>
   <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/sebdah/dynamic-dynamodb">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/sebdah/dynamic-dynamodb/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/sebdah/dynamic-dynamodb/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
     <div class="wrapper">
-      <header>
-        <h1>Dynamic DynamoDB</h1>
-        <p>Auto-provisioning tool for DynamoDB</p>
-        <p class="view"><a href="https://github.com/sebdah/dynamic-dynamodb">View the Project on GitHub <small>sebdah/dynamic-dynamodb</small></a></p>
-        <ul>
-          <li><a href="https://github.com/sebdah/dynamic-dynamodb/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/sebdah/dynamic-dynamodb/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/sebdah/dynamic-dynamodb">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
+
       <section>
+        <div id="title">
+          <h1>Dynamic DynamoDB</h1>
+          <p>Auto-provisioning tool for DynamoDB</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/sebdah">sebdah</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
         <h1>Dynamic DynamoDB</h1>
 
 <p>AWS DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.</p>
@@ -225,7 +236,12 @@ Write units scaling properties:
 
 <h2>Release information</h2>
 
-<p><strong>0.3.3 (2013-04-05)</strong></p>
+<p><strong>0.3.4 (2013-04-05)</strong></p>
+
+<ul>
+<li>Bug fix: <a href="https://github.com/sebdah/dynamic-dynamodb/issues/15">Min/max limits seems to be read improperly from configuration files (#15)</a>
+</li>
+</ul><p><strong>0.3.3 (2013-04-05)</strong></p>
 
 <ul>
 <li>Bug fix: <a href="https://github.com/sebdah/dynamic-dynamodb/issues/14">Mixup of read and writes provisioing in scaling (#14)</a>
@@ -265,11 +281,8 @@ Write units scaling properties:
 
 <p>This project is maintained by <a href="http://www.sebastiandahlgren.se">Sebastian Dahlgren</a> (<a href="https://github.com/sebdah">GitHub</a> | <a href="https://twitter.com/sebdah">Twitter</a> | <a href="www.linkedin.com/in/sebastiandahlgren">LinkedIn</a>)</p>
       </section>
+
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/sebdah">sebdah</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
