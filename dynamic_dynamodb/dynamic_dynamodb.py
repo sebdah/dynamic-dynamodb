@@ -23,7 +23,7 @@ limitations under the License.
 import sys
 import math
 import time
-import logging
+import logger
 import datetime
 
 from boto import dynamodb
@@ -96,20 +96,8 @@ class DynamicDynamoDB:
         """
         self.dry_run = dry_run
 
-        #
         # Logging configuration
-        #
-        self.logger = logging.getLogger('dynamic-dynamodb')
-        self.logger.setLevel(logging.DEBUG)
-        if self.dry_run:
-            stdout_formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - dryrun - %(levelname)s - %(message)s')
-        else:
-            stdout_formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(stdout_formatter)
-        self.logger.addHandler(console_handler)
+        self.logger = logger.Logger(dry_run=self.dry_run)
 
         #
         # Handel parameters
