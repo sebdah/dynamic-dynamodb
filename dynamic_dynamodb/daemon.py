@@ -1,5 +1,9 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Python daemon implementation from:
 
+http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
+"""
 import sys, os, time, atexit
 from signal import SIGTERM
 
@@ -63,7 +67,7 @@ class Daemon:
     def delpid(self):
         os.remove(self.pidfile)
 
-    def start(self):
+    def start(self, *args, **kwargs):
         """
         Start the daemon
         """
@@ -82,7 +86,7 @@ class Daemon:
 
         # Start the daemon
         self.daemonize()
-        self.run()
+        self.run(*args, **kwargs)
 
     def stop(self):
         """
