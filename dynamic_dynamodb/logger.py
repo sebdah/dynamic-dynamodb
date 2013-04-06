@@ -2,6 +2,7 @@
 """
 Logging management for Dynamic DynamoDB
 """
+import os.path
 import logging
 
 
@@ -48,7 +49,7 @@ class Logger:
 
         # File handler
         if log_file:
-            file_handler = logging.FileHandler(log_file)
+            file_handler = logging.FileHandler(os.path.expanduser(log_file))
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
 

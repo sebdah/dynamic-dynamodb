@@ -21,6 +21,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import sys
+import logger
 import argparse
 import ConfigParser
 import dynamic_dynamodb
@@ -132,6 +133,12 @@ def main():
 
     if args.config:
         config = parse_configuration_file(args.config)
+        log_level = get_config_log_level(args.config)
+        log_file = get_config_log_file(args.config)
+        log_handler = logger.Logger(
+            level=log_level,
+            log_file=log_file,
+            dry_run=args.dry_run)
     else:
         if not args.table_name:
             print 'argument -t/--table-name is required'
@@ -159,6 +166,7 @@ def main():
         config['aws-access-key-id'] = args.aws_access_key_id
         config['aws-secret-access-key'] = args.aws_secret_access_key
         config['maintenance-windows'] = None
+        log_handler = logger.Logger(dry_run=args.dry_run)
 
     # Options that can only be seet on command line:
     config['dry-run'] = args.dry_run
@@ -186,7 +194,8 @@ def main():
                 dry_run=config['dry-run'],
                 aws_access_key_id=config['aws-access-key-id'],
                 aws_secret_access_key=config['aws-secret-access-key'],
-                maintenance_windows=config['maintenance-windows'])
+                maintenance_windows=config['maintenance-windows'],
+                logger=log_handler)
         elif args.daemon == 'stop':
             daemon.stop()
         elif args.daemon == 'restart':
@@ -215,8 +224,49 @@ def main():
             dry_run=config['dry-run'],
             aws_access_key_id=config['aws-access-key-id'],
             aws_secret_access_key=config['aws-secret-access-key'],
-            maintenance_windows=config['maintenance-windows'])
+            maintenance_windows=config['maintenance-windows'],
+            logger=log_handler)
         dynamic_ddb.run()
+
+
+def get_config_log_level(config_path):
+    """ Return the configured log level
+
+    :type config_path: str
+    :param config_path: Path to the configuration file
+    """
+    # Read the configuration file
+    config_file = ConfigParser.SafeConfigParser()
+    config_file.optionxform = lambda option: option
+    config_file.read(config_path)
+
+    try:
+        return config_file.get('logging', 'log-level')
+    except ConfigParser.NoOptionError:
+        return 'info'
+    except ConfigParser.NoSectionError:
+        return 'info'
+    return 'info'
+
+
+def get_config_log_file(config_path):
+    """ Return the configured log file
+
+    :type config_path: str
+    :param config_path: Path to the configuration file
+    """
+    # Read the configuration file
+    config_file = ConfigParser.SafeConfigParser()
+    config_file.optionxform = lambda option: option
+    config_file.read(config_path)
+
+    try:
+        return config_file.get('logging', 'log-file')
+    except ConfigParser.NoOptionError:
+        return None
+    except ConfigParser.NoSectionError:
+        return None
+    return None
 
 
 def parse_configuration_file(config_path):
