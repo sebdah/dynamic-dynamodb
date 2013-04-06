@@ -25,6 +25,8 @@ import argparse
 import ConfigParser
 import dynamic_dynamodb
 
+from dynamic_dynamodb_daemon import DynamicDynamoDBDaemon
+
 
 def main():
     """ Main function handling option parsing etc """
@@ -35,6 +37,8 @@ def main():
     parser.add_argument('--dry-run',
         action='store_true',
         help='Run without making any changes to your DynamoDB table')
+    parser.add_argument('--daemon',
+        help='Run Dynamic DynamoDB as a daemon [start|stop|restart]')
     parser.add_argument('--check-interval',
         type=int,
         default=300,
@@ -151,27 +155,60 @@ def main():
     # Options that can only be seet on command line:
     config['dry-run'] = args.dry_run
 
-    dynamic_ddb = dynamic_dynamodb.DynamicDynamoDB(
-        config['region'],
-        config['table-name'],
-        config['reads-upper-threshold'],
-        config['reads-lower-threshold'],
-        config['increase-reads-with'],
-        config['decrease-reads-with'],
-        config['writes-upper-threshold'],
-        config['writes-lower-threshold'],
-        config['increase-writes-with'],
-        config['decrease-writes-with'],
-        config['min-provisioned-reads'],
-        config['max-provisioned-reads'],
-        config['min-provisioned-writes'],
-        config['max-provisioned-writes'],
-        check_interval=config['check-interval'],
-        dry_run=config['dry-run'],
-        aws_access_key_id=config['aws-access-key-id'],
-        aws_secret_access_key=config['aws-secret-access-key'],
-        maintenance_windows=config['maintenance-windows'])
-    dynamic_ddb.run()
+    if args.daemon:
+        daemon = DynamicDynamoDBDaemon('/tmp/daemon.pid')
+
+        if args.daemon == 'start':
+            daemon.start(
+                config['region'],
+                config['table-name'],
+                config['reads-upper-threshold'],
+                config['reads-lower-threshold'],
+                config['increase-reads-with'],
+                config['decrease-reads-with'],
+                config['writes-upper-threshold'],
+                config['writes-lower-threshold'],
+                config['increase-writes-with'],
+                config['decrease-writes-with'],
+                config['min-provisioned-reads'],
+                config['max-provisioned-reads'],
+                config['min-provisioned-writes'],
+                config['max-provisioned-writes'],
+                check_interval=config['check-interval'],
+                dry_run=config['dry-run'],
+                aws_access_key_id=config['aws-access-key-id'],
+                aws_secret_access_key=config['aws-secret-access-key'],
+                maintenance_windows=config['maintenance-windows'])
+        elif args.daemon == 'stop':
+            daemon.stop()
+        elif args.daemon == 'restart':
+            daemon.restart()
+        else:
+            print ('Valid options for --daemon are start, stop and restart')
+            parser.print_help()
+            sys.exit(1)
+    else:
+        dynamic_ddb = dynamic_dynamodb.DynamicDynamoDB(
+            config['region'],
+            config['table-name'],
+            config['reads-upper-threshold'],
+            config['reads-lower-threshold'],
+            config['increase-reads-with'],
+            config['decrease-reads-with'],
+            config['writes-upper-threshold'],
+            config['writes-lower-threshold'],
+            config['increase-writes-with'],
+            config['decrease-writes-with'],
+            config['min-provisioned-reads'],
+            config['max-provisioned-reads'],
+            config['min-provisioned-writes'],
+            config['max-provisioned-writes'],
+            check_interval=config['check-interval'],
+            dry_run=config['dry-run'],
+            aws_access_key_id=config['aws-access-key-id'],
+            aws_secret_access_key=config['aws-secret-access-key'],
+            maintenance_windows=config['maintenance-windows'])
+        dynamic_ddb.run()
 
 
 def parse_configuration_file(config_path):
