@@ -177,7 +177,8 @@ class DynamicDynamoDB:
 
         # Check if we should update read provisioning
         if read_usage_percent == 0:
-            self.logger.info('Scale down is not performed when usage is at 0%')
+            self.logger.info(
+                'Scaling down reads is not done when usage is at 0%')
         elif read_usage_percent >= self.reads_upper_threshold:
             new_value = self._calculate_increase_reads(
                 throughput['read_units'],
@@ -194,7 +195,8 @@ class DynamicDynamoDB:
 
         # Check if we should update write provisioning
         if write_usage_percent == 0:
-            self.logger.info('Scale down is not performed when usage is at 0%')
+            self.logger.info(
+                'Scaling down writes is not done when usage is at 0%')
         elif write_usage_percent >= self.writes_upper_threshold:
             new_value = self._calculate_increase_writes(
                 throughput['write_units'],
@@ -248,8 +250,7 @@ class DynamicDynamoDB:
         :param percent: How many percent should we increase with
         :returns: int -- New provisioning value
         """
-        increase = int(float(original_provisioning)*(float(percent)/100+1))
-        new_reads = self._get_provisioned_read_units() + increase
+        new_reads = int(float(original_provisioning)*(float(percent)/100+1))
         if self.max_provisioned_reads > 0:
             if new_reads > self.max_provisioned_reads:
                 self.logger.info(
@@ -286,8 +287,7 @@ class DynamicDynamoDB:
         :param percent: How many percent should we increase with
         :returns: int -- New provisioning value
         """
-        increase = int(float(original_provisioning)*(float(percent)/100+1))
-        new_writes = self._get_provisioned_write_units() + increase
+        new_writes = int(float(original_provisioning)*(float(percent)/100+1))
         if self.max_provisioned_writes > 0:
             if new_writes > self.max_provisioned_writes:
                 self.logger.info(
@@ -342,10 +342,17 @@ class DynamicDynamoDB:
             consumed_reads = int(math.ceil(float(metrics[0]['Sum'])/float(300)))
 
         consumed_reads_percent = int(math.ceil(
-            float(consumed_reads) / float(self._get_provisioned_read_units()) * 100))
+            float(consumed_reads) / \
+            float(self._get_provisioned_read_units()) * \
+            100))
         self.logger.info('Consumed reads: {0:d}'.format(consumed_reads))
-        self.logger.info('Provisioned reads: {0:d}'.format(int(self._get_provisioned_read_units())))
-        self.logger.info('Read usage: {0:d}%'.format(consumed_reads_percent))
+        self.logger.info('Provisioned reads: {0:d}'.format(
+            int(self._get_provisioned_read_units())))
+        self.logger.info('Consumed read capacity: {0:d}%'.format(consumed_reads_percent))
+        self.logger.info('Reads lower threshold: {0:d}%'.format(
+            self.reads_lower_threshold))
+        self.logger.info('Reads upper threshold: {0:d}%'.format(
+            self.reads_upper_threshold))
         return consumed_reads_percent
 
     def _get_consumed_writes_percentage(self):
@@ -373,10 +380,17 @@ class DynamicDynamoDB:
                 float(metrics[0]['Sum'])/float(300)))
 
         consumed_writes_percent = int(math.ceil(
-            float(consumed_writes) / float(self._get_provisioned_write_units()) * 100))
+            float(consumed_writes) / \
+            float(self._get_provisioned_write_units()) * \
+            100))
         self.logger.info('Consumed writes: {0:d}'.format(consumed_writes))
-        self.logger.info('Provisioned writes: {0:d}'.format(int(self._get_provisioned_write_units())))
-        self.logger.info('Write usage: {0:d}%'.format(consumed_writes_percent))
+        self.logger.info('Provisioned writes: {0:d}'.format(
+            int(self._get_provisioned_write_units())))
+        self.logger.info('Consumed write capacity: {0:d}%'.format(consumed_writes_percent))
+        self.logger.info('Writes lower threshold: {0:d}%'.format(
+            self.writes_lower_threshold))
+        self.logger.info('Writes upper threshold: {0:d}%'.format(
+            self.writes_upper_threshold))
         return consumed_writes_percent
 
     def _get_provisioned_read_units(self):
@@ -485,5 +499,18 @@ class DynamicDynamoDB:
                     self.logger.warning(
                         'Scaling limit exeeded. '
                         'The table can only be scaled down twice per day.')
+
+                    if int(read_units) > self._get_provisioned_read_units():
+                        self.logger.info('Scaling up reads to {0:d}'.format(
+                            int(read_units)))
+                        self._update_throughput(
+                            int(read_units),
+                            int(self._get_provisioned_write_units()))
+                    elif int(write_units) > self._get_provisioned_write_units():
+                        self.logger.info('Scaling up writes to {0:d}'.format(
+                            int(write_units)))
+                        self._update_throughput(
+                            int(self._get_provisioned_read_units()),
+                            int(write_units))
                 else:
                     raise

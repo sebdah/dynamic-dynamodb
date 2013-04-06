@@ -202,10 +202,15 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
 **0.4.0 (N/A)**
 
 - [Support for daemonizing Dynamic DynamoDB (#11)](https://github.com/sebdah/dynamic-dynamodb/issues/11)
+
+**0.3.5 (2013-04-05)**
+
 - [Handle missing table exceptions (#12)](https://github.com/sebdah/dynamic-dynamodb/issues/12)
+- Bug fix: [No upscaling happening when scaling limit is exceeded (#16)](https://github.com/sebdah/dynamic-dynamodb/issues/16)
 
 **0.3.4 (2013-04-05)**
 
