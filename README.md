@@ -111,7 +111,7 @@ Full --help output
                             [--check-interval CHECK_INTERVAL]
                             [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
-                            [-r REGION] -t TABLE_NAME
+                            [--version] [-r REGION] -t TABLE_NAME
                             [--reads-upper-threshold READS_UPPER_THRESHOLD]
                             [--reads-lower-threshold READS_LOWER_THRESHOLD]
                             [--increase-reads-with INCREASE_READS_WITH]
@@ -134,6 +134,7 @@ Full --help output
       --check-interval CHECK_INTERVAL
                             How many seconds should we wait between the checks
                             (default: 300)
+      --version             Print current version number
       --aws-access-key-id AWS_ACCESS_KEY_ID
                             Override Boto configuration with the following AWS
                             access key

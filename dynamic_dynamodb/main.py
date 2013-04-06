@@ -25,6 +25,7 @@ import argparse
 import ConfigParser
 import dynamic_dynamodb
 
+from . import version
 from dynamic_dynamodb_daemon import DynamicDynamoDBDaemon
 
 
@@ -44,6 +45,9 @@ def main():
         default=300,
         help="""How many seconds should we wait between
                 the checks (default: 300)""")
+    parser.add_argument('--version',
+        action='store_true',
+        help='Print current version number')
     parser.add_argument('--aws-access-key-id',
         default=None,
         help="Override Boto configuration with the following AWS access key")
@@ -115,6 +119,10 @@ def main():
         type=int,
         help="""Maximum number of provisioned writes""")
     args = parser.parse_args()
+
+    if args.version:
+        print 'Dynamic DynamoDB version: {0}'.format(version)
+        sys.exit(0)
 
     if args.aws_access_key_id and not args.aws_secret_access_key:
         print ('Both --aws-access-key-id and --aws-secret-access-key must '
