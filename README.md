@@ -207,6 +207,7 @@ Release information
 **0.4.0 (N/A)**
 
 - [Support for daemonizing Dynamic DynamoDB (#11)](https://github.com/sebdah/dynamic-dynamodb/issues/11)
+- [Add --version flag to dynamic-dynamodb command (#18)](https://github.com/sebdah/dynamic-dynamodb/issues/18)
 
 **0.3.5 (2013-04-05)**
 
