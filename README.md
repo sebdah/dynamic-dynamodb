@@ -212,7 +212,7 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
-**0.4.0 (N/A)**
+**0.4.0 (2013-04-06)**
 
 - [Support for daemonizing Dynamic DynamoDB (#11)](https://github.com/sebdah/dynamic-dynamodb/issues/11)
 - [Enhanced logging options (#4)](https://github.com/sebdah/dynamic-dynamodb/issues/4)
