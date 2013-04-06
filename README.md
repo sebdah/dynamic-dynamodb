@@ -64,6 +64,14 @@ Example configuration file
     # How often should Dynamic DynamoDB monitor changes (in seconds)
     check-interval: 300
 
+    [logging]
+    # Log level [debug|info|warning|error]
+    log-level: info
+
+    # Log file (comment out to get only console output)
+    log-file: /var/log/dynamic-dynamodb.log
+
+
     [table: my_table]
     #
     # Read provisioning configuration
@@ -102,15 +110,16 @@ Example configuration file
     #
     # Maintenance windows (in UTC)
     #
-    maintenance-windows: 22:00-23:59,00:00-06:00
+    #maintenance-windows: 22:00-23:59,00:00-06:00
 
 Full --help output
 ------------------
 
-    usage: dynamic-dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+    usage: dynamic-dynamodb [-h] [--dry-run] [--daemon DAEMON]
+                            [--check-interval CHECK_INTERVAL]
                             [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
-                            [-r REGION] -t TABLE_NAME
+                            [--version] [-r REGION] -t TABLE_NAME
                             [--reads-upper-threshold READS_UPPER_THRESHOLD]
                             [--reads-lower-threshold READS_LOWER_THRESHOLD]
                             [--increase-reads-with INCREASE_READS_WITH]
@@ -129,9 +138,11 @@ Full --help output
     optional arguments:
       -h, --help            show this help message and exit
       --dry-run             Run without making any changes to your DynamoDB table
+      --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
       --check-interval CHECK_INTERVAL
                             How many seconds should we wait between the checks
                             (default: 300)
+      --version             Print current version number
       --aws-access-key-id AWS_ACCESS_KEY_ID
                             Override Boto configuration with the following AWS
                             access key
@@ -200,6 +211,12 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
+**0.4.0 (2013-04-06)**
+
+- [Support for daemonizing Dynamic DynamoDB (#11)](https://github.com/sebdah/dynamic-dynamodb/issues/11)
+- [Enhanced logging options (#4)](https://github.com/sebdah/dynamic-dynamodb/issues/4)
+- [Add --version flag to dynamic-dynamodb command (#18)](https://github.com/sebdah/dynamic-dynamodb/issues/18)
 
 **0.3.5 (2013-04-05)**
 

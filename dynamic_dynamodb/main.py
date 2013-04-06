@@ -21,9 +21,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import sys
+import logger
 import argparse
 import ConfigParser
 import dynamic_dynamodb
+
+from . import version
+from dynamic_dynamodb_daemon import DynamicDynamoDBDaemon
 
 
 def main():
@@ -35,11 +39,16 @@ def main():
     parser.add_argument('--dry-run',
         action='store_true',
         help='Run without making any changes to your DynamoDB table')
+    parser.add_argument('--daemon',
+        help='Run Dynamic DynamoDB as a daemon [start|stop|restart]')
     parser.add_argument('--check-interval',
         type=int,
         default=300,
         help="""How many seconds should we wait between
                 the checks (default: 300)""")
+    parser.add_argument('--version',
+        action='store_true',
+        help='Print current version number')
     parser.add_argument('--aws-access-key-id',
         default=None,
         help="Override Boto configuration with the following AWS access key")
@@ -112,6 +121,10 @@ def main():
         help="""Maximum number of provisioned writes""")
     args = parser.parse_args()
 
+    if args.version:
+        print 'Dynamic DynamoDB version: {0}'.format(version)
+        sys.exit(0)
+
     if args.aws_access_key_id and not args.aws_secret_access_key:
         print ('Both --aws-access-key-id and --aws-secret-access-key must '
             'be specified.')
@@ -120,6 +133,12 @@ def main():
 
     if args.config:
         config = parse_configuration_file(args.config)
+        log_level = get_config_log_level(args.config)
+        log_file = get_config_log_file(args.config)
+        log_handler = logger.Logger(
+            level=log_level,
+            log_file=log_file,
+            dry_run=args.dry_run)
     else:
         if not args.table_name:
             print 'argument -t/--table-name is required'
@@ -147,31 +166,107 @@ def main():
         config['aws-access-key-id'] = args.aws_access_key_id
         config['aws-secret-access-key'] = args.aws_secret_access_key
         config['maintenance-windows'] = None
+        log_handler = logger.Logger(dry_run=args.dry_run)
 
     # Options that can only be seet on command line:
     config['dry-run'] = args.dry_run
 
-    dynamic_ddb = dynamic_dynamodb.DynamicDynamoDB(
-        config['region'],
-        config['table-name'],
-        config['reads-upper-threshold'],
-        config['reads-lower-threshold'],
-        config['increase-reads-with'],
-        config['decrease-reads-with'],
-        config['writes-upper-threshold'],
-        config['writes-lower-threshold'],
-        config['increase-writes-with'],
-        config['decrease-writes-with'],
-        config['min-provisioned-reads'],
-        config['max-provisioned-reads'],
-        config['min-provisioned-writes'],
-        config['max-provisioned-writes'],
-        check_interval=config['check-interval'],
-        dry_run=config['dry-run'],
-        aws_access_key_id=config['aws-access-key-id'],
-        aws_secret_access_key=config['aws-secret-access-key'],
-        maintenance_windows=config['maintenance-windows'])
-    dynamic_ddb.run()
+    if args.daemon:
+        daemon = DynamicDynamoDBDaemon('/tmp/daemon.pid')
+
+        if args.daemon == 'start':
+            daemon.start(
+                config['region'],
+                config['table-name'],
+                config['reads-upper-threshold'],
+                config['reads-lower-threshold'],
+                config['increase-reads-with'],
+                config['decrease-reads-with'],
+                config['writes-upper-threshold'],
+                config['writes-lower-threshold'],
+                config['increase-writes-with'],
+                config['decrease-writes-with'],
+                config['min-provisioned-reads'],
+                config['max-provisioned-reads'],
+                config['min-provisioned-writes'],
+                config['max-provisioned-writes'],
+                check_interval=config['check-interval'],
+                dry_run=config['dry-run'],
+                aws_access_key_id=config['aws-access-key-id'],
+                aws_secret_access_key=config['aws-secret-access-key'],
+                maintenance_windows=config['maintenance-windows'],
+                logger=log_handler)
+        elif args.daemon == 'stop':
+            daemon.stop()
+        elif args.daemon == 'restart':
+            daemon.restart()
+        else:
+            print ('Valid options for --daemon are start, stop and restart')
+            parser.print_help()
+            sys.exit(1)
+    else:
+        dynamic_ddb = dynamic_dynamodb.DynamicDynamoDB(
+            config['region'],
+            config['table-name'],
+            config['reads-upper-threshold'],
+            config['reads-lower-threshold'],
+            config['increase-reads-with'],
+            config['decrease-reads-with'],
+            config['writes-upper-threshold'],
+            config['writes-lower-threshold'],
+            config['increase-writes-with'],
+            config['decrease-writes-with'],
+            config['min-provisioned-reads'],
+            config['max-provisioned-reads'],
+            config['min-provisioned-writes'],
+            config['max-provisioned-writes'],
+            check_interval=config['check-interval'],
+            dry_run=config['dry-run'],
+            aws_access_key_id=config['aws-access-key-id'],
+            aws_secret_access_key=config['aws-secret-access-key'],
+            maintenance_windows=config['maintenance-windows'],
+            logger=log_handler)
+        dynamic_ddb.run()
+
+
+def get_config_log_level(config_path):
+    """ Return the configured log level
+
+    :type config_path: str
+    :param config_path: Path to the configuration file
+    """
+    # Read the configuration file
+    config_file = ConfigParser.SafeConfigParser()
+    config_file.optionxform = lambda option: option
+    config_file.read(config_path)
+
+    try:
+        return config_file.get('logging', 'log-level')
+    except ConfigParser.NoOptionError:
+        return 'info'
+    except ConfigParser.NoSectionError:
+        return 'info'
+    return 'info'
+
+
+def get_config_log_file(config_path):
+    """ Return the configured log file
+
+    :type config_path: str
+    :param config_path: Path to the configuration file
+    """
+    # Read the configuration file
+    config_file = ConfigParser.SafeConfigParser()
+    config_file.optionxform = lambda option: option
+    config_file.read(config_path)
+
+    try:
+        return config_file.get('logging', 'log-file')
+    except ConfigParser.NoOptionError:
+        return None
+    except ConfigParser.NoSectionError:
+        return None
+    return None
 
 
 def parse_configuration_file(config_path):
