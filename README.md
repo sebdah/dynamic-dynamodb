@@ -107,7 +107,8 @@ Example configuration file
 Full --help output
 ------------------
 
-    usage: dynamic_dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+    usage: dynamic_dynamodb [-h] [--dry-run] [--daemon DAEMON]
+                            [--check-interval CHECK_INTERVAL]
                             [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
                             [-r REGION] -t TABLE_NAME
@@ -129,6 +130,7 @@ Full --help output
     optional arguments:
       -h, --help            show this help message and exit
       --dry-run             Run without making any changes to your DynamoDB table
+      --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
       --check-interval CHECK_INTERVAL
                             How many seconds should we wait between the checks
                             (default: 300)
@@ -202,6 +204,7 @@ Release information
 -------------------
 **0.4.0 (N/A)**
 
+- [Support for daemonizing Dynamic DynamoDB (#11)](https://github.com/sebdah/dynamic-dynamodb/issues/11)
 - [Handle missing table exceptions (#12)](https://github.com/sebdah/dynamic-dynamodb/issues/12)
 
 **0.3.4 (2013-04-05)**
