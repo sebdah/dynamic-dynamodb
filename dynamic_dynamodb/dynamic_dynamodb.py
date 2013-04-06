@@ -23,7 +23,6 @@ limitations under the License.
 import sys
 import math
 import time
-import logging
 import datetime
 
 from boto import dynamodb
@@ -52,7 +51,7 @@ class DynamicDynamoDB:
                 min_provisioned_writes=None, max_provisioned_writes=None,
                 check_interval=300, dry_run=True,
                 aws_access_key_id=None, aws_secret_access_key=None,
-                maintenance_windows=None):
+                maintenance_windows=None, logger=None):
         """ Constructor setting the basic configuration
 
         :type region: str
@@ -93,23 +92,13 @@ class DynamicDynamoDB:
         :param aws_secret_access_key: AWS secret key to use
         :type maintenance_windows: str
         :param maintenance_windows: Example '00:00-01:00,10:00-11:00'
+        :type logger: logging instance
+        :param logger: An instance of logging
         """
         self.dry_run = dry_run
 
-        #
         # Logging configuration
-        #
-        self.logger = logging.getLogger('dynamic-dynamodb')
-        self.logger.setLevel(logging.DEBUG)
-        if self.dry_run:
-            stdout_formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - dryrun - %(levelname)s - %(message)s')
-        else:
-            stdout_formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(stdout_formatter)
-        self.logger.addHandler(console_handler)
+        self.logger = logger
 
         #
         # Handel parameters
