@@ -1,44 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Dynamic DynamoDB by sebdah</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
     <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
+    <title>Dynamic DynamoDB by sebdah</title>
   </head>
+
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/sebdah/dynamic-dynamodb">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/sebdah/dynamic-dynamodb/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/sebdah/dynamic-dynamodb/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
+    <div id="container">
+      <div class="inner">
 
-    <div class="wrapper">
-
-      <section>
-        <div id="title">
+        <header>
           <h1>Dynamic DynamoDB</h1>
-          <p>Auto-provisioning tool for DynamoDB</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/sebdah">sebdah</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
-        </div>
+          <h2>Auto-provisioning tool for DynamoDB</h2>
+        </header>
 
-        <h1>Dynamic DynamoDB</h1>
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/sebdah/dynamic-dynamodb/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/sebdah/dynamic-dynamodb/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/sebdah/dynamic-dynamodb" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>Dynamic DynamoDB</h1>
 
 <p>AWS DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.</p>
 
@@ -101,6 +94,14 @@ region: us-east-1
 # How often should Dynamic DynamoDB monitor changes (in seconds)
 check-interval: 300
 
+[logging]
+# Log level [debug|info|warning|error]
+log-level: info
+
+# Log file (comment out to get only console output)
+log-file: /var/log/dynamic-dynamodb.log
+
+
 [table: my_table]
 #
 # Read provisioning configuration
@@ -139,15 +140,16 @@ decrease-writes-with: 50
 #
 # Maintenance windows (in UTC)
 #
-maintenance-windows: 22:00-23:59,00:00-06:00
+#maintenance-windows: 22:00-23:59,00:00-06:00
 </code></pre>
 
 <h2>Full --help output</h2>
 
-<pre><code>usage: dynamic_dynamodb [-h] [--dry-run] [--check-interval CHECK_INTERVAL]
+<pre><code>usage: dynamic-dynamodb [-h] [--dry-run] [--daemon DAEMON]
+                        [--check-interval CHECK_INTERVAL]
                         [--aws-access-key-id AWS_ACCESS_KEY_ID]
                         [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
-                        [-r REGION] -t TABLE_NAME
+                        [--version] [-r REGION] -t TABLE_NAME
                         [--reads-upper-threshold READS_UPPER_THRESHOLD]
                         [--reads-lower-threshold READS_LOWER_THRESHOLD]
                         [--increase-reads-with INCREASE_READS_WITH]
@@ -166,9 +168,11 @@ Dynamic DynamoDB - Auto provisioning AWS DynamoDB
 optional arguments:
   -h, --help            show this help message and exit
   --dry-run             Run without making any changes to your DynamoDB table
+  --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
   --check-interval CHECK_INTERVAL
                         How many seconds should we wait between the checks
                         (default: 300)
+  --version             Print current version number
   --aws-access-key-id AWS_ACCESS_KEY_ID
                         Override Boto configuration with the following AWS
                         access key
@@ -236,7 +240,13 @@ Write units scaling properties:
 
 <h2>Release information</h2>
 
-<p><strong>0.3.5 (2013-04-05)</strong></p>
+<p><strong>0.4.0 (2013-04-06)</strong></p>
+
+<ul>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/11">Support for daemonizing Dynamic DynamoDB (#11)</a></li>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/4">Enhanced logging options (#4)</a></li>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/18">Add --version flag to dynamic-dynamodb command (#18)</a></li>
+</ul><p><strong>0.3.5 (2013-04-05)</strong></p>
 
 <ul>
 <li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/12">Handle missing table exceptions (#12)</a></li>
@@ -286,11 +296,14 @@ Write units scaling properties:
 <h2>Author</h2>
 
 <p>This project is maintained by <a href="http://www.sebastiandahlgren.se">Sebastian Dahlgren</a> (<a href="https://github.com/sebdah">GitHub</a> | <a href="https://twitter.com/sebdah">Twitter</a> | <a href="www.linkedin.com/in/sebastiandahlgren">LinkedIn</a>)</p>
-      </section>
+        </section>
 
-    </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-              <script type="text/javascript">
+        <footer>
+          Dynamic DynamoDB is maintained by <a href="https://github.com/sebdah">sebdah</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+                  <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -301,5 +314,7 @@ Write units scaling properties:
             } catch(err) {}
           </script>
 
+      </div>
+    </div>
   </body>
 </html>
