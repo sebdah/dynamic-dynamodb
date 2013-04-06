@@ -64,6 +64,14 @@ Example configuration file
     # How often should Dynamic DynamoDB monitor changes (in seconds)
     check-interval: 300
 
+    [logging]
+    # Log level [debug|info|warning|error]
+    log-level: info
+
+    # Log file (comment out to get only console output)
+    log-file: /var/log/dynamic-dynamodb.log
+
+
     [table: my_table]
     #
     # Read provisioning configuration
@@ -102,7 +110,7 @@ Example configuration file
     #
     # Maintenance windows (in UTC)
     #
-    maintenance-windows: 22:00-23:59,00:00-06:00
+    #maintenance-windows: 22:00-23:59,00:00-06:00
 
 Full --help output
 ------------------
@@ -207,6 +215,7 @@ Release information
 **0.4.0 (N/A)**
 
 - [Support for daemonizing Dynamic DynamoDB (#11)](https://github.com/sebdah/dynamic-dynamodb/issues/11)
+- [Enhanced logging options (#4)](https://github.com/sebdah/dynamic-dynamodb/issues/4)
 - [Add --version flag to dynamic-dynamodb command (#18)](https://github.com/sebdah/dynamic-dynamodb/issues/18)
 
 **0.3.5 (2013-04-05)**
