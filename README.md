@@ -212,6 +212,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**0.4.1 (2013-04-10)**
+
+- [No logging in --daemon mode (#21)](https://github.com/sebdah/dynamic-dynamodb/issues/21)
+
 **0.4.0 (2013-04-06)**
 
 - [Support for daemonizing Dynamic DynamoDB (#11)](https://github.com/sebdah/dynamic-dynamodb/issues/11)
