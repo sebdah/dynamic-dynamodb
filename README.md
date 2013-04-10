@@ -115,7 +115,7 @@ Example configuration file
 Full --help output
 ------------------
 
-    usage: dynamic_dynamodb [-h] [--dry-run] [--daemon DAEMON]
+    usage: dynamic-dynamodb [-h] [--dry-run] [--daemon DAEMON]
                             [--check-interval CHECK_INTERVAL]
                             [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
@@ -211,6 +211,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
+**0.4.1 (2013-04-10)**
+
+- [No logging in --daemon mode (#21)](https://github.com/sebdah/dynamic-dynamodb/issues/21)
 
 **0.4.0 (2013-04-06)**
 

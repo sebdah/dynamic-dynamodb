@@ -172,7 +172,9 @@ def main():
     config['dry-run'] = args.dry_run
 
     if args.daemon:
+        log_handler.warning('innan')
         daemon = DynamicDynamoDBDaemon('/tmp/daemon.pid')
+        log_handler.warning('efter1')
 
         if args.daemon == 'start':
             daemon.start(
