@@ -8,12 +8,13 @@ import sys, os, time, atexit
 from signal import SIGTERM
 
 class Daemon:
-    """
-    A generic daemon class.
+    """ A generic daemon class.
 
     Usage: subclass the Daemon class and override the run() method
     """
-    def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+    def __init__(self, pidfile, stdin='/dev/null',
+                 stdout='/dev/null', stderr='/dev/null'):
+        """ Constructor """
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
@@ -31,7 +32,8 @@ class Daemon:
                 # exit first parent
                 sys.exit(0)
         except OSError, e:
-            sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.stderr.write(
+                "fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
             sys.exit(1)
 
         # decouple from parent environment
@@ -46,7 +48,8 @@ class Daemon:
                 # exit from second parent
                 sys.exit(0)
         except OSError, e:
-            sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.stderr.write(
+                "fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
             sys.exit(1)
 
         # redirect standard file descriptors
@@ -68,9 +71,7 @@ class Daemon:
         os.remove(self.pidfile)
 
     def start(self, *args, **kwargs):
-        """
-        Start the daemon
-        """
+        """ Start the daemon """
         # Check for a pidfile to see if the daemon already runs
         try:
             pf = file(self.pidfile,'r')
@@ -89,9 +90,7 @@ class Daemon:
         self.run(*args, **kwargs)
 
     def stop(self):
-        """
-        Stop the daemon
-        """
+        """ Stop the daemon """
         # Get the pid from the pidfile
         try:
             pf = file(self.pidfile,'r')
@@ -120,14 +119,13 @@ class Daemon:
                 sys.exit(1)
 
     def restart(self):
-        """
-        Restart the daemon
-        """
+        """ Restart the daemon """
         self.stop()
         self.start()
 
     def run(self):
         """
-        You should override this method when you subclass Daemon. It will be called after the process has been
+        You should override this method when you subclass Daemon.
+        It will be called after the process has been
         daemonized by start() or restart().
         """
