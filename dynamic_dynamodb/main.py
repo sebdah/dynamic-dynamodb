@@ -46,6 +46,8 @@ def main():
         default=300,
         help="""How many seconds should we wait between
                 the checks (default: 300)""")
+    parser.add_argument('--log-file',
+        help='Send output to the given log file')
     parser.add_argument('--version',
         action='store_true',
         help='Print current version number')
@@ -132,6 +134,7 @@ def main():
         sys.exit(1)
 
     if args.config:
+        # Handle configuration file
         config = parse_configuration_file(args.config)
         log_level = get_config_log_level(args.config)
         log_file = get_config_log_file(args.config)
@@ -140,14 +143,13 @@ def main():
             log_file=log_file,
             dry_run=args.dry_run)
     else:
+        # Handle command line arguments
         if not args.table_name:
             print 'argument -t/--table-name is required'
             parser.print_help()
             sys.exit(1)
 
         config = {}
-
-        # Handle command line arguments
         config['region'] = args.region
         config['table-name'] = args.table_name
         config['reads-upper-threshold'] = args.reads_upper_threshold
@@ -166,7 +168,12 @@ def main():
         config['aws-access-key-id'] = args.aws_access_key_id
         config['aws-secret-access-key'] = args.aws_secret_access_key
         config['maintenance-windows'] = None
-        log_handler = logger.Logger(dry_run=args.dry_run)
+        if args.log_file:
+            log_handler = logger.Logger(
+                dry_run=args.dry_run,
+                log_file=args.log_file)
+        else:
+            log_handler = logger.Logger(dry_run=args.dry_run)
 
     # Options that can only be seet on command line:
     config['dry-run'] = args.dry_run
