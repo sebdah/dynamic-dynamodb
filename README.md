@@ -115,11 +115,12 @@ Example configuration file
 Full --help output
 ------------------
 
-    usage: dynamic-dynamodb [-h] [--dry-run] [--daemon DAEMON]
+    usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run] [--daemon DAEMON]
                             [--check-interval CHECK_INTERVAL]
+                            [--log-file LOG_FILE] [--version]
                             [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
-                            [--version] [-r REGION] -t TABLE_NAME
+                            [-r REGION] [-t TABLE_NAME]
                             [--reads-upper-threshold READS_UPPER_THRESHOLD]
                             [--reads-lower-threshold READS_LOWER_THRESHOLD]
                             [--increase-reads-with INCREASE_READS_WITH]
@@ -137,11 +138,14 @@ Full --help output
 
     optional arguments:
       -h, --help            show this help message and exit
+      -c CONFIG, --config CONFIG
+                            Read configuration from a configuration file
       --dry-run             Run without making any changes to your DynamoDB table
       --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
       --check-interval CHECK_INTERVAL
                             How many seconds should we wait between the checks
                             (default: 300)
+      --log-file LOG_FILE   Send output to the given log file
       --version             Print current version number
       --aws-access-key-id AWS_ACCESS_KEY_ID
                             Override Boto configuration with the following AWS
