@@ -49,6 +49,8 @@ class DynamicDynamoDB:
                 increase_writes_with, decrease_writes_with,
                 min_provisioned_reads=None, max_provisioned_reads=None,
                 min_provisioned_writes=None, max_provisioned_writes=None,
+                allow_scaling_down_reads_on_0_percent=False,
+                allow_scaling_down_writes_on_0_percent=False,
                 check_interval=300, dry_run=True,
                 aws_access_key_id=None, aws_secret_access_key=None,
                 maintenance_windows=None, logger=None):
@@ -82,6 +84,12 @@ class DynamicDynamoDB:
         :param min_provisioned_writes: Minimum number of provisioned writes
         :type max_provisioned_writes: int
         :param max_provisioned_writes: Maximum number of provisioned writes
+        :type allow_scaling_down_reads_on_0_percent: bool
+        :param allow_scaling_down_reads_on_0_percent:
+            Allow scaling when 0 percent of the reads are consumed
+        :type allow_scaling_down_writes_on_0_percent: bool
+        :param allow_scaling_down_writes_on_0_percent:
+            Allow scaling when 0 percent of the writes are consumed
         :type check_interval: int
         :param check_interval: How many seconds to wait between checks
         :type dry_run: bool
@@ -129,6 +137,10 @@ class DynamicDynamoDB:
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
         self.maintenance_windows = maintenance_windows
+        self.allow_scaling_down_reads_on_0_percent = \
+            allow_scaling_down_reads_on_0_percent
+        self.allow_scaling_down_writes_on_0_percent = \
+            allow_scaling_down_writes_on_0_percent
 
         if min_provisioned_reads:
             self.min_provisioned_reads = int(min_provisioned_reads)
@@ -165,7 +177,8 @@ class DynamicDynamoDB:
         }
 
         # Check if we should update read provisioning
-        if read_usage_percent == 0:
+        if read_usage_percent == 0 and not \
+           self.allow_scaling_down_reads_on_0_percent:
             self.logger.info(
                 'Scaling down reads is not done when usage is at 0%')
         elif read_usage_percent >= self.reads_upper_threshold:
@@ -183,7 +196,8 @@ class DynamicDynamoDB:
             throughput['read_units'] = new_value
 
         # Check if we should update write provisioning
-        if write_usage_percent == 0:
+        if write_usage_percent == 0 and not \
+           self.allow_scaling_down_writes_on_0_percent:
             self.logger.info(
                 'Scaling down writes is not done when usage is at 0%')
         elif write_usage_percent >= self.writes_upper_threshold:
