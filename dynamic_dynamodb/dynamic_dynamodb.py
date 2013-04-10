@@ -51,6 +51,7 @@ class DynamicDynamoDB:
                 min_provisioned_writes=None, max_provisioned_writes=None,
                 allow_scaling_down_reads_on_0_percent=False,
                 allow_scaling_down_writes_on_0_percent=False,
+                restric_scale_down_to_low_reads_and_writes=False,
                 check_interval=300, dry_run=True,
                 aws_access_key_id=None, aws_secret_access_key=None,
                 maintenance_windows=None, logger=None):
@@ -90,6 +91,10 @@ class DynamicDynamoDB:
         :type allow_scaling_down_writes_on_0_percent: bool
         :param allow_scaling_down_writes_on_0_percent:
             Allow scaling when 0 percent of the writes are consumed
+        :type restric_scale_down_to_low_reads_and_writes: bool
+        :param restric_scale_down_to_low_reads_and_writes:
+            Restric scaling to only happend when both writes and reads needs to
+            be scaled down
         :type check_interval: int
         :param check_interval: How many seconds to wait between checks
         :type dry_run: bool
@@ -141,6 +146,8 @@ class DynamicDynamoDB:
             allow_scaling_down_reads_on_0_percent
         self.allow_scaling_down_writes_on_0_percent = \
             allow_scaling_down_writes_on_0_percent
+        self.restric_scale_down_to_low_reads_and_writes = \
+            restric_scale_down_to_low_reads_and_writes
 
         if min_provisioned_reads:
             self.min_provisioned_reads = int(min_provisioned_reads)
@@ -479,6 +486,7 @@ class DynamicDynamoDB:
             else:
                 raise
 
+        # Check that we are in the right time frame
         if self.maintenance_windows:
             if not self._is_maintenance_window():
                 self.logger.warning(
@@ -487,10 +495,29 @@ class DynamicDynamoDB:
             else:
                 self.logger.info('Current time is within maintenance window')
 
+        # Check table status
         if table.status != 'ACTIVE':
             self.logger.warning(
                 'Not performing throughput changes when table '
                 'is in {0} state'.format(table.status))
+
+        # If this setting is True, we will only scale down when
+        # BOTH reads AND writes are low
+        if self.restric_scale_down_to_low_reads_and_writes:
+            prov_reads = self._get_provisioned_read_units()
+            prov_writes = self._get_provisioned_write_units()
+            if read_units < prov_reads and write_units < prov_writes:
+                self.logger.info('Both reads and writes will be decreased')
+            elif read_units < prov_reads:
+                self.logger.info((
+                    'Will not decrease reads nor writes, '
+                    'waiting for both to become low before decrease'))
+                read_units = prov_reads
+            elif write_units < prov_writes:
+                self.logger.info((
+                    'Will not decrease reads nor writes, '
+                    'waiting for both to become low before decrease'))
+                write_units = prov_writes
 
         if not self.dry_run:
             try:
