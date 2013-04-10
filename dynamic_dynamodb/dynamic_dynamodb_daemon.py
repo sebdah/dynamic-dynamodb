@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """ DynamicDynamoDBDaemon implementation """
-import time
 from daemon import Daemon
+from dynamic_dynamodb import DynamicDynamoDB
 
 
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon class """
     def run(self, *args, **kwargs):
         """ Run the daemon """
-        while True:
-            time.sleep(1)
+        dynamic_dynamodb = DynamicDynamoDB(*args, **kwargs)
+        dynamic_dynamodb.run()
