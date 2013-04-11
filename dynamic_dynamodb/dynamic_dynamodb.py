@@ -505,4 +505,11 @@ class DynamicDynamoDB:
                     self.logger.warning('ValidationException: {0}'.format(
                         error.body['message']))
                 else:
-                    raise
+                    self.logger.error(
+                        (
+                            'Unhandled exception: {0}: {1}. '
+                            'Please file a bug report at {3}'
+                        ).format(
+                        dynamodb_error,
+                        error.body['message'],
+                        'https://github.com/sebdah/dynamic-dynamodb/issues'))
