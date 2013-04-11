@@ -215,6 +215,7 @@ Release information
 **0.4.2 (2013-04-11)**
 
 - [Unhandled exception: ValidationException (#28)](https://github.com/sebdah/dynamic-dynamodb/issues/28)
+- [Handle DynamoDB provisioning exceptions cleaner (#29)](https://github.com/sebdah/dynamic-dynamodb/issues/29)
 
 **0.4.1 (2013-04-10)**
 
