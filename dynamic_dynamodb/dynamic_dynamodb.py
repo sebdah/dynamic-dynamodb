@@ -542,5 +542,15 @@ class DynamicDynamoDB:
                         self._update_throughput(
                             int(self._get_provisioned_read_units()),
                             int(write_units))
+                elif dynamodb_error == 'ValidationException':
+                    self.logger.warning('ValidationException: {0}'.format(
+                        error.body['message']))
                 else:
-                    raise
+                    self.logger.error(
+                        (
+                            'Unhandled exception: {0}: {1}. '
+                            'Please file a bug report at {3}'
+                        ).format(
+                        dynamodb_error,
+                        error.body['message'],
+                        'https://github.com/sebdah/dynamic-dynamodb/issues'))
