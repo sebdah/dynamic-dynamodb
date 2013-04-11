@@ -501,5 +501,8 @@ class DynamicDynamoDB:
                         self._update_throughput(
                             int(self._get_provisioned_read_units()),
                             int(write_units))
+                elif dynamodb_error == 'ValidationException':
+                    self.logger.warning('ValidationException: {0}'.format(
+                        error.body['message']))
                 else:
                     raise
