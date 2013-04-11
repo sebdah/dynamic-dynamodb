@@ -201,7 +201,7 @@ def main():
                 config['max-provisioned-writes'],
                 config['allow-scaling-down-reads-on-0-percent'],
                 config['allow-scaling-down-writes-on-0-percent'],
-                config['restric-scale-down-to-low-reads-and-writes'],
+                config['always-decrease-rw-together'],
                 check_interval=config['check-interval'],
                 dry_run=config['dry-run'],
                 aws_access_key_id=config['aws-access-key-id'],
@@ -234,7 +234,7 @@ def main():
             config['max-provisioned-writes'],
             config['allow-scaling-down-reads-on-0-percent'],
             config['allow-scaling-down-writes-on-0-percent'],
-            config['restric-scale-down-to-low-reads-and-writes'],
+            config['always-decrease-rw-together'],
             check_interval=config['check-interval'],
             dry_run=config['dry-run'],
             aws_access_key_id=config['aws-access-key-id'],
@@ -352,7 +352,7 @@ def parse_configuration_file(config_path):
         ('maintenance-windows', False),
         ('allow-scaling-down-reads-on-0-percent', False),
         ('allow-scaling-down-writes-on-0-percent', False),
-        ('restric-scale-down-to-low-reads-and-writes', False),
+        ('always-decrease-rw-together', False),
     ]
 
     # Populate the table options
@@ -362,7 +362,7 @@ def parse_configuration_file(config_path):
                 config[option] = config_file.getboolean(section, option)
             elif option == 'allow-scaling-down-writes-on-0-percent':
                 config[option] = config_file.getboolean(section, option)
-            elif option == 'restric-scale-down-to-low-reads-and-writes':
+            elif option == 'always-decrease-rw-together':
                 config[option] = config_file.getboolean(section, option)
             else:
                 config[option] = config_file.get(section, option)
@@ -376,7 +376,7 @@ def parse_configuration_file(config_path):
                     config[option] = False
                 elif option == 'allow-scaling-down-writes-on-0-percent':
                     config[option] = False
-                elif option == 'restric-scale-down-to-low-reads-and-writes':
+                elif option == 'always-decrease-rw-together':
                     config[option] = False
                 else:
                     config[option] = None

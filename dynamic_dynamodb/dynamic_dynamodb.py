@@ -51,7 +51,7 @@ class DynamicDynamoDB:
                 min_provisioned_writes=None, max_provisioned_writes=None,
                 allow_scaling_down_reads_on_0_percent=False,
                 allow_scaling_down_writes_on_0_percent=False,
-                restric_scale_down_to_low_reads_and_writes=False,
+                always_decrease_rw_together=False,
                 check_interval=300, dry_run=True,
                 aws_access_key_id=None, aws_secret_access_key=None,
                 maintenance_windows=None, logger=None):
@@ -91,8 +91,8 @@ class DynamicDynamoDB:
         :type allow_scaling_down_writes_on_0_percent: bool
         :param allow_scaling_down_writes_on_0_percent:
             Allow scaling when 0 percent of the writes are consumed
-        :type restric_scale_down_to_low_reads_and_writes: bool
-        :param restric_scale_down_to_low_reads_and_writes:
+        :type always_decrease_rw_together: bool
+        :param always_decrease_rw_together:
             Restric scaling to only happend when both writes and reads needs to
             be scaled down
         :type check_interval: int
@@ -146,8 +146,8 @@ class DynamicDynamoDB:
             allow_scaling_down_reads_on_0_percent
         self.allow_scaling_down_writes_on_0_percent = \
             allow_scaling_down_writes_on_0_percent
-        self.restric_scale_down_to_low_reads_and_writes = \
-            restric_scale_down_to_low_reads_and_writes
+        self.always_decrease_rw_together = \
+            always_decrease_rw_together
 
         if min_provisioned_reads:
             self.min_provisioned_reads = int(min_provisioned_reads)
@@ -503,7 +503,7 @@ class DynamicDynamoDB:
 
         # If this setting is True, we will only scale down when
         # BOTH reads AND writes are low
-        if self.restric_scale_down_to_low_reads_and_writes:
+        if self.always_decrease_rw_together:
             prov_reads = self._get_provisioned_read_units()
             prov_writes = self._get_provisioned_write_units()
             if read_units < prov_reads and write_units < prov_writes:
