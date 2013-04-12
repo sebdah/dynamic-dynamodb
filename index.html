@@ -141,15 +141,28 @@ decrease-writes-with: 50
 # Maintenance windows (in UTC)
 #
 #maintenance-windows: 22:00-23:59,00:00-06:00
+
+#
+# Other settings
+#
+
+# Allow down scaling when at 0% consumed reads
+#allow-scaling-down-reads-on-0-percent: true
+#allow-scaling-down-writes-on-0-percent: true
+
+# Restric scale down to only happend when BOTH reads AND writes are in need
+# of scaling down. Set this to "true" to minimize down scaling.
+#always-decrease-rw-together: true
 </code></pre>
 
 <h2>Full --help output</h2>
 
-<pre><code>usage: dynamic-dynamodb [-h] [--dry-run] [--daemon DAEMON]
+<pre><code>usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run] [--daemon DAEMON]
                         [--check-interval CHECK_INTERVAL]
+                        [--log-file LOG_FILE] [--version]
                         [--aws-access-key-id AWS_ACCESS_KEY_ID]
                         [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
-                        [--version] [-r REGION] -t TABLE_NAME
+                        [-r REGION] [-t TABLE_NAME]
                         [--reads-upper-threshold READS_UPPER_THRESHOLD]
                         [--reads-lower-threshold READS_LOWER_THRESHOLD]
                         [--increase-reads-with INCREASE_READS_WITH]
@@ -167,11 +180,14 @@ Dynamic DynamoDB - Auto provisioning AWS DynamoDB
 
 optional arguments:
   -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        Read configuration from a configuration file
   --dry-run             Run without making any changes to your DynamoDB table
   --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
   --check-interval CHECK_INTERVAL
                         How many seconds should we wait between the checks
                         (default: 300)
+  --log-file LOG_FILE   Send output to the given log file
   --version             Print current version number
   --aws-access-key-id AWS_ACCESS_KEY_ID
                         Override Boto configuration with the following AWS
@@ -240,7 +256,13 @@ Write units scaling properties:
 
 <h2>Release information</h2>
 
-<p><strong>0.4.2 (2013-04-11)</strong></p>
+<p><strong>0.5.0 (2013-04-12)</strong></p>
+
+<ul>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/20">Add --log-file command line option (#20)</a></li>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/17">Allow scale down at 0% consumed count (#17)</a></li>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/23">"only downscale reads AND writes" option would be useful (#23)</a></li>
+</ul><p><strong>0.4.2 (2013-04-11)</strong></p>
 
 <ul>
 <li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/28">Unhandled exception: ValidationException (#28)</a></li>
@@ -305,6 +327,23 @@ Write units scaling properties:
 <h2>Author</h2>
 
 <p>This project is maintained by <a href="http://www.sebastiandahlgren.se">Sebastian Dahlgren</a> (<a href="https://github.com/sebdah">GitHub</a> | <a href="https://twitter.com/sebdah">Twitter</a> | <a href="www.linkedin.com/in/sebastiandahlgren">LinkedIn</a>)</p>
+
+<h2>License</h2>
+
+<p>APACHE LICENSE 2.0
+Copyright 2013 Sebastian Dahlgren</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+
+<p><a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
         </section>
 
         <footer>
