@@ -112,6 +112,19 @@ Example configuration file
     #
     #maintenance-windows: 22:00-23:59,00:00-06:00
 
+    #
+    # Other settings
+    #
+
+    # Allow down scaling when at 0% consumed reads
+    #allow-scaling-down-reads-on-0-percent: true
+    #allow-scaling-down-writes-on-0-percent: true
+
+    # Restric scale down to only happend when BOTH reads AND writes are in need
+    # of scaling down. Set this to "true" to minimize down scaling.
+    #always-decrease-rw-together: true
+
+
 Full --help output
 ------------------
 
