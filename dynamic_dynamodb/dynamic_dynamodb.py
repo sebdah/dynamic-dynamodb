@@ -49,6 +49,9 @@ class DynamicDynamoDB:
                 increase_writes_with, decrease_writes_with,
                 min_provisioned_reads=None, max_provisioned_reads=None,
                 min_provisioned_writes=None, max_provisioned_writes=None,
+                allow_scaling_down_reads_on_0_percent=False,
+                allow_scaling_down_writes_on_0_percent=False,
+                always_decrease_rw_together=False,
                 check_interval=300, dry_run=True,
                 aws_access_key_id=None, aws_secret_access_key=None,
                 maintenance_windows=None, logger=None):
@@ -82,6 +85,16 @@ class DynamicDynamoDB:
         :param min_provisioned_writes: Minimum number of provisioned writes
         :type max_provisioned_writes: int
         :param max_provisioned_writes: Maximum number of provisioned writes
+        :type allow_scaling_down_reads_on_0_percent: bool
+        :param allow_scaling_down_reads_on_0_percent:
+            Allow scaling when 0 percent of the reads are consumed
+        :type allow_scaling_down_writes_on_0_percent: bool
+        :param allow_scaling_down_writes_on_0_percent:
+            Allow scaling when 0 percent of the writes are consumed
+        :type always_decrease_rw_together: bool
+        :param always_decrease_rw_together:
+            Restric scaling to only happend when both writes and reads needs to
+            be scaled down
         :type check_interval: int
         :param check_interval: How many seconds to wait between checks
         :type dry_run: bool
@@ -129,6 +142,12 @@ class DynamicDynamoDB:
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
         self.maintenance_windows = maintenance_windows
+        self.allow_scaling_down_reads_on_0_percent = \
+            allow_scaling_down_reads_on_0_percent
+        self.allow_scaling_down_writes_on_0_percent = \
+            allow_scaling_down_writes_on_0_percent
+        self.always_decrease_rw_together = \
+            always_decrease_rw_together
 
         if min_provisioned_reads:
             self.min_provisioned_reads = int(min_provisioned_reads)
@@ -165,7 +184,8 @@ class DynamicDynamoDB:
         }
 
         # Check if we should update read provisioning
-        if read_usage_percent == 0:
+        if read_usage_percent == 0 and not \
+           self.allow_scaling_down_reads_on_0_percent:
             self.logger.info(
                 'Scaling down reads is not done when usage is at 0%')
         elif read_usage_percent >= self.reads_upper_threshold:
@@ -183,7 +203,8 @@ class DynamicDynamoDB:
             throughput['read_units'] = new_value
 
         # Check if we should update write provisioning
-        if write_usage_percent == 0:
+        if write_usage_percent == 0 and not \
+           self.allow_scaling_down_writes_on_0_percent:
             self.logger.info(
                 'Scaling down writes is not done when usage is at 0%')
         elif write_usage_percent >= self.writes_upper_threshold:
@@ -465,6 +486,7 @@ class DynamicDynamoDB:
             else:
                 raise
 
+        # Check that we are in the right time frame
         if self.maintenance_windows:
             if not self._is_maintenance_window():
                 self.logger.warning(
@@ -473,10 +495,29 @@ class DynamicDynamoDB:
             else:
                 self.logger.info('Current time is within maintenance window')
 
+        # Check table status
         if table.status != 'ACTIVE':
             self.logger.warning(
                 'Not performing throughput changes when table '
                 'is in {0} state'.format(table.status))
+
+        # If this setting is True, we will only scale down when
+        # BOTH reads AND writes are low
+        if self.always_decrease_rw_together:
+            prov_reads = self._get_provisioned_read_units()
+            prov_writes = self._get_provisioned_write_units()
+            if read_units < prov_reads and write_units < prov_writes:
+                self.logger.info('Both reads and writes will be decreased')
+            elif read_units < prov_reads:
+                self.logger.info((
+                    'Will not decrease reads nor writes, '
+                    'waiting for both to become low before decrease'))
+                read_units = prov_reads
+            elif write_units < prov_writes:
+                self.logger.info((
+                    'Will not decrease reads nor writes, '
+                    'waiting for both to become low before decrease'))
+                write_units = prov_writes
 
         if not self.dry_run:
             try:

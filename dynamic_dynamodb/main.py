@@ -46,6 +46,8 @@ def main():
         default=300,
         help="""How many seconds should we wait between
                 the checks (default: 300)""")
+    parser.add_argument('--log-file',
+        help='Send output to the given log file')
     parser.add_argument('--version',
         action='store_true',
         help='Print current version number')
@@ -132,6 +134,7 @@ def main():
         sys.exit(1)
 
     if args.config:
+        # Handle configuration file
         config = parse_configuration_file(args.config)
         log_level = get_config_log_level(args.config)
         log_file = get_config_log_file(args.config)
@@ -140,14 +143,13 @@ def main():
             log_file=log_file,
             dry_run=args.dry_run)
     else:
+        # Handle command line arguments
         if not args.table_name:
             print 'argument -t/--table-name is required'
             parser.print_help()
             sys.exit(1)
 
         config = {}
-
-        # Handle command line arguments
         config['region'] = args.region
         config['table-name'] = args.table_name
         config['reads-upper-threshold'] = args.reads_upper_threshold
@@ -162,11 +164,18 @@ def main():
         config['max-provisioned-reads'] = args.max_provisioned_reads
         config['min-provisioned-writes'] = args.min_provisioned_writes
         config['max-provisioned-writes'] = args.max_provisioned_writes
+        config['allow-scaling-down-reads-on-0-percent'] = False
+        config['allow-scaling-down-writes-on-0-percent'] = False
         config['check-interval'] = args.check_interval
         config['aws-access-key-id'] = args.aws_access_key_id
         config['aws-secret-access-key'] = args.aws_secret_access_key
         config['maintenance-windows'] = None
-        log_handler = logger.Logger(dry_run=args.dry_run)
+        if args.log_file:
+            log_handler = logger.Logger(
+                dry_run=args.dry_run,
+                log_file=args.log_file)
+        else:
+            log_handler = logger.Logger(dry_run=args.dry_run)
 
     # Options that can only be seet on command line:
     config['dry-run'] = args.dry_run
@@ -190,6 +199,9 @@ def main():
                 config['max-provisioned-reads'],
                 config['min-provisioned-writes'],
                 config['max-provisioned-writes'],
+                config['allow-scaling-down-reads-on-0-percent'],
+                config['allow-scaling-down-writes-on-0-percent'],
+                config['always-decrease-rw-together'],
                 check_interval=config['check-interval'],
                 dry_run=config['dry-run'],
                 aws_access_key_id=config['aws-access-key-id'],
@@ -220,6 +232,9 @@ def main():
             config['max-provisioned-reads'],
             config['min-provisioned-writes'],
             config['max-provisioned-writes'],
+            config['allow-scaling-down-reads-on-0-percent'],
+            config['allow-scaling-down-writes-on-0-percent'],
+            config['always-decrease-rw-together'],
             check_interval=config['check-interval'],
             dry_run=config['dry-run'],
             aws_access_key_id=config['aws-access-key-id'],
@@ -334,19 +349,36 @@ def parse_configuration_file(config_path):
         ('max-provisioned-reads', False),
         ('min-provisioned-writes', False),
         ('max-provisioned-writes', False),
-        ('maintenance-windows', False)
+        ('maintenance-windows', False),
+        ('allow-scaling-down-reads-on-0-percent', False),
+        ('allow-scaling-down-writes-on-0-percent', False),
+        ('always-decrease-rw-together', False),
     ]
 
     # Populate the table options
     for option, required in table_options:
         try:
-            config[option] = config_file.get(section, option)
+            if option == 'allow-scaling-down-reads-on-0-percent':
+                config[option] = config_file.getboolean(section, option)
+            elif option == 'allow-scaling-down-writes-on-0-percent':
+                config[option] = config_file.getboolean(section, option)
+            elif option == 'always-decrease-rw-together':
+                config[option] = config_file.getboolean(section, option)
+            else:
+                config[option] = config_file.get(section, option)
         except ConfigParser.NoOptionError:
             if required:
                 print 'Missing [{0}] option "{1}" in {2}'.format(
                     section, option, config_path)
                 sys.exit(1)
             else:
-                config[option] = None
+                if option == 'allow-scaling-down-reads-on-0-percent':
+                    config[option] = False
+                elif option == 'allow-scaling-down-writes-on-0-percent':
+                    config[option] = False
+                elif option == 'always-decrease-rw-together':
+                    config[option] = False
+                else:
+                    config[option] = None
 
     return config

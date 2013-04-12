@@ -112,14 +112,28 @@ Example configuration file
     #
     #maintenance-windows: 22:00-23:59,00:00-06:00
 
+    #
+    # Other settings
+    #
+
+    # Allow down scaling when at 0% consumed reads
+    #allow-scaling-down-reads-on-0-percent: true
+    #allow-scaling-down-writes-on-0-percent: true
+
+    # Restric scale down to only happend when BOTH reads AND writes are in need
+    # of scaling down. Set this to "true" to minimize down scaling.
+    #always-decrease-rw-together: true
+
+
 Full --help output
 ------------------
 
-    usage: dynamic-dynamodb [-h] [--dry-run] [--daemon DAEMON]
+    usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run] [--daemon DAEMON]
                             [--check-interval CHECK_INTERVAL]
+                            [--log-file LOG_FILE] [--version]
                             [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
-                            [--version] [-r REGION] -t TABLE_NAME
+                            [-r REGION] [-t TABLE_NAME]
                             [--reads-upper-threshold READS_UPPER_THRESHOLD]
                             [--reads-lower-threshold READS_LOWER_THRESHOLD]
                             [--increase-reads-with INCREASE_READS_WITH]
@@ -137,11 +151,14 @@ Full --help output
 
     optional arguments:
       -h, --help            show this help message and exit
+      -c CONFIG, --config CONFIG
+                            Read configuration from a configuration file
       --dry-run             Run without making any changes to your DynamoDB table
       --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
       --check-interval CHECK_INTERVAL
                             How many seconds should we wait between the checks
                             (default: 300)
+      --log-file LOG_FILE   Send output to the given log file
       --version             Print current version number
       --aws-access-key-id AWS_ACCESS_KEY_ID
                             Override Boto configuration with the following AWS
@@ -212,6 +229,12 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**0.5.0 (2013-04-12)**
+
+- [Add --log-file command line option (#20)](https://github.com/sebdah/dynamic-dynamodb/issues/20)
+- [Allow scale down at 0% consumed count (#17)](https://github.com/sebdah/dynamic-dynamodb/issues/17)
+- ["only downscale reads AND writes" option would be useful (#23)](https://github.com/sebdah/dynamic-dynamodb/issues/23)
+
 **0.4.2 (2013-04-11)**
 
 - [Unhandled exception: ValidationException (#28)](https://github.com/sebdah/dynamic-dynamodb/issues/28)
@@ -271,3 +294,22 @@ Author
 ------
 
 This project is maintained by [Sebastian Dahlgren](http://www.sebastiandahlgren.se) ([GitHub](https://github.com/sebdah) | [Twitter](https://twitter.com/sebdah) | [LinkedIn](www.linkedin.com/in/sebastiandahlgren))
+
+License
+-------
+
+APACHE LICENSE 2.0
+Copyright 2013 Sebastian Dahlgren
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
