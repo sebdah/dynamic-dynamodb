@@ -229,6 +229,12 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**0.5.0 (2013-04-12)**
+
+- [Add --log-file command line option (#20)](https://github.com/sebdah/dynamic-dynamodb/issues/20)
+- [Allow scale down at 0% consumed count (#17)](https://github.com/sebdah/dynamic-dynamodb/issues/17)
+- ["only downscale reads AND writes" option would be useful (#23)](https://github.com/sebdah/dynamic-dynamodb/issues/23)
+
 **0.4.2 (2013-04-11)**
 
 - [Unhandled exception: ValidationException (#28)](https://github.com/sebdah/dynamic-dynamodb/issues/28)
