@@ -92,7 +92,6 @@ def parse(config_path):
                     'type': 'int'
                 },
             ])
-        print global_config
 
     #
     # Handle [logging]
@@ -115,7 +114,6 @@ def parse(config_path):
                     'type': 'str'
                 }
             ])
-        print logging_config
 
     #
     # Handle [table: ]

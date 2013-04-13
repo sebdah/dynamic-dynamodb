@@ -20,22 +20,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from config_parsers import command_line_parser, config_file_parser
-from default_configuration import CONFIGURATION
+import config
 
 VERSION = '1.0.0'
 
 
 def main():
     """ Main function called from dynamic-dynamodb """
-    # Read the command line options
-    cmd_line_config = command_line_parser.parse(CONFIGURATION)
-
-    # If a configuration file is specified, read that as well
-    if cmd_line_config['config']:
-        file_config = config_file_parser.parse(cmd_line_config['config'])
+    configuration = config.get_configuration()
 
 
 def version():
     """ Returns the version number """
     return VERSION
+

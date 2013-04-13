@@ -5,12 +5,8 @@ import argparse
 import dynamic_dynamodb
 
 
-def parse(configuration):
-    """ Parse command line options
-
-    :type configuration: dict
-    :param configuration: Dictionary with all options and defaults
-    """
+def parse():
+    """ Parse command line options """
     parser = argparse.ArgumentParser(
         description='Dynamic DynamoDB - Auto provisioning AWS DynamoDB')
     parser.add_argument('-c', '--config',
@@ -95,7 +91,9 @@ def parse(configuration):
         print 'Dynamic DynamoDB version: {0}'.format(dynamic_dynamodb.version())
         sys.exit(0)
 
+
     # Replace any new values in the configuration
+    configuration = {}
     for arg in args.__dict__:
         if args.__dict__.get(arg) is not None:
             configuration[arg] = args.__dict__.get(arg)
