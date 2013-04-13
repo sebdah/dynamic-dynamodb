@@ -97,6 +97,7 @@ def parse(configuration):
 
     # Replace any new values in the configuration
     for arg in args.__dict__:
-        print '{0}: {1}'.format(arg, args.__dict__.get(arg))
         if args.__dict__.get(arg) is not None:
             configuration[arg] = args.__dict__.get(arg)
+
+    return configuration

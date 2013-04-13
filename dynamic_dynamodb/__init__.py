@@ -20,19 +20,31 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-import config_parsers
+from config_parsers import command_line_parser, config_file_parser
 
 VERSION = '1.0.0'
 
 
 def main():
     """ Main function called from dynamic-dynamodb """
-    configuration = {
+    # Default configuration
+    default_configuration = {
+        # Command line only
+        'config': None,
+        'dry_run': False,
+
+        # [global]
         'aws_region': 'us-east-1',
         'aws_access_key_id': None,
         'aws_secret_access_key': None,
-        'table_name': None,
         'check_interval': 300,
+
+        # [logging]
+        'log_file': None,
+        'log_level': 'info',
+
+        # [table: x]
+        'table_name': None,
         'reads_lower_threshold': 30,
         'reads_upper_threshold': 90,
         'increase_reads_with': 50,
@@ -48,12 +60,11 @@ def main():
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
-        'dry_run': False,
         'maintenance_windows': None,
-        'log_file': None,
-        'config_file': None
     }
-    config_parsers.command_line_parser.parse(configuration)
+    cmd_line_config = command_line_parser.parse(default_configuration)
+    if cmd_line_config['config']:
+        file_config = config_file_parser.parse(cmd_line_config['config'])
 
 
 def version():
