@@ -236,5 +236,8 @@ def parse(config_path):
             config_path)
         sys.exit(1)
 
-    return dict(global_config.items() + table_config.items())
+    return dict(
+        global_config.items() +
+        logging_config.items() +
+        table_config.items())
 
