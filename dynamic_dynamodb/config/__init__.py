@@ -2,6 +2,7 @@
 """ Configuration management """
 import config_file_parser
 import command_line_parser
+from dynamic_dynamodb.log_handler import LOGGER as logger
 
 
 DEFAULT_OPTIONS = {
@@ -63,5 +64,27 @@ def get_configuration():
         # Get the value from the command line
         configuration[option] = cmd_line_options.get(
             option, DEFAULT_OPTIONS[option])
+
+    # Check some basic rules
+    configuration = check_rules(configuration)
+
+    return configuration
+
+
+def check_rules(configuration):
+    """ Do some basic checks on the configuraion """
+    # Check that increase_writes_with is not > 100
+    if configuration['increase_writes_with'] > 100:
+        logger.error(
+                'You can not increase the table throughput with more '
+                'than 100% at a time. Setting --increase-writes-with to 100.')
+        configuration['increase_writes_with'] = 100
+
+    # Check that increase_reads_with is not > 100
+    if configuration['increase_reads_with'] > 100:
+        logger.error(
+                'You can not increase the table throughput with more '
+                'than 100% at a time. Setting --increase-reads-with to 100.')
+        configuration['increase_reads_with'] = 100
 
     return configuration
