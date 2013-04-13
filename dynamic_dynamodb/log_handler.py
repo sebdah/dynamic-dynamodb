@@ -20,6 +20,8 @@ limitations under the License.
 import os.path
 import logging
 
+from config_handler import CONFIGURATION
+
 
 class LogHandler:
     """ Logging class """
@@ -83,3 +85,22 @@ class LogHandler:
     def warning(self, *args, **kwargs):
         """ Log on warning level """
         self.logger.warning(*args, **kwargs)
+
+
+def __get_logger():
+    """ Returns the logger """
+    # Instanciate a new logger
+    if CONFIGURATION['log_file']:
+        logger = LogHandler(
+            level=CONFIGURATION['log_level'],
+            log_file=CONFIGURATION['log_file'],
+            dry_run=CONFIGURATION['dry_run'])
+    else:
+        logger = LogHandler(
+            level=CONFIGURATION['log_level'],
+            dry_run=CONFIGURATION['dry_run'])
+
+    return logger
+
+
+LOGGER = __get_logger()

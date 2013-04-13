@@ -7,6 +7,7 @@ import command_line_parser
 DEFAULT_OPTIONS = {
     # Command line only
     'config': None,
+    'daemon': False,
     'dry_run': False,
 
     # [global]

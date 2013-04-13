@@ -20,8 +20,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-import config
-import log_handler
+import config_handler
+import core
 
 VERSION = '1.0.0'
 
@@ -29,18 +29,7 @@ VERSION = '1.0.0'
 def main():
     """ Main function called from dynamic-dynamodb """
     # Get the configuration
-    configuration = config.get_configuration()
-
-    # Instanciate a new logger
-    if configuration['log_file']:
-        logger = log_handler.LogHandler(
-            level=configuration['log_level'],
-            log_file=configuration['log_file'],
-            dry_run=configuration['dry_run'])
-    else:
-        logger = log_handler.LogHandler(
-            level=configuration['log_level'],
-            dry_run=configuration['dry_run'])
+    pass
 
 
 def version():
