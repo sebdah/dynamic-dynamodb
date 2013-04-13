@@ -1,6 +1,9 @@
 """ Configuration management """
+import config_file_parser
+import command_line_parser
 
-CONFIGURATION = {
+
+DEFAULT_OPTIONS = {
     # Command line only
     'config': None,
     'dry_run': False,
@@ -50,7 +53,13 @@ def get_configuration():
 
     # Replace any overlapping values so that command line options
     # trumps configuration file options
-    for conf_file_option in conf_file_options:
+    for option in DEFAULT_OPTIONS:
+        # Get the value from the configuration file
+        configuration[option] = conf_file_options.get(
+            option, DEFAULT_OPTIONS[option])
 
+        # Get the value from the command line
+        configuration[option] = cmd_line_options.get(
+            option, DEFAULT_OPTIONS[option])
 
-    return {}
+    return configuration

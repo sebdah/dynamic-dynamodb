@@ -28,6 +28,7 @@ VERSION = '1.0.0'
 def main():
     """ Main function called from dynamic-dynamodb """
     configuration = config.get_configuration()
+    print configuration
 
 
 def version():
