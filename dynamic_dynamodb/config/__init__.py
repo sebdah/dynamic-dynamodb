@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Configuration management """
 import config_file_parser
 import command_line_parser
