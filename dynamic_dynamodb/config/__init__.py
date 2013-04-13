@@ -2,7 +2,7 @@
 """ Configuration management """
 import config_file_parser
 import command_line_parser
-from dynamic_dynamodb.log_handler import LOGGER as logger
+#from .log_handler import LOGGER as logger
 
 
 DEFAULT_OPTIONS = {
@@ -12,7 +12,7 @@ DEFAULT_OPTIONS = {
     'dry_run': False,
 
     # [global]
-    'aws_region': 'us-east-1',
+    'region': 'us-east-1',
     'aws_access_key_id': None,
     'aws_secret_access_key': None,
     'check_interval': 300,
@@ -33,7 +33,7 @@ DEFAULT_OPTIONS = {
     'decrease_writes_with': 50,
     'min_provisioned_reads': None,
     'max_provisioned_reads': None,
-    'min_provisioned_writes': 'apa',
+    'min_provisioned_writes': None,
     'max_provisioned_writes': None,
     'allow_scaling_down_reads_on_0_percent': False,
     'allow_scaling_down_writes_on_0_percent': False,
@@ -51,7 +51,7 @@ def get_configuration():
     cmd_line_options = command_line_parser.parse()
 
     # If a configuration file is specified, read that as well
-    if cmd_line_options['config']:
+    if 'config' in cmd_line_options:
         conf_file_options = config_file_parser.parse(cmd_line_options['config'])
 
     # Replace any overlapping values so that command line options
@@ -62,8 +62,8 @@ def get_configuration():
             option, DEFAULT_OPTIONS[option])
 
         # Get the value from the command line
-        configuration[option] = cmd_line_options.get(
-            option, DEFAULT_OPTIONS[option])
+        if option in cmd_line_options:
+            configuration[option] = cmd_line_options.get(option)
 
     # Check some basic rules
     configuration = check_rules(configuration)
@@ -75,16 +75,16 @@ def check_rules(configuration):
     """ Do some basic checks on the configuraion """
     # Check that increase_writes_with is not > 100
     if configuration['increase_writes_with'] > 100:
-        logger.error(
-                'You can not increase the table throughput with more '
-                'than 100% at a time. Setting --increase-writes-with to 100.')
+        print(
+            'You can not increase the table throughput with more '
+            'than 100% at a time. Setting --increase-writes-with to 100.')
         configuration['increase_writes_with'] = 100
 
     # Check that increase_reads_with is not > 100
     if configuration['increase_reads_with'] > 100:
-        logger.error(
-                'You can not increase the table throughput with more '
-                'than 100% at a time. Setting --increase-reads-with to 100.')
+        print(
+            'You can not increase the table throughput with more '
+            'than 100% at a time. Setting --increase-reads-with to 100.')
         configuration['increase_reads_with'] = 100
 
     return configuration

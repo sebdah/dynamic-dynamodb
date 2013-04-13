@@ -80,7 +80,7 @@ def parse(config_path):
                     'type': 'str'
                 },
                 {
-                    'key': 'aws_region',
+                    'key': 'region',
                     'option': 'region',
                     'required': False,
                     'type': 'str'
@@ -211,13 +211,13 @@ def parse(config_path):
                     'key': 'allow_scaling_down_reads_on_0_percent',
                     'option': 'allow-scaling-down-reads-on-0-percent',
                     'required': False,
-                    'type': 'int'
+                    'type': 'bool'
                 },
                 {
                     'key': 'allow_scaling_down_writes_on_0_percent',
                     'option': 'allow-scaling-down-writes-on-0-percent',
                     'required': False,
-                    'type': 'int'
+                    'type': 'bool'
                 },
                 {
                     'key': 'always_decrease_rw_together',
@@ -226,7 +226,7 @@ def parse(config_path):
                     'type': 'bool'
                 },
             ])
-        table_config['table-name'] = current_section.rsplit(':', 1)[1].strip()
+        table_config['table_name'] = current_section.rsplit(':', 1)[1].strip()
         break
 
     if not section:

@@ -75,12 +75,12 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
     :returns: int -- Number of consumed reads
     """
     metrics = cloudwatch_connection.get_metric_statistics(
-        time_frame,
-        datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
-        datetime.utcnow()-timedelta(minutes=10),
-        'ConsumedReadCapacityUnits',
-        'AWS/DynamoDB',
-        ['Sum'],
+        period=time_frame,
+        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
+        end_time=datetime.utcnow()-timedelta(minutes=10),
+        metric_name='ConsumedReadCapacityUnits',
+        namespace='AWS/DynamoDB',
+        statistics=['Sum'],
         dimensions={'TableName': table_name},
         unit='Count')
 
@@ -92,7 +92,7 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
 
     consumed_read_units_percent = int(math.ceil(
             float(consumed_read_units) / \
-            float(get_provisioned_read_units()) * \
+            float(get_provisioned_read_units(table_name)) * \
             100))
 
     logger.info('Consumed read units: {0:d}%'.format(
@@ -110,12 +110,12 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
     :returns: int -- Number of consumed writes
     """
     metrics = cloudwatch_connection.get_metric_statistics(
-        time_frame,
-        datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
-        datetime.utcnow()-timedelta(minutes=10),
-        'ConsumedWriteCapacityUnits',
-        'AWS/DynamoDB',
-        ['Sum'],
+        period=time_frame,
+        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
+        end_time=datetime.utcnow()-timedelta(minutes=10),
+        metric_name='ConsumedWriteCapacityUnits',
+        namespace='AWS/DynamoDB',
+        statistics=['Sum'],
         dimensions={'TableName': table_name},
         unit='Count')
 
@@ -127,7 +127,7 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
 
     consumed_write_units_percent = int(math.ceil(
             float(consumed_write_units) / \
-            float(get_provisioned_read_units()) * \
+            float(get_provisioned_read_units(table_name)) * \
             100))
 
     logger.info('Consumed write units: {0:d}%'.format(

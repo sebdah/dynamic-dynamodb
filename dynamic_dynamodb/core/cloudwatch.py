@@ -19,13 +19,13 @@ def __get_connection_cloudwatch():
             connection = cloudwatch.connect_to_region(configuration['region'])
 
     except Exception as err:
-        logger.error('Failed connecting to DynamoDB: {0}'.format(err))
+        logger.error('Failed connecting to CloudWatch: {0}'.format(err))
         logger.error(
             'Please report an issue at: '
             'https://github.com/sebdah/dynamic-dynamodb/issues')
         raise
 
-    logger.info('Connected to DynamoDB')
+    logger.info('Connected to CloudWatch')
     return connection
 
 

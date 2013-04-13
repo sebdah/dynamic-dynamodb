@@ -20,16 +20,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-import config_handler
+import config
 import core
+import config_handler
 
 VERSION = '1.0.0'
 
 
 def main():
     """ Main function called from dynamic-dynamodb """
-    # Get the configuration
-    pass
+    core.ensure_provisioning(config_handler.CONFIGURATION['table_name'])
 
 
 def version():
