@@ -18,10 +18,10 @@ limitations under the License.
 """
 
 import sys
-from dynamic_dynamodb import main
+import dynamic_dynamodb
 
 if __name__ == '__main__':
-    main.main()
+    dynamic_dynamodb.main()
     sys.exit(0)
 
 sys.exit(1)
