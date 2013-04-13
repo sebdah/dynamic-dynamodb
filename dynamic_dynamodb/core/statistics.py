@@ -127,7 +127,7 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
 
     consumed_write_units_percent = int(math.ceil(
             float(consumed_write_units) / \
-            float(get_provisioned_read_units(table_name)) * \
+            float(get_provisioned_write_units(table_name)) * \
             100))
 
     logger.info('Consumed write units: {0:d}%'.format(
