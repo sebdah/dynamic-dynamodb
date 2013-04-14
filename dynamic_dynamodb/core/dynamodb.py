@@ -43,7 +43,8 @@ def get_table(table_name):
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
         if dynamodb_error == 'ResourceNotFoundException':
-            logger.error('Table {0} not found'.format(table_name))
+            logger.error(
+                '{0} - Table {1} not found'.format(table_name, table_name))
             sys.exit(1)
         else:
             raise

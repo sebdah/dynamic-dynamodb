@@ -32,7 +32,8 @@ def get_consumed_read_units(table_name, time_frame=300):
     else:
         consumed_read_units = 0
 
-    logger.info('Consumed read units: {0:d}'.format(consumed_read_units))
+    logger.info('{0} - Consumed read units: {1:d}'.format(
+        table_name, consumed_read_units))
     return consumed_read_units
 
 
@@ -61,7 +62,8 @@ def get_consumed_write_units(table_name, time_frame=300):
     else:
         consumed_write_units = 0
 
-    logger.info('Consumed write units: {0:d}'.format(consumed_write_units))
+    logger.info('{0} - Consumed write units: {1:d}'.format(
+        table_name, consumed_write_units))
     return consumed_write_units
 
 
@@ -95,8 +97,8 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
             float(get_provisioned_read_units(table_name)) * \
             100))
 
-    logger.info('Consumed read units: {0:d}%'.format(
-        consumed_read_units_percent))
+    logger.info('{0} - Consumed read units: {1:d}%'.format(
+        table_name, consumed_read_units_percent))
     return consumed_read_units
 
 
@@ -130,8 +132,8 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
             float(get_provisioned_write_units(table_name)) * \
             100))
 
-    logger.info('Consumed write units: {0:d}%'.format(
-        consumed_write_units_percent))
+    logger.info('{0} - Consumed write units: {1:d}%'.format(
+        table_name, consumed_write_units_percent))
     return consumed_write_units
 
 
@@ -143,7 +145,8 @@ def get_provisioned_read_units(table_name):
     :returns: int -- Number of read units
     """
     table = dynamodb.get_table(table_name)
-    logger.info('Provisioned read units: {0:d}'.format(table.read_units))
+    logger.info('{0} - Provisioned read units: {1:d}'.format(
+        table_name, table.read_units))
     return int(table.read_units)
 
 
@@ -155,5 +158,6 @@ def get_provisioned_write_units(table_name):
     :returns: int -- Number of write units
     """
     table = dynamodb.get_table(table_name)
-    logger.info('Provisioned write units: {0:d}'.format(table.write_units))
+    logger.info('{0} - Provisioned write units: {1:d}'.format(
+        table_name, table.write_units))
     return int(table.write_units)
