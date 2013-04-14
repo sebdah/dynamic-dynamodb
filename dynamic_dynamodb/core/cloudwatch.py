@@ -25,7 +25,7 @@ def __get_connection_cloudwatch():
             'https://github.com/sebdah/dynamic-dynamodb/issues')
         raise
 
-    logger.info('Connected to CloudWatch')
+    logger.debug('Connected to CloudWatch')
     return connection
 
 

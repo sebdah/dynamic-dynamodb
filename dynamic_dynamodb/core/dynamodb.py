@@ -27,7 +27,7 @@ def __get_connection_dynamodb():
             'https://github.com/sebdah/dynamic-dynamodb/issues')
         raise
 
-    logger.info('Connected to DynamoDB')
+    logger.debug('Connected to DynamoDB')
     return connection
 
 
