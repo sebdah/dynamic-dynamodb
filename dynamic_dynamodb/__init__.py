@@ -20,15 +20,41 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import sys
+import time
+
 import core
-import config_handler
+from daemon import Daemon
+from config_handler import CONFIGURATION as configuration
 
 VERSION = '1.0.0'
 
 
+class DynamicDynamoDBDaemon(Daemon):
+    """ Daemon for Dynamic DynamoDB"""
+
+    def run(self, *args, **kwargs):
+        """ Run the daemon """
+        while True:
+            core.ensure_provisioning(configuration['table_name'])
+            time.sleep(2)
+
+
 def main():
     """ Main function called from dynamic-dynamodb """
-    core.ensure_provisioning(config_handler.CONFIGURATION['table_name'])
+    if configuration['daemon']:
+        daemon = DynamicDynamoDBDaemon('/tmp/daemon.pid')
+        if configuration['daemon'] == 'start':
+            daemon.start()
+        elif configuration['daemon'] == 'stop':
+            daemon.stop()
+        elif configuration['daemon'] == 'restart':
+            daemon.restart()
+        else:
+            print 'Valid options for --daemon are start, stop and restart'
+            sys.exit(1)
+    else:
+        core.ensure_provisioning(configuration['table_name'])
 
 
 def version():
