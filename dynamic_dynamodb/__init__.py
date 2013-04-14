@@ -33,11 +33,15 @@ VERSION = '1.0.0'
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
 
-    def run(self, *args, **kwargs):
-        """ Run the daemon """
+    def run(self, check_interval=1):
+        """ Run the daemon
+
+        :type check_interval: int
+        :param check_interval: Delay in seconds between checks
+        """
         while True:
             core.ensure_provisioning(configuration['table_name'])
-            time.sleep(2)
+            time.sleep(check_interval)
 
 
 def main():
@@ -45,7 +49,7 @@ def main():
     if configuration['daemon']:
         daemon = DynamicDynamoDBDaemon('/tmp/daemon.pid')
         if configuration['daemon'] == 'start':
-            daemon.start()
+            daemon.start(check_interval=configuration['check_interval'])
         elif configuration['daemon'] == 'stop':
             daemon.stop()
         elif configuration['daemon'] == 'restart':
