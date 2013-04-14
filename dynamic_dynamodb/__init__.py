@@ -22,6 +22,7 @@ limitations under the License.
 """
 import sys
 import time
+import json
 
 import core
 from daemon import Daemon
@@ -46,6 +47,9 @@ class DynamicDynamoDBDaemon(Daemon):
 
 def main():
     """ Main function called from dynamic-dynamodb """
+    print json.dumps(configuration)
+    sys.exit(0)
+
     if configuration['daemon']:
         daemon = DynamicDynamoDBDaemon('/tmp/daemon.pid')
         if configuration['daemon'] == 'start':

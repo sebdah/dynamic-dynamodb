@@ -11,14 +11,16 @@ from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
 def __get_connection_dynamodb():
     """ Ensure connection to DynamoDB """
     try:
-        if (configuration['aws_access_key_id'] and
-            configuration['aws_secret_access_key']):
+        if (configuration['global']['aws_access_key_id'] and
+            configuration['global']['aws_secret_access_key']):
             connection = dynamodb.connect_to_region(
-                configuration['region'],
-                aws_access_key_id=configuration['aws_access_key_id'],
-                aws_secret_access_key=configuration['aws_secret_access_key'])
+                configuration['global']['region'],
+                aws_access_key_id=configuration['global']['aws_access_key_id'],
+                aws_secret_access_key=\
+                    configuration['global']['aws_secret_access_key'])
         else:
-            connection = dynamodb.connect_to_region(configuration['region'])
+            connection = dynamodb.connect_to_region(
+                configuration['global']['region'])
 
     except Exception as err:
         logger.error('Failed connecting to DynamoDB: {0}'.format(err))

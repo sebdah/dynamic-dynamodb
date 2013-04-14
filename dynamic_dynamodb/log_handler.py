@@ -90,15 +90,15 @@ class LogHandler:
 def __get_logger():
     """ Returns the logger """
     # Instanciate a new logger
-    if CONFIGURATION['log_file']:
+    if CONFIGURATION['logging']['log_file']:
         logger = LogHandler(
-            level=CONFIGURATION['log_level'],
-            log_file=CONFIGURATION['log_file'],
-            dry_run=CONFIGURATION['dry_run'])
+            level=CONFIGURATION['logging']['log_level'],
+            log_file=CONFIGURATION['logging']['log_file'],
+            dry_run=CONFIGURATION['global']['dry_run'])
     else:
         logger = LogHandler(
-            level=CONFIGURATION['log_level'],
-            dry_run=CONFIGURATION['dry_run'])
+            level=CONFIGURATION['logging']['log_level'],
+            dry_run=CONFIGURATION['logging']['dry_run'])
 
     return logger
 
