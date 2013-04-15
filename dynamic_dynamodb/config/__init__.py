@@ -109,11 +109,15 @@ def __get_config_table_options(conf_file_options):
     """
     options = {}
 
-    for option in DEFAULT_OPTIONS['table'].keys():
-        options[table_name][option] = DEFAULT_OPTIONS['table'][option]
+    for table_name in conf_file_options['tables']:
+        options[table_name] = {}
 
-        if option in cmd_line_options:
-            options[table_name][option] = cmd_line_options[option]
+        for option in DEFAULT_OPTIONS['table'].keys():
+            options[table_name][option] = DEFAULT_OPTIONS['table'][option]
+
+            if option in conf_file_options['tables'][table_name]:
+                options[table_name][option] = \
+                    conf_file_options['tables'][table_name][option]
 
     return options
 

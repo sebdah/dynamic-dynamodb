@@ -38,7 +38,7 @@ def __parse_options(config_file, section, options):
                 configuration[option.get('key')] = \
                     config_file.get(section, option.get('option'))
         except ConfigParser.NoOptionError:
-            if option.get('required', False):
+            if option.get('required'):
                 print 'Missing [{0}] option "{1}" in configuration'.format(
                     section, option.get('option'))
                 sys.exit(1)
@@ -118,16 +118,19 @@ def parse(config_path):
     #
     # Handle [table: ]
     #
+    table_config = { 'tables': {} }
 
     # Find the first table definition
-    section = None
+    found_table = False
     for current_section in config_file.sections():
         if current_section.rsplit(':', 1)[0] != 'table':
             continue
-        section = current_section
-        table_config = __parse_options(
+
+        found_table = True
+        current_table_name = current_section.rsplit(':', 1)[1].strip()
+        table_config['tables'][current_table_name] = __parse_options(
             config_file,
-            section,
+            current_section,
             [
                 {
                     'key': 'reads_lower_threshold',
@@ -226,10 +229,8 @@ def parse(config_path):
                     'type': 'bool'
                 },
             ])
-        table_config['table_name'] = current_section.rsplit(':', 1)[1].strip()
-        break
 
-    if not section:
+    if not found_table:
         print 'Could not find a [table: <table_name>] section in {0}'.format(
             config_path)
         sys.exit(1)

@@ -22,7 +22,6 @@ limitations under the License.
 """
 import sys
 import time
-import json
 
 import core
 from daemon import Daemon
@@ -41,28 +40,28 @@ class DynamicDynamoDBDaemon(Daemon):
         :param check_interval: Delay in seconds between checks
         """
         while True:
-            core.ensure_provisioning(configuration['table_name'])
+            for table_name in configuration['tables'].keys():
+                core.ensure_provisioning(table_name)
             time.sleep(check_interval)
 
 
 def main():
     """ Main function called from dynamic-dynamodb """
-    print json.dumps(configuration)
-    sys.exit(0)
-
-    if configuration['daemon']:
+    if configuration['global']['daemon']:
         daemon = DynamicDynamoDBDaemon('/tmp/daemon.pid')
-        if configuration['daemon'] == 'start':
-            daemon.start(check_interval=configuration['check_interval'])
-        elif configuration['daemon'] == 'stop':
+        if configuration['global']['daemon'] == 'start':
+            daemon.start(
+                check_interval=configuration['global']['check_interval'])
+        elif configuration['global']['daemon'] == 'stop':
             daemon.stop()
-        elif configuration['daemon'] == 'restart':
+        elif configuration['global']['daemon'] == 'restart':
             daemon.restart()
         else:
             print 'Valid options for --daemon are start, stop and restart'
             sys.exit(1)
     else:
-        core.ensure_provisioning(configuration['table_name'])
+        for table_name in configuration['tables'].keys():
+            core.ensure_provisioning(table_name)
 
 
 def version():

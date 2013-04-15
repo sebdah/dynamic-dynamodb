@@ -5,7 +5,7 @@ import dynamodb
 import statistics
 import calculators
 from dynamic_dynamodb.log_handler import LOGGER as logger
-from dynamic_dynamodb.config_handler import CONFIGURATION as config
+from dynamic_dynamodb.config_handler import get_table_option
 
 from boto.exception import DynamoDBResponseError
 
@@ -28,43 +28,57 @@ def ensure_provisioning(table_name):
     }
 
     if (consumed_read_units_percent == 0 and not
-        config['allow_scaling_down_reads_on_0_percent']):
+        get_table_option(table_name, 'allow_scaling_down_reads_on_0_percent')):
+
         logger.info(
             '{0} - Scaling down reads is not done when usage is at 0%'.format(
                 table_name))
 
-    elif consumed_read_units_percent >= config['reads_upper_threshold']:
+    elif (consumed_read_units_percent >=
+        get_table_option(table_name, 'reads_upper_threshold')):
+
         updated_provisioning = calculators.increase_reads_in_percent(
+            table_name,
             updated_throughput['read_units'],
-            config['increase_reads_with'])
+            get_table_option(table_name, 'increase_reads_with'))
         updated_throughput['update_needed'] = True
         updated_throughput['read_units'] = updated_provisioning
 
-    elif consumed_read_units_percent <= config['reads_lower_threshold']:
+    elif (consumed_read_units_percent <=
+        get_table_option(table_name, 'reads_lower_threshold')):
+
         updated_provisioning = calculators.decrease_reads_in_percent(
+            table_name,
             updated_throughput['read_units'],
-            config['decrease_reads_with'])
+            get_table_option(table_name, 'decrease_reads_with'))
         updated_throughput['update_needed'] = True
         updated_throughput['read_units'] = updated_provisioning
 
     # Check if we should update write provisioning
     if (consumed_write_units_percent == 0 and not
-        config['allow_scaling_down_writes_on_0_percent']):
+        get_table_option(table_name, 'allow_scaling_down_writes_on_0_percent')):
+
         logger.info(
             '{0} - Scaling down writes is not done when usage is at 0%'.format(
                 table_name))
 
-    elif consumed_write_units_percent >= config['writes_upper_threshold']:
+    elif (consumed_write_units_percent >=
+        get_table_option(table_name, 'writes_upper_threshold')):
+
         updated_provisioning = calculators.increase_writes_in_percent(
+            table_name,
             updated_throughput['write_units'],
-            config['increase_writes_with'])
+            get_table_option(table_name, 'increase_writes_with'))
         updated_throughput['update_needed'] = True
         updated_throughput['write_units'] = updated_provisioning
 
-    elif consumed_write_units_percent <= config['writes_lower_threshold']:
+    elif (consumed_write_units_percent <=
+        get_table_option(table_name, 'writes_lower_threshold')):
+
         updated_provisioning = calculators.decrease_writes_in_percent(
+            table_name,
             updated_throughput['write_units'],
-            config['decrease_writes_with'])
+            get_table_option(table_name, 'decrease_writes_with'))
         updated_throughput['update_needed'] = True
         updated_throughput['write_units'] = updated_provisioning
 
@@ -128,8 +142,10 @@ def update_throughput(table_name, read_units, write_units):
     table = dynamodb.get_table(table_name)
 
     # Check that we are in the right time frame
-    if config['maintenance_windows']:
-        if not is_maintenance_window(table_name, config['maintenance_windows']):
+    if get_table_option(table_name, 'maintenance_windows'):
+        if not is_maintenance_window(table_name,
+            get_table_option(table_name, 'maintenance_windows')):
+
             logger.warning(
                 '{0} - Current time is outside maintenance window'.format(
                     table_name))
@@ -147,7 +163,7 @@ def update_throughput(table_name, read_units, write_units):
 
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
-    if config['always_decrease_rw_together']:
+    if get_table_option(table_name, 'always_decrease_rw_together'):
         if read_units < table.read_units and write_units < table.write_units:
             logger.info('{0} - Both reads and writes will be decreased'.format(
                 table_name))
@@ -162,7 +178,7 @@ def update_throughput(table_name, read_units, write_units):
                 'both to become low before decrease'.format(table_name))
             write_units = table.write_units
 
-    if not config['dry_run']:
+    if not get_table_option(table_name, 'dry_run'):
         try:
             table.update_throughput(int(read_units), int(write_units))
             logger.info('Provisioning updated')
