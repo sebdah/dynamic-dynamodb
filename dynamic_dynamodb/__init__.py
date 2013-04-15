@@ -48,7 +48,7 @@ class DynamicDynamoDBDaemon(Daemon):
 def main():
     """ Main function called from dynamic-dynamodb """
     if configuration['global']['daemon']:
-        daemon = DynamicDynamoDBDaemon('/tmp/daemon.pid')
+        daemon = DynamicDynamoDBDaemon('/tmp/dynamic-dynamodb.pid')
         if configuration['global']['daemon'] == 'start':
             daemon.start(
                 check_interval=configuration['global']['check_interval'])
