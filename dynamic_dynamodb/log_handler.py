@@ -98,7 +98,7 @@ def __get_logger():
     else:
         logger = LogHandler(
             level=CONFIGURATION['logging']['log_level'],
-            dry_run=CONFIGURATION['logging']['dry_run'])
+            dry_run=CONFIGURATION['global']['dry_run'])
 
     return logger
 

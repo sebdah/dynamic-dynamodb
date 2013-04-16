@@ -109,6 +109,9 @@ def __get_config_table_options(conf_file_options):
     """
     options = {}
 
+    if not conf_file_options:
+        return options
+
     for table_name in conf_file_options['tables']:
         options[table_name] = {}
 
@@ -136,10 +139,10 @@ def __get_global_options(cmd_line_options, conf_file_options=None):
     for option in DEFAULT_OPTIONS['global'].keys():
         options[option] = DEFAULT_OPTIONS['global'][option]
 
-        if option in conf_file_options:
+        if conf_file_options and option in conf_file_options:
             options[option] = conf_file_options[option]
 
-        if option in cmd_line_options:
+        if cmd_line_options and option in cmd_line_options:
             options[option] = cmd_line_options[option]
 
     return options
@@ -159,10 +162,10 @@ def __get_logging_options(cmd_line_options, conf_file_options=None):
     for option in DEFAULT_OPTIONS['logging'].keys():
         options[option] = DEFAULT_OPTIONS['logging'][option]
 
-        if option in conf_file_options:
+        if conf_file_options and option in conf_file_options:
             options[option] = conf_file_options[option]
 
-        if option in cmd_line_options:
+        if cmd_line_options and option in cmd_line_options:
             options[option] = cmd_line_options[option]
 
     return options
