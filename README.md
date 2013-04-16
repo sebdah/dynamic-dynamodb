@@ -230,6 +230,15 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.0.0 (2013-04-16)**
+
+The 1.0.0 release is a leap forward when it comes to module structure and extendability. Please remember that this is still released in beta in PyPI, so all bug reports are very welcome. File any odd behavior or bugs in [GitHub Issues](https://github.com/sebdah/dynamic-dynamodb/issues).
+
+- [Restructure the Dynamic DynamoDB code base (#30)](https://github.com/sebdah/dynamic-dynamodb/issues/30)
+- [Support multiple tables in one configuration file (#19)](https://github.com/sebdah/dynamic-dynamodb/issues/19)
+- [Change pid file name (#31)](https://github.com/sebdah/dynamic-dynamodb/issues/31)
+- [Handle combinations of configuration file and command line options better (#24)](https://github.com/sebdah/dynamic-dynamodb/issues/24)
+
 **0.5.0 (2013-04-12)**
 
 - [Add --log-file command line option (#20)](https://github.com/sebdah/dynamic-dynamodb/issues/20)
