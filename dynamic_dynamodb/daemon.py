@@ -7,8 +7,9 @@ http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
 import sys, os, time, atexit
 from signal import SIGTERM
 
+
 class Daemon:
-    """ A generic daemon class.
+    """ A generic daemon class
 
     Usage: subclass the Daemon class and override the run() method
     """
@@ -21,9 +22,10 @@ class Daemon:
         self.pidfile = pidfile
 
     def daemonize(self):
-        """
-        do the UNIX double-fork magic, see Stevens' "Advanced
-        Programming in the UNIX Environment" for details (ISBN 0201563177)
+        """ Do the UNIX double-fork magic
+
+        See Stevens' "Advanced Programming in the UNIX Environment" for
+        details (ISBN 0201563177)
         http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
         """
         try:
@@ -31,9 +33,9 @@ class Daemon:
             if pid > 0:
                 # exit first parent
                 sys.exit(0)
-        except OSError, e:
+        except OSError as err:
             sys.stderr.write(
-                "fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+                "fork #1 failed: %d (%s)\n" % (err.errno, err.strerror))
             sys.exit(1)
 
         # decouple from parent environment
@@ -47,9 +49,9 @@ class Daemon:
             if pid > 0:
                 # exit from second parent
                 sys.exit(0)
-        except OSError, e:
+        except OSError as err:
             sys.stderr.write(
-                "fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+                "fork #2 failed: %d (%s)\n" % (err.errno, err.strerror))
             sys.exit(1)
 
         # redirect standard file descriptors
@@ -100,8 +102,9 @@ class Daemon:
             pid = None
 
         if not pid:
-            message = "pidfile %s does not exist. Daemon not running?\n"
-            sys.stderr.write(message % self.pidfile)
+            sys.stderr.write(
+                "pidfile {0} does not exist. Daemon not running?\n".format(
+                    self.pidfile))
             return # not an error in a restart
 
         # Try killing the daemon process

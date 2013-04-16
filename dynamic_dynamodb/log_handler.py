@@ -20,8 +20,10 @@ limitations under the License.
 import os.path
 import logging
 
+from config_handler import CONFIGURATION
 
-class Logger:
+
+class LogHandler:
     """ Logging class """
     def __init__(self, name='dynamic-dynamodb', level='info',
                  log_file=None, dry_run=False):
@@ -83,3 +85,22 @@ class Logger:
     def warning(self, *args, **kwargs):
         """ Log on warning level """
         self.logger.warning(*args, **kwargs)
+
+
+def __get_logger():
+    """ Returns the logger """
+    # Instanciate a new logger
+    if CONFIGURATION['logging']['log_file']:
+        logger = LogHandler(
+            level=CONFIGURATION['logging']['log_level'],
+            log_file=CONFIGURATION['logging']['log_file'],
+            dry_run=CONFIGURATION['global']['dry_run'])
+    else:
+        logger = LogHandler(
+            level=CONFIGURATION['logging']['log_level'],
+            dry_run=CONFIGURATION['global']['dry_run'])
+
+    return logger
+
+
+LOGGER = __get_logger()
