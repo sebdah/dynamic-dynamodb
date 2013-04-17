@@ -20,7 +20,7 @@ limitations under the License.
 import os.path
 import logging
 
-from config_handler import CONFIGURATION
+import config_handler
 
 
 class LogHandler:
@@ -90,15 +90,15 @@ class LogHandler:
 def __get_logger():
     """ Returns the logger """
     # Instanciate a new logger
-    if CONFIGURATION['logging']['log_file']:
+    if config_handler.get_logging_option('log_file'):
         logger = LogHandler(
-            level=CONFIGURATION['logging']['log_level'],
-            log_file=CONFIGURATION['logging']['log_file'],
-            dry_run=CONFIGURATION['global']['dry_run'])
+            level=config_handler.get_logging_option('log_level'),
+            log_file=config_handler.get_logging_option('log_file'),
+            dry_run=config_handler.get_global_option('dry_run'))
     else:
         logger = LogHandler(
-            level=CONFIGURATION['logging']['log_level'],
-            dry_run=CONFIGURATION['global']['dry_run'])
+            level=config_handler.get_logging_option('log_level'),
+            dry_run=config_handler.get_global_option('dry_run'))
 
     return logger
 

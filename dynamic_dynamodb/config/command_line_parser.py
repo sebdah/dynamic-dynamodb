@@ -53,6 +53,12 @@ def parse():
         type=int,
         help="""How many percent should we decrease the
                 read units with? (default: 50)""")
+    r_scaling_ag.add_argument('--increase-reads-unit',
+        type=str,
+        help='Do you want to scale in percent or units? (default: percent)')
+    r_scaling_ag.add_argument('--decrease-reads-unit',
+        type=str,
+        help='Do you want to scale in percent or units? (default: percent)')
     r_scaling_ag.add_argument('--min-provisioned-reads',
         type=int,
         help="""Minimum number of provisioned reads""")
@@ -78,6 +84,12 @@ def parse():
         type=int,
         help="""How many percent should we decrease the write
                 units with? (default: 50)""")
+    r_scaling_ag.add_argument('--increase-writes-unit',
+        type=str,
+        help='Do you want to scale in percent or units? (default: percent)')
+    r_scaling_ag.add_argument('--decrease-writes-unit',
+        type=str,
+        help='Do you want to scale in percent or units? (default: percent)')
     w_scaling_ag.add_argument('--min-provisioned-writes',
         type=int,
         help="""Minimum number of provisioned writes""")

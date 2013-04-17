@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Configuration management """
+import sys
 import config_file_parser
 import command_line_parser
 
@@ -26,10 +27,14 @@ DEFAULT_OPTIONS = {
         'reads_upper_threshold': 90,
         'increase_reads_with': 50,
         'decrease_reads_with': 50,
+        'increase_reads_unit': 'percent',
+        'decrease_reads_unit': 'percent',
         'writes_lower_threshold': 30,
         'writes_upper_threshold': 90,
         'increase_writes_with': 50,
         'decrease_writes_with': 50,
+        'increase_writes_unit': 'percent',
+        'decrease_writes_unit': 'percent',
         'min_provisioned_reads': None,
         'max_provisioned_reads': None,
         'min_provisioned_writes': None,
@@ -77,6 +82,9 @@ def get_configuration():
         configuration['tables'] = __get_cmd_table_options(cmd_line_options)
     else:
         configuration['tables'] = __get_config_table_options(conf_file_options)
+
+    # Ensure some basic rules
+    __check_table_rules(configuration)
 
     return configuration
 
@@ -171,20 +179,38 @@ def __get_logging_options(cmd_line_options, conf_file_options=None):
     return options
 
 
-def check_rules(configuration):
+def __check_table_rules(configuration):
     """ Do some basic checks on the configuraion """
-    # Check that increase_writes_with is not > 100
-    if configuration['increase_writes_with'] > 100:
-        print(
-            'You can not increase the table throughput with more '
-            'than 100% at a time. Setting --increase-writes-with to 100.')
-        configuration['increase_writes_with'] = 100
+    for table_name in configuration['tables']:
+        table = configuration['tables'][table_name]
+        # Check that increase/decrease units is OK
+        valid_units = ['percent', 'units']
+        if table['increase_reads_unit'] not in valid_units:
+            print('increase-reads-with must be set to either percent or units')
+            sys.exit(1)
+        if table['decrease_reads_unit'] not in valid_units:
+            print('decrease-reads-with must be set to either percent or units')
+            sys.exit(1)
+        if table['increase_writes_unit'] not in valid_units:
+            print('increase-writes-with must be set to either percent or units')
+            sys.exit(1)
+        if table['decrease_writes_unit'] not in valid_units:
+            print('decrease-writes-with must be set to either percent or units')
+            sys.exit(1)
 
-    # Check that increase_reads_with is not > 100
-    if configuration['increase_reads_with'] > 100:
-        print(
-            'You can not increase the table throughput with more '
-            'than 100% at a time. Setting --increase-reads-with to 100.')
-        configuration['increase_reads_with'] = 100
+        # Check that increase_writes_with is not > 100
+        if (table['increase_writes_unit'] == 'percent' and
+            table['increase_writes_with'] > 100):
 
-    return configuration
+            print(
+                'You can not increase the table throughput with more '
+                'than 100% at a time. Setting --increase-writes-with to 100.')
+            table['increase_writes_with'] = 100
+
+        # Check that increase_reads_with is not > 100
+        if (table['increase_reads_unit'] == 'percent' and
+            table['increase_reads_with'] > 100):
+            print(
+                'You can not increase the table throughput with more '
+                'than 100% at a time. Setting --increase-reads-with to 100.')
+            table['increase_reads_with'] = 100
