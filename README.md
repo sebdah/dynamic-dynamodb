@@ -327,3 +327,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+We're hiring
+------------
+
+[Avail](http://www.avail.com) are hiring skilled architects and test leaders to our HQ in Malmö, Sweden. Great positions if cloud services is your passion. In-depth Java knowledge is requirement for architect positions. For more information, send an e-mail to [Sebastian Dahlgren](www.linkedin.com/in/sebastiandahlgren). Don't forget to attach your resume or link to LinkedIn.
