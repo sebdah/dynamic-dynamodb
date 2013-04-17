@@ -115,6 +115,10 @@ reads-lower-threshold: 30
 increase-reads-with: 50
 decrease-reads-with: 50
 
+# Units to increase or decrease reads with, must be either percent or units
+increase-reads-unit: percent
+decrease-reads-unit: percent
+
 # Maximum and minimum read provisioning
 # Dynamic DynamoDB will not provision any more or less reads than this
 #min-provisioned-reads: 100
@@ -131,6 +135,10 @@ writes-lower-threshold: 30
 # How many percent should Dynamic DynamoDB increase/decrease provisioning with (%)
 increase-writes-with: 50
 decrease-writes-with: 50
+
+# Units to increase or decrease writes with, must be either percent or units
+increase-writes-unit: percent
+decrease-writes-unit: percent
 
 # Maximum and minimum write provisioning
 # Dynamic DynamoDB will not provision any more or less writes than this
@@ -167,12 +175,16 @@ decrease-writes-with: 50
                         [--reads-lower-threshold READS_LOWER_THRESHOLD]
                         [--increase-reads-with INCREASE_READS_WITH]
                         [--decrease-reads-with DECREASE_READS_WITH]
+                        [--increase-reads-unit INCREASE_READS_UNIT]
+                        [--decrease-reads-unit DECREASE_READS_UNIT]
                         [--min-provisioned-reads MIN_PROVISIONED_READS]
                         [--max-provisioned-reads MAX_PROVISIONED_READS]
                         [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
                         [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
                         [--increase-writes-with INCREASE_WRITES_WITH]
                         [--decrease-writes-with DECREASE_WRITES_WITH]
+                        [--increase-writes-unit INCREASE_WRITES_UNIT]
+                        [--decrease-writes-unit DECREASE_WRITES_UNIT]
                         [--min-provisioned-writes MIN_PROVISIONED_WRITES]
                         [--max-provisioned-writes MAX_PROVISIONED_WRITES]
 
@@ -218,10 +230,22 @@ Read units scaling properties:
   --decrease-reads-with DECREASE_READS_WITH
                         How many percent should we decrease the read units
                         with? (default: 50)
+  --increase-reads-unit INCREASE_READS_UNIT
+                        Do you want to scale in percent or units? (default:
+                        percent)
+  --decrease-reads-unit DECREASE_READS_UNIT
+                        Do you want to scale in percent or units? (default:
+                        percent)
   --min-provisioned-reads MIN_PROVISIONED_READS
                         Minimum number of provisioned reads
   --max-provisioned-reads MAX_PROVISIONED_READS
                         Maximum number of provisioned reads
+  --increase-writes-unit INCREASE_WRITES_UNIT
+                        Do you want to scale in percent or units? (default:
+                        percent)
+  --decrease-writes-unit DECREASE_WRITES_UNIT
+                        Do you want to scale in percent or units? (default:
+                        percent)
 
 Write units scaling properties:
   --writes-upper-threshold WRITES_UPPER_THRESHOLD
@@ -256,7 +280,13 @@ Write units scaling properties:
 
 <h2>Release information</h2>
 
-<p><strong>1.0.1 (2013-04-17)</strong></p>
+<p><strong>1.1.0 (2013-04-17)</strong></p>
+
+<ul>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/22">Update provisioning in units not just percentage (#22)</a></li>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/33">Increase in percent does not add to current provisioning properly (#33)</a></li>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/32">Enhance configuration option validation (#32)</a></li>
+</ul><p><strong>1.0.1 (2013-04-17)</strong></p>
 
 <ul>
 <li>Minor fix: Ugly output removed</li>
@@ -357,10 +387,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
-
-<h2>We're hiring</h2>
-
-<p><a href="http://www.avail.com">Avail</a> are hiring skilled architects and test leaders to our HQ in Malmö, Sweden. Great positions if cloud services is your passion. In-depth Java knowledge is requirement for architect positions. For more information, send an e-mail to <a href="www.linkedin.com/in/sebastiandahlgren">Sebastian Dahlgren</a>. Don't forget to attach your resume or link to LinkedIn.</p>
         </section>
 
         <footer>
