@@ -254,6 +254,12 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.1.0 (2013-04-17)**
+
+- [Update provisioning in units not just percentage (#22)](https://github.com/sebdah/dynamic-dynamodb/issues/22)
+- [Increase in percent does not add to current provisioning properly (#33)](https://github.com/sebdah/dynamic-dynamodb/issues/33)
+- [Enhance configuration option validation (#32)](https://github.com/sebdah/dynamic-dynamodb/issues/32)
+
 **1.0.1 (2013-04-17)**
 
 - Minor fix: Ugly output removed
