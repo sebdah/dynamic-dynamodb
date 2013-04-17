@@ -98,7 +98,7 @@ def ensure_provisioning(table_name):
         logger.info('{0} - No need to change provisioning'.format(table_name))
 
 
-def is_maintenance_window(table_name, maintenance_windows):
+def __is_maintenance_window(table_name, maintenance_windows):
     """ Checks that the current time is within the maintenance window
 
     :type table_name: str
@@ -143,7 +143,7 @@ def update_throughput(table_name, read_units, write_units):
 
     # Check that we are in the right time frame
     if get_table_option(table_name, 'maintenance_windows'):
-        if not is_maintenance_window(table_name,
+        if not __is_maintenance_window(table_name,
             get_table_option(table_name, 'maintenance_windows')):
 
             logger.warning(
