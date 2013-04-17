@@ -230,6 +230,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.0.1 (2013-04-17)**
+
+- Minor fix: Ugly output removed
+
 **1.0.0 (2013-04-16)**
 
 The 1.0.0 release is a leap forward when it comes to module structure and extendability. Please remember that this is still released in beta in PyPI, so all bug reports are very welcome. File any odd behavior or bugs in [GitHub Issues](https://github.com/sebdah/dynamic-dynamodb/issues).
