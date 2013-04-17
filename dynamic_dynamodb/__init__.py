@@ -62,9 +62,6 @@ def main():
     else:
         for table_name in configuration['tables'].keys():
             core.ensure_provisioning(table_name)
-        else:
-            print 'Nothing to do, see --help for instructions'
-            sys.exit(1)
 
 
 def version():
