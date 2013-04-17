@@ -17,7 +17,7 @@ def decrease_reads_in_percent(table_name, current_provisioning, percent):
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
     logger.debug(
-        'Read provisioning will be decreased with {0:d} units'.format(
+        'Read provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
     if get_table_option(table_name, 'min_provisioned_writesprovisioned_reads') > 0:
@@ -43,10 +43,11 @@ def increase_reads_in_percent(table_name, current_provisioning, percent):
     :param percent: How many percent should we increase with
     :returns: int -- New provisioning value
     """
-    updated_provisioning = int(
+    increase = int(
         float(current_provisioning)*(float(percent)/100+1))
+    updated_provisioning = current_provisioning + increase
     logger.debug(
-        'Read provisioning will be increased with {0:d} units'.format(
+        'Read provisioning will be increased to {0:d} units'.format(
             updated_provisioning))
 
     if get_table_option(table_name, 'max_provisioned_reads') > 0:
@@ -75,7 +76,7 @@ def decrease_writes_in_percent(table_name, current_provisioning, percent):
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
     logger.debug(
-        'Write provisioning will be decreased with {0:d} units'.format(
+        'Write provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
     if get_table_option(table_name, 'min_provisioned_writes') > 0:
@@ -101,12 +102,11 @@ def increase_writes_in_percent(table_name, current_provisioning, percent):
     :param percent: How many percent should we increase with
     :returns: int -- New provisioning value
     """
-    updated_provisioning = int(
-        float(current_provisioning)*(float(percent)/100))
+    increase = int(float(current_provisioning)*(float(percent)/100))
+    updated_provisioning = current_provisioning + increase
     logger.debug(
-        'Write provisioning will be increased with {0:d} units'.format(
+        'Write provisioning will be increased to {0:d} units'.format(
             updated_provisioning))
-
 
     if get_table_option(table_name, 'max_provisioned_writes') > 0:
         if (updated_provisioning >
@@ -133,7 +133,7 @@ def decrease_reads_in_units(table_name, current_provisioning, units):
     """
     updated_provisioning = int(current_provisioning) - int(units)
     logger.debug(
-        'Read provisioning will be decreased with {0:d} units'.format(
+        'Read provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
     if get_table_option(table_name, 'min_provisioned_writesprovisioned_reads') > 0:
@@ -161,7 +161,7 @@ def increase_reads_in_units(table_name, current_provisioning, units):
     """
     updated_provisioning = int(current_provisioning) + int(units)
     logger.debug(
-        'Read provisioning will be increased with {0:d} units'.format(
+        'Read provisioning will be increased to {0:d} units'.format(
             updated_provisioning))
 
     if get_table_option(table_name, 'max_provisioned_reads') > 0:
@@ -189,7 +189,7 @@ def decrease_writes_in_units(table_name, current_provisioning, units):
     """
     updated_provisioning = int(current_provisioning) - int(units)
     logger.debug(
-        'Write provisioning will be decreased with {0:d} units'.format(
+        'Write provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
     if get_table_option(table_name, 'min_provisioned_writes') > 0:
@@ -217,7 +217,7 @@ def increase_writes_in_units(table_name, current_provisioning, units):
     """
     updated_provisioning = int(current_provisioning) + int(units)
     logger.debug(
-        'Write provisioning will be increased with {0:d} units'.format(
+        'Write provisioning will be increased to {0:d} units'.format(
             updated_provisioning))
 
     if get_table_option(table_name, 'max_provisioned_writes') > 0:

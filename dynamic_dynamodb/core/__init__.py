@@ -23,7 +23,7 @@ def ensure_provisioning(table_name):
     if read_update_needed or write_update_needed:
         logger.info(
             '{0} - Changing provisioning to {1:d} '
-            'read unitss and {2:d} write units'.format(
+            'read units and {2:d} write units'.format(
                 table_name,
                 int(updated_read_units),
                 int(updated_write_units)))
@@ -40,7 +40,7 @@ def __ensure_provisioning_reads(table_name):
     :returns: (bool, int) -- update_needed, updated_read_units
     """
     update_needed = False
-    updated_read_units = statistics.get_consumed_read_units(table_name)
+    updated_read_units = statistics.get_provisioned_read_units(table_name)
 
     consumed_read_units_percent = \
         statistics.get_consumed_read_units_percent(table_name)
@@ -97,7 +97,7 @@ def __ensure_provisioning_writes(table_name):
     :returns: (bool, int) -- update_needed, updated_write_units
     """
     update_needed = False
-    updated_write_units = statistics.get_consumed_write_units(table_name)
+    updated_write_units = statistics.get_provisioned_write_units(table_name)
 
     consumed_write_units_percent = \
         statistics.get_consumed_write_units_percent(table_name)

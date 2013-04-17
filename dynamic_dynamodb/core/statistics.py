@@ -145,7 +145,7 @@ def get_provisioned_read_units(table_name):
     :returns: int -- Number of read units
     """
     table = dynamodb.get_table(table_name)
-    logger.info('{0} - Provisioned read units: {1:d}'.format(
+    logger.debug('{0} - Provisioned read units: {1:d}'.format(
         table_name, table.read_units))
     return int(table.read_units)
 
@@ -158,6 +158,6 @@ def get_provisioned_write_units(table_name):
     :returns: int -- Number of write units
     """
     table = dynamodb.get_table(table_name)
-    logger.info('{0} - Provisioned write units: {1:d}'.format(
+    logger.debug('{0} - Provisioned write units: {1:d}'.format(
         table_name, table.write_units))
     return int(table.write_units)
