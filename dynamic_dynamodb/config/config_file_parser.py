@@ -157,6 +157,18 @@ def parse(config_path):
                     'type': 'int'
                 },
                 {
+                    'key': 'increase_reads_unit',
+                    'option': 'increase-reads-unit',
+                    'required': True,
+                    'type': 'str'
+                },
+                {
+                    'key': 'decrease_reads_unit',
+                    'option': 'decrease-reads-unit',
+                    'required': True,
+                    'type': 'str'
+                },
+                {
                     'key': 'writes_lower_threshold',
                     'option': 'writes-lower-threshold',
                     'required': False,
@@ -179,6 +191,18 @@ def parse(config_path):
                     'option': 'decrease-writes-with',
                     'required': False,
                     'type': 'int'
+                },
+                {
+                    'key': 'increase_writes_unit',
+                    'option': 'increase-writes-unit',
+                    'required': True,
+                    'type': 'str'
+                },
+                {
+                    'key': 'decrease_writes_unit',
+                    'option': 'decrease-writes-unit',
+                    'required': True,
+                    'type': 'str'
                 },
                 {
                     'key': 'min_provisioned_reads',
