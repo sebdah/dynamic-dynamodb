@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Configuration management """
+import sys
 import config_file_parser
 import command_line_parser
 
@@ -180,16 +181,34 @@ def __get_logging_options(cmd_line_options, conf_file_options=None):
 
 def __check_table_rules(configuration):
     """ Do some basic checks on the configuraion """
-    # Check that increase_writes_with is not > 100
     for table_name in configuration['tables'].keys():
-        if configuration[table_name]['increase_writes_with'] > 100:
+        # Check that increase/decrease units is OK
+        valid_units = ['percent', 'units']
+        if configuration[table_name]['increase_reads_unit'] not in valid_units:
+            print('increase-reads-with must be set to either percent or units')
+            sys.exit(1)
+        if configuration[table_name]['decrease_reads_unit'] not in valid_units:
+            print('decrease-reads-with must be set to either percent or units')
+            sys.exit(1)
+        if configuration[table_name]['increase_writes_unit'] not in valid_units:
+            print('increase-writes-with must be set to either percent or units')
+            sys.exit(1)
+        if configuration[table_name]['decrease_writes_unit'] not in valid_units:
+            print('decrease-writes-with must be set to either percent or units')
+            sys.exit(1)
+
+        # Check that increase_writes_with is not > 100
+        if (configuration[table_name]['increase_writes_unit'] == 'percent' and
+            configuration[table_name]['increase_writes_with'] > 100):
+
             print(
                 'You can not increase the table throughput with more '
                 'than 100% at a time. Setting --increase-writes-with to 100.')
             configuration[table_name]['increase_writes_with'] = 100
 
         # Check that increase_reads_with is not > 100
-        if configuration['increase_reads_with'] > 100:
+        if (configuration['increase_reads_unit'] == 'percent' and
+            configuration['increase_reads_with'] > 100):
             print(
                 'You can not increase the table throughput with more '
                 'than 100% at a time. Setting --increase-reads-with to 100.')
