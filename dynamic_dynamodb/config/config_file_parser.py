@@ -58,7 +58,7 @@ def parse(config_path):
     config_path = os.path.expanduser(config_path)
 
     # Read the configuration file
-    config_file = ConfigParser.SafeConfigParser()
+    config_file = ConfigParser.RawConfigParser()
     config_file.optionxform = lambda option: option
     config_file.read(config_path)
 

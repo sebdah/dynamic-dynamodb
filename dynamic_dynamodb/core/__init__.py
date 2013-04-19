@@ -1,4 +1,6 @@
 """ Core components """
+import re
+import sys
 import datetime
 
 import dynamodb
@@ -7,6 +9,7 @@ import calculators
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option, get_global_option
 
+import requests
 from boto.exception import DynamoDBResponseError
 
 
@@ -16,8 +19,15 @@ def ensure_provisioning(table_name):
     :type table_name: str
     :param table_name: Name of the DynamoDB table
     """
-    read_update_needed, updated_read_units = __ensure_provisioning_reads(table_name)
-    write_update_needed, updated_write_units = __ensure_provisioning_writes(table_name)
+    if get_global_option('circuit_breaker_url'):
+        if __circuit_breaker_is_open():
+            logger.warning('Circuit breaker is OPEN!')
+            return None
+
+    read_update_needed, updated_read_units = __ensure_provisioning_reads(
+        table_name)
+    write_update_needed, updated_write_units = __ensure_provisioning_writes(
+        table_name)
 
     # Handle throughput updates
     if read_update_needed or write_update_needed:
@@ -30,6 +40,73 @@ def ensure_provisioning(table_name):
         update_throughput(table_name, updated_read_units, updated_write_units)
     else:
         logger.info('{0} - No need to change provisioning'.format(table_name))
+
+
+def __circuit_breaker_is_open():
+    """ Checks wether the circuit breaker is open
+
+    :returns: bool -- True if the circuit is open
+    """
+    logger.debug('Checking circuit breaker status')
+
+    # Parse the URL to make sure it is OK
+    pattern = re.compile(
+        r'^(?P<scheme>http(s)?://)'
+        r'((?P<username>.+):(?P<password>.+)@){0,1}'
+        r'(?P<url>.*)$'
+    )
+    match = pattern.match(get_global_option('circuit_breaker_url'))
+
+    if not match:
+        logger.error('Malformatted URL: {}'.format(
+            get_global_option('circuit_breaker_url')))
+        sys.exit(1)
+
+    use_basic_auth = False
+    if match.group('username') and match.group('password'):
+        use_basic_auth = True
+
+    # Make the actual URL to call
+    if use_basic_auth:
+        url = '{scheme}{url}'.format(
+            scheme=match.group('scheme'),
+            url=match.group('url'))
+        auth = (match.group('username'), match.group('password'))
+    else:
+        url = get_global_option('circuit_breaker_url')
+        auth = ()
+
+    # Make the actual request
+    try:
+        response = requests.get(
+            url,
+            auth=auth,
+            timeout=get_global_option('circuit_breaker_timeout') / 1000.00)
+        if int(response.status_code) == 200:
+            logger.info('Circuit breaker is closed')
+            return False
+        else:
+            logger.warning(
+                'Circuit breaker returned with status code {0:d}'.format(
+                    response.status_code))
+
+    except requests.exceptions.SSLError as error:
+        logger.warning('Circuit breaker: {}'.format(error))
+    except requests.exceptions.Timeout as error:
+        logger.warning('Circuit breaker: {}'.format(error))
+    except requests.exceptions.ConnectionError as error:
+        logger.warning('Circuit breaker: {}'.format(error))
+    except requests.exceptions.HTTPError as error:
+        logger.warning('Circuit breaker: {}'.format(error))
+    except requests.exceptions.TooManyRedirects as error:
+        logger.warning('Circuit breaker: {}'.format(error))
+    except Exception as error:
+        logger.error('Unhandled exception: {}'.format(error))
+        logger.error(
+            'Please file a bug at '
+            'https://github.com/sebdah/dynamic-dynamodb/issues')
+
+    return True
 
 
 def __ensure_provisioning_reads(table_name):

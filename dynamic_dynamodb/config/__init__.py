@@ -17,7 +17,7 @@ DEFAULT_OPTIONS = {
         'aws_secret_access_key': None,
         'check_interval': 300,
         'circuit_breaker_url': None,
-        'circuit_breaker_timeout': 0.00
+        'circuit_breaker_timeout': 10000.00
     },
     'logging': {
         # [logging]
