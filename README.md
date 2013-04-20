@@ -12,8 +12,10 @@ Features in short
 
 - Scale up and down DynamoDB automatically
 - Restrict scaling to certain time slots
+- Monitor multiple DynamoDB tables at the same time
 - Gives you control over how much reads and writes you want to scale up and down with
 - Dynamic DynamoDB has support for max and min limits so that you always knows how much money you spend at most and how much capacity you can be guaranteed
+- Support for circuit breaker API call. If your service is experiencing disturbances, Dynamic DynamoDB will not scale down your DynamoDB tables
 
 Basic usage
 -----------
@@ -42,6 +44,8 @@ Command:
                      --increase-writes-with 40 \
                      --decrease-writes-with 70 \
                      --check-interval 300
+
+Please note that using configuration files instead of command line options will give you even more control over the service.
 
 Installation instructions
 -------------------------
