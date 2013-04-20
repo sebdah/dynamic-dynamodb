@@ -31,6 +31,9 @@ def __parse_options(config_file, section, options):
             elif option.get('type') == 'int':
                 configuration[option.get('key')] = \
                     config_file.getint(section, option.get('option'))
+            elif option.get('type') == 'float':
+                configuration[option.get('key')] = \
+                    config_file.getfloat(section, option.get('option'))
             elif option.get('type') == 'bool':
                 configuration[option.get('key')] = \
                     config_file.getboolean(section, option.get('option'))
@@ -55,7 +58,7 @@ def parse(config_path):
     config_path = os.path.expanduser(config_path)
 
     # Read the configuration file
-    config_file = ConfigParser.SafeConfigParser()
+    config_file = ConfigParser.RawConfigParser()
     config_file.optionxform = lambda option: option
     config_file.read(config_path)
 
@@ -90,6 +93,18 @@ def parse(config_path):
                     'option': 'check-interval',
                     'required': False,
                     'type': 'int'
+                },
+                {
+                    'key': 'circuit_breaker_url',
+                    'option': 'circuit-breaker-url',
+                    'required': False,
+                    'type': 'str'
+                },
+                {
+                    'key': 'circuit_breaker_timeout',
+                    'option': 'circuit-breaker-timeout',
+                    'required': False,
+                    'type': 'float'
                 },
             ])
 

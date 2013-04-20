@@ -12,8 +12,10 @@ Features in short
 
 - Scale up and down DynamoDB automatically
 - Restrict scaling to certain time slots
+- Monitor multiple DynamoDB tables at the same time
 - Gives you control over how much reads and writes you want to scale up and down with
 - Dynamic DynamoDB has support for max and min limits so that you always knows how much money you spend at most and how much capacity you can be guaranteed
+- Support for circuit breaker API call. If your service is experiencing disturbances, Dynamic DynamoDB will not scale down your DynamoDB tables
 
 Basic usage
 -----------
@@ -43,6 +45,8 @@ Command:
                      --decrease-writes-with 70 \
                      --check-interval 300
 
+Please note that using configuration files instead of command line options will give you even more control over the service.
+
 Installation instructions
 -------------------------
 
@@ -63,6 +67,12 @@ Example configuration file
 
     # How often should Dynamic DynamoDB monitor changes (in seconds)
     check-interval: 300
+
+    # Circuit breaker configuration
+    # No provisioning updates will be made unless this URL returns
+    # a HTTP 200 OK status code
+    #circuit-breaker-url: http://my.service.com/v1/is_up
+    #circuit-breaker-timeout: 500
 
     [logging]
     # Log level [debug|info|warning|error]
@@ -253,6 +263,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
+**1.2.0 (2013-04-20)**
+
+- [Add support for dead-man's-switch API call (#25)](https://github.com/sebdah/dynamic-dynamodb/issues/25)
 
 **1.1.0 (2013-04-17)**
 
