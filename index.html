@@ -44,8 +44,10 @@
 <ul>
 <li>Scale up and down DynamoDB automatically</li>
 <li>Restrict scaling to certain time slots</li>
+<li>Monitor multiple DynamoDB tables at the same time</li>
 <li>Gives you control over how much reads and writes you want to scale up and down with</li>
 <li>Dynamic DynamoDB has support for max and min limits so that you always knows how much money you spend at most and how much capacity you can be guaranteed</li>
+<li>Support for circuit breaker API call. If your service is experiencing disturbances, Dynamic DynamoDB will not scale down your DynamoDB tables</li>
 </ul><h2>Basic usage</h2>
 
 <p>This example will configure Dynamic DynamoDB to:</p>
@@ -74,6 +76,8 @@
                  --check-interval 300
 </code></pre>
 
+<p>Please note that using configuration files instead of command line options will give you even more control over the service.</p>
+
 <h2>Installation instructions</h2>
 
 <p>The easiest way to install Dynamic DynamoDB is through PyPI:</p>
@@ -93,6 +97,12 @@ region: us-east-1
 
 # How often should Dynamic DynamoDB monitor changes (in seconds)
 check-interval: 300
+
+# Circuit breaker configuration
+# No provisioning updates will be made unless this URL returns
+# a HTTP 200 OK status code
+#circuit-breaker-url: http://my.service.com/v1/is_up
+#circuit-breaker-timeout: 500
 
 [logging]
 # Log level [debug|info|warning|error]
@@ -280,7 +290,11 @@ Write units scaling properties:
 
 <h2>Release information</h2>
 
-<p><strong>1.1.0 (2013-04-17)</strong></p>
+<p><strong>1.2.0 (2013-04-20)</strong></p>
+
+<ul>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/25">Add support for dead-man's-switch API call (#25)</a></li>
+</ul><p><strong>1.1.0 (2013-04-17)</strong></p>
 
 <ul>
 <li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/22">Update provisioning in units not just percentage (#22)</a></li>
