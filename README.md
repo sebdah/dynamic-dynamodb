@@ -264,6 +264,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.2.0 (2013-04-20)**
+
+- [Add support for dead-man's-switch API call (#25)](https://github.com/sebdah/dynamic-dynamodb/issues/25)
+
 **1.1.0 (2013-04-17)**
 
 - [Update provisioning in units not just percentage (#22)](https://github.com/sebdah/dynamic-dynamodb/issues/22)
