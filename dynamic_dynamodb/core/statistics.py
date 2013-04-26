@@ -99,7 +99,7 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
 
     logger.info('{0} - Consumed read units: {1:d}%'.format(
         table_name, consumed_read_units_percent))
-    return consumed_read_units
+    return consumed_read_units_percent
 
 
 def get_consumed_write_units_percent(table_name, time_frame=300):
@@ -134,7 +134,7 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
 
     logger.info('{0} - Consumed write units: {1:d}%'.format(
         table_name, consumed_write_units_percent))
-    return consumed_write_units
+    return consumed_write_units_percent
 
 
 def get_provisioned_read_units(table_name):
