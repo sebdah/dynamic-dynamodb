@@ -1,2 +1,4 @@
+recursive-include dynamic_dynamodb *
 include dynamic-dynamodb
 include README
+include LICENSE
