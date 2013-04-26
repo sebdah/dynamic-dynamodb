@@ -20,7 +20,7 @@ def decrease_reads_in_percent(table_name, current_provisioning, percent):
         'Read provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
-    if get_table_option(table_name, 'min_provisioned_writesprovisioned_reads') > 0:
+    if get_table_option(table_name, 'min_provisioned_reads') > 0:
         if (updated_provisioning <
             get_table_option(table_name, 'min_provisioned_reads')):
 
@@ -136,7 +136,7 @@ def decrease_reads_in_units(table_name, current_provisioning, units):
         'Read provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
-    if get_table_option(table_name, 'min_provisioned_writesprovisioned_reads') > 0:
+    if get_table_option(table_name, 'min_provisioned_reads') > 0:
         if (updated_provisioning <
             get_table_option(table_name, 'min_provisioned_reads')):
 
