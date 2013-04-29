@@ -148,8 +148,8 @@ Full --help output
 
     usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run] [--daemon DAEMON]
                             [--check-interval CHECK_INTERVAL]
-                            [--log-file LOG_FILE] [--version]
-                            [--aws-access-key-id AWS_ACCESS_KEY_ID]
+                            [--log-file LOG_FILE] [--log-level LOG_LEVEL]
+                            [--version] [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
                             [-r REGION] [-t TABLE_NAME]
                             [--reads-upper-threshold READS_UPPER_THRESHOLD]
@@ -181,6 +181,8 @@ Full --help output
                             How many seconds should we wait between the checks
                             (default: 300)
       --log-file LOG_FILE   Send output to the given log file
+      --log-level LOG_LEVEL
+                            Log level to use (default: info)
       --version             Print current version number
       --aws-access-key-id AWS_ACCESS_KEY_ID
                             Override Boto configuration with the following AWS
