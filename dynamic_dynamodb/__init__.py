@@ -27,7 +27,7 @@ import core
 from daemon import Daemon
 from config_handler import CONFIGURATION as configuration
 
-VERSION = '1.2.5'
+VERSION = '1.3.0-SNAPSHOT'
 
 
 class DynamicDynamoDBDaemon(Daemon):
