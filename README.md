@@ -148,8 +148,8 @@ Full --help output
 
     usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run] [--daemon DAEMON]
                             [--check-interval CHECK_INTERVAL]
-                            [--log-file LOG_FILE] [--version]
-                            [--aws-access-key-id AWS_ACCESS_KEY_ID]
+                            [--log-file LOG_FILE] [--log-level LOG_LEVEL]
+                            [--version] [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
                             [-r REGION] [-t TABLE_NAME]
                             [--reads-upper-threshold READS_UPPER_THRESHOLD]
@@ -181,6 +181,8 @@ Full --help output
                             How many seconds should we wait between the checks
                             (default: 300)
       --log-file LOG_FILE   Send output to the given log file
+      --log-level LOG_LEVEL
+                            Log level to use (default: info)
       --version             Print current version number
       --aws-access-key-id AWS_ACCESS_KEY_ID
                             Override Boto configuration with the following AWS
@@ -263,6 +265,11 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
+**1.2.5 (2013-04-29)**
+
+- [Handle ResourceInUseException better (#36)](https://github.com/sebdah/dynamic-dynamodb/issues/36)
+- [Add --log-level option to command line (#34)](https://github.com/sebdah/dynamic-dynamodb/issues/34)
 
 **1.2.4 (2013-04-26)**
 

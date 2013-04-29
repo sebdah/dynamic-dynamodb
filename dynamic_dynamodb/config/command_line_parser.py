@@ -22,6 +22,9 @@ def parse():
                 the checks (default: 300)""")
     parser.add_argument('--log-file',
         help='Send output to the given log file')
+    parser.add_argument('--log-level',
+        default='info',
+        help='Log level to use (default: info)')
     parser.add_argument('--version',
         action='store_true',
         help='Print current version number')
