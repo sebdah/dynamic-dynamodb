@@ -264,6 +264,11 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.2.5 (2013-04-29)**
+
+- [Handle ResourceInUseException better (#36)](https://github.com/sebdah/dynamic-dynamodb/issues/36)
+- [Add --log-level option to command line (#34)](https://github.com/sebdah/dynamic-dynamodb/issues/34)
+
 **1.2.4 (2013-04-26)**
 
 - [Mix up between percent and units (#35)](https://github.com/sebdah/dynamic-dynamodb/issues/35)
