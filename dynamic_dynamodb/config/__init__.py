@@ -9,6 +9,7 @@ DEFAULT_OPTIONS = {
         # Command line only
         'config': None,
         'daemon': False,
+        'instance': 'default',
         'dry_run': False,
 
         # [global]

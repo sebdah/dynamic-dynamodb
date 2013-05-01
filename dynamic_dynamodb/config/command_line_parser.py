@@ -14,8 +14,6 @@ def parse():
     parser.add_argument('--dry-run',
         action='store_true',
         help='Run without making any changes to your DynamoDB table')
-    parser.add_argument('--daemon',
-        help='Run Dynamic DynamoDB as a daemon [start|stop|restart]')
     parser.add_argument('--check-interval',
         type=int,
         help="""How many seconds should we wait between
@@ -32,7 +30,17 @@ def parse():
         help="Override Boto configuration with the following AWS access key")
     parser.add_argument('--aws-secret-access-key',
         help="Override Boto configuration with the following AWS secret key")
-    dynamodb_ag = parser.add_argument_group('DynamoDB settings')
+    daemon_ag = parser.add_argument_group('Daemon options')
+    daemon_ag.add_argument('--daemon',
+        help='Run Dynamic DynamoDB as a daemon [start|stop|restart]')
+    daemon_ag.add_argument('--instance',
+        default='default',
+        help=(
+            'Name of the Dynamic DynamoDB instance. '
+            'Used to run multiple instances of Dynamic DynamoDB. '
+            'Give each instance a unique name and control them separately with '
+            'the --daemon flag. (default: default)'))
+    dynamodb_ag = parser.add_argument_group('DynamoDB options')
     dynamodb_ag.add_argument('-r', '--region',
         help='AWS region to operate in (default: us-east-1')
     dynamodb_ag.add_argument('-t', '--table-name',
