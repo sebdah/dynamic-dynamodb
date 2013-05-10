@@ -58,7 +58,7 @@ def __circuit_breaker_is_open():
     match = pattern.match(get_global_option('circuit_breaker_url'))
 
     if not match:
-        logger.error('Malformatted URL: {}'.format(
+        logger.error('Malformatted URL: {0}'.format(
             get_global_option('circuit_breaker_url')))
         sys.exit(1)
 
@@ -91,17 +91,17 @@ def __circuit_breaker_is_open():
                     response.status_code))
 
     except requests.exceptions.SSLError as error:
-        logger.warning('Circuit breaker: {}'.format(error))
+        logger.warning('Circuit breaker: {0}'.format(error))
     except requests.exceptions.Timeout as error:
-        logger.warning('Circuit breaker: {}'.format(error))
+        logger.warning('Circuit breaker: {0}'.format(error))
     except requests.exceptions.ConnectionError as error:
-        logger.warning('Circuit breaker: {}'.format(error))
+        logger.warning('Circuit breaker: {0}'.format(error))
     except requests.exceptions.HTTPError as error:
-        logger.warning('Circuit breaker: {}'.format(error))
+        logger.warning('Circuit breaker: {0}'.format(error))
     except requests.exceptions.TooManyRedirects as error:
-        logger.warning('Circuit breaker: {}'.format(error))
+        logger.warning('Circuit breaker: {0}'.format(error))
     except Exception as error:
-        logger.error('Unhandled exception: {}'.format(error))
+        logger.error('Unhandled exception: {0}'.format(error))
         logger.error(
             'Please file a bug at '
             'https://github.com/sebdah/dynamic-dynamodb/issues')
