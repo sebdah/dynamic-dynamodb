@@ -18,7 +18,9 @@ limitations under the License.
 """
 
 import sys
+
 import dynamic_dynamodb
+
 
 if __name__ == '__main__':
     dynamic_dynamodb.main()
