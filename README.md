@@ -273,6 +273,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.3.1 (2013-05-10)**
+
+- [Fix Python 2.6 support (#39)](https://github.com/sebdah/dynamic-dynamodb/issues/39)
+
 **1.3.0 (2013-05-01)**
 
 This Dynamic DynamoDB release makes it possible to use multiple Dynamic DynamoDB instances in parallel in daemon mode. Simply use the `--instance` flag to separate the difference instances with a unique name. Then control them as usual with the `--daemon` flag.
