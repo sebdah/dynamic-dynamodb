@@ -273,6 +273,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.3.2 (2013-05-14)**
+
+- [increase_reads_in_percent calculations are incorrect (#40)](https://github.com/sebdah/dynamic-dynamodb/issues/40)
+
 **1.3.1 (2013-05-10)**
 
 - [Fix Python 2.6 support (#39)](https://github.com/sebdah/dynamic-dynamodb/issues/39)
