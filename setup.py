@@ -3,7 +3,7 @@ from setuptools import setup
 
 
 setup(name='dynamic-dynamodb',
-    version='1.3.1',
+    version='1.3.2',
     license='Apache License, Version 2.0',
     description='Automatic provisioning for AWS DynamoDB tables',
     author='Sebastian Dahlgren',
