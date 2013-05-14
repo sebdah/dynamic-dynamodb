@@ -43,8 +43,7 @@ def increase_reads_in_percent(table_name, current_provisioning, percent):
     :param percent: How many percent should we increase with
     :returns: int -- New provisioning value
     """
-    increase = int(
-        float(current_provisioning)*(float(percent)/100+1))
+    increase = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning + increase
     logger.debug(
         'Read provisioning will be increased to {0:d} units'.format(

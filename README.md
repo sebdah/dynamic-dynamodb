@@ -146,12 +146,13 @@ Example configuration file
 Full --help output
 ------------------
 
-    usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run] [--daemon DAEMON]
+    usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run]
                             [--check-interval CHECK_INTERVAL]
                             [--log-file LOG_FILE] [--log-level LOG_LEVEL]
                             [--version] [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
-                            [-r REGION] [-t TABLE_NAME]
+                            [--daemon DAEMON] [--instance INSTANCE] [-r REGION]
+                            [-t TABLE_NAME]
                             [--reads-upper-threshold READS_UPPER_THRESHOLD]
                             [--reads-lower-threshold READS_LOWER_THRESHOLD]
                             [--increase-reads-with INCREASE_READS_WITH]
@@ -176,7 +177,6 @@ Full --help output
       -c CONFIG, --config CONFIG
                             Read configuration from a configuration file
       --dry-run             Run without making any changes to your DynamoDB table
-      --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
       --check-interval CHECK_INTERVAL
                             How many seconds should we wait between the checks
                             (default: 300)
@@ -191,7 +191,14 @@ Full --help output
                             Override Boto configuration with the following AWS
                             secret key
 
-    DynamoDB settings:
+    Daemon options:
+      --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
+      --instance INSTANCE   Name of the Dynamic DynamoDB instance. Used to run
+                            multiple instances of Dynamic DynamoDB. Give each
+                            instance a unique name and control them separately
+                            with the --daemon flag. (default: default)
+
+    DynamoDB options:
       -r REGION, --region REGION
                             AWS region to operate in (default: us-east-1
       -t TABLE_NAME, --table-name TABLE_NAME
@@ -265,6 +272,20 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
+**1.3.2 (2013-05-14)**
+
+- [increase_reads_in_percent calculations are incorrect (#40)](https://github.com/sebdah/dynamic-dynamodb/issues/40)
+
+**1.3.1 (2013-05-10)**
+
+- [Fix Python 2.6 support (#39)](https://github.com/sebdah/dynamic-dynamodb/issues/39)
+
+**1.3.0 (2013-05-01)**
+
+This Dynamic DynamoDB release makes it possible to use multiple Dynamic DynamoDB instances in parallel in daemon mode. Simply use the `--instance` flag to separate the difference instances with a unique name. Then control them as usual with the `--daemon` flag.
+
+- [Allow to run multiple instances in parallel (#37)](https://github.com/sebdah/dynamic-dynamodb/issues/37)
 
 **1.2.5 (2013-04-29)**
 

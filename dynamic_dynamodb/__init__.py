@@ -27,7 +27,7 @@ import core
 from daemon import Daemon
 from config_handler import CONFIGURATION as configuration
 
-VERSION = '1.2.5'
+VERSION = '1.3.2'
 
 
 class DynamicDynamoDBDaemon(Daemon):
@@ -48,14 +48,20 @@ class DynamicDynamoDBDaemon(Daemon):
 def main():
     """ Main function called from dynamic-dynamodb """
     if configuration['global']['daemon']:
-        daemon = DynamicDynamoDBDaemon('/tmp/dynamic-dynamodb.pid')
+        pid_file = '/tmp/dynamic-dynamodb.{0}.pid'.format(
+            configuration['global']['instance'])
+        daemon = DynamicDynamoDBDaemon(pid_file)
+
         if configuration['global']['daemon'] == 'start':
             daemon.start(
                 check_interval=configuration['global']['check_interval'])
+
         elif configuration['global']['daemon'] == 'stop':
             daemon.stop()
+
         elif configuration['global']['daemon'] == 'restart':
             daemon.restart()
+
         else:
             print 'Valid options for --daemon are start, stop and restart'
             sys.exit(1)
@@ -67,4 +73,3 @@ def main():
 def version():
     """ Returns the version number """
     return VERSION
-
