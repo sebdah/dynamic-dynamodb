@@ -27,8 +27,6 @@ import core
 from daemon import Daemon
 from config_handler import CONFIGURATION as configuration
 
-VERSION = '1.3.2'
-
 
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
@@ -68,8 +66,3 @@ def main():
     else:
         for table_name in configuration['tables'].keys():
             core.ensure_provisioning(table_name)
-
-
-def version():
-    """ Returns the version number """
-    return VERSION
