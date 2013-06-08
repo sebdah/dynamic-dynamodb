@@ -273,6 +273,11 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.3.3 (2013-06-08)**
+
+- [Increasing to a minimum provisioned throughput value doesn't take into account the current table's throughput (#45)](https://github.com/sebdah/dynamic-dynamodb/issues/45)
+- [dynamic-dynamodb --version causes AttributeError in cli (#44)](https://github.com/sebdah/dynamic-dynamodb/issues/44)
+
 **1.3.2 (2013-05-14)**
 
 - [increase_reads_in_percent calculations are incorrect (#40)](https://github.com/sebdah/dynamic-dynamodb/issues/40)
