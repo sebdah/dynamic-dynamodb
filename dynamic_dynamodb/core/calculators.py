@@ -3,6 +3,34 @@ from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option
 
 
+def get_min_provisioned_reads(table_name, current_provisioning):
+    """ Returns the minimum provisioned reads
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type current_provisioning: int
+    :param current_provisioning: The current provisioning
+    :returns: int -- Minimum provisioned reads
+    """
+    return int(min(
+        get_table_option(table_name, 'min_provisioned_reads'),
+        (current_provisioning * 2)))
+
+
+def get_min_provisioned_writes(table_name, current_provisioning):
+    """ Returns the minimum provisioned writes
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type current_provisioning: int
+    :param current_provisioning: The current provisioning
+    :returns: int -- Minimum provisioned writes
+    """
+    return int(min(
+        get_table_option(table_name, 'min_provisioned_writes'),
+        (current_provisioning * 2)))
+
+
 def decrease_reads_in_percent(table_name, current_provisioning, percent):
     """ Decrease the current_provisioning with percent %
 
@@ -20,14 +48,16 @@ def decrease_reads_in_percent(table_name, current_provisioning, percent):
         'Read provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
-    if get_table_option(table_name, 'min_provisioned_reads') > 0:
-        if (updated_provisioning <
-            get_table_option(table_name, 'min_provisioned_reads')):
+    min_provisioned_reads = get_min_provisioned_reads(
+        table_name,
+        current_provisioning)
 
+    if min_provisioned_reads > 0:
+        if updated_provisioning < min_provisioned_reads:
             logger.info('Reached provisioned reads min limit: {0:d}'.format(
-                int(get_table_option(table_name, 'min_provisioned_reads'))))
+                min_provisioned_reads))
 
-            return get_table_option(table_name, 'min_provisioned_reads')
+            return min_provisioned_reads
 
     return updated_provisioning
 
@@ -78,14 +108,16 @@ def decrease_writes_in_percent(table_name, current_provisioning, percent):
         'Write provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
-    if get_table_option(table_name, 'min_provisioned_writes') > 0:
-        if (updated_provisioning <
-            get_table_option(table_name, 'min_provisioned_writes')):
+    min_provisioned_writes = get_min_provisioned_writes(
+        table_name,
+        current_provisioning)
 
+    if min_provisioned_writes > 0:
+        if updated_provisioning < min_provisioned_writes:
             logger.info('Reached provisioned writes min limit: {0:d}'.format(
-                int(get_table_option(table_name, 'min_provisioned_writes'))))
+                min_provisioned_writes))
 
-            return get_table_option(table_name, 'min_provisioned_writes')
+            return min_provisioned_writes
 
     return updated_provisioning
 
@@ -135,14 +167,16 @@ def decrease_reads_in_units(table_name, current_provisioning, units):
         'Read provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
-    if get_table_option(table_name, 'min_provisioned_reads') > 0:
-        if (updated_provisioning <
-            get_table_option(table_name, 'min_provisioned_reads')):
+    min_provisioned_reads = get_min_provisioned_reads(
+        table_name,
+        current_provisioning)
 
+    if min_provisioned_reads > 0:
+        if updated_provisioning < min_provisioned_reads:
             logger.info('Reached provisioned reads min limit: {0:d}'.format(
-                int(get_table_option(table_name, 'min_provisioned_reads'))))
+                min_provisioned_reads))
 
-            return get_table_option(table_name, 'min_provisioned_reads')
+            return min_provisioned_reads
 
     return updated_provisioning
 
@@ -191,14 +225,16 @@ def decrease_writes_in_units(table_name, current_provisioning, units):
         'Write provisioning will be decreased to {0:d} units'.format(
             updated_provisioning))
 
-    if get_table_option(table_name, 'min_provisioned_writes') > 0:
-        if (updated_provisioning <
-            get_table_option(table_name, 'min_provisioned_writes')):
+    min_provisioned_writes = get_min_provisioned_writes(
+        table_name,
+        current_provisioning)
 
+    if min_provisioned_writes > 0:
+        if updated_provisioning < min_provisioned_writes:
             logger.info('Reached provisioned writes min limit: {0:d}'.format(
-                int(get_table_option(table_name, 'min_provisioned_writes'))))
+                min_provisioned_writes))
 
-            return get_table_option(table_name, 'min_provisioned_writes')
+            return min_provisioned_writes
 
     return updated_provisioning
 

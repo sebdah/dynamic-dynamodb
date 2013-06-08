@@ -1,8 +1,8 @@
 """ Command line configuration parser """
 import sys
+import os.path
 import argparse
-
-import dynamic_dynamodb
+import ConfigParser
 
 
 def parse():
@@ -111,9 +111,17 @@ def parse():
 
     # Print the version and quit
     if args.version:
-        print 'Dynamic DynamoDB version: {0}'.format(dynamic_dynamodb.version())
-        sys.exit(0)
+        # Read the dynamic-dynamodb.conf configuration file
+        internal_config_file = ConfigParser.RawConfigParser()
+        internal_config_file.optionxform = lambda option: option
+        internal_config_file.read(
+            os.path.abspath(
+                os.path.join(
+                    os.path.dirname(__file__), '../dynamic-dynamodb.conf')))
 
+        print 'Dynamic DynamoDB version: {0}'.format(
+            internal_config_file.get('general', 'version'))
+        sys.exit(0)
 
     # Replace any new values in the configuration
     configuration = {}
