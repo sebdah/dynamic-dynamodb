@@ -273,6 +273,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.3.4 (2013-06-13)**
+
+- [An attempt to update provisioning is made even if the requested values are equal to the tables current values (#46)](https://github.com/sebdah/dynamic-dynamodb/issues/46)
+
 **1.3.3 (2013-06-08)**
 
 - [Increasing to a minimum provisioned throughput value doesn't take into account the current table's throughput (#45)](https://github.com/sebdah/dynamic-dynamodb/issues/45)
