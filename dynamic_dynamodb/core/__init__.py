@@ -304,6 +304,10 @@ def update_throughput(table_name, read_units, write_units):
                 'both to become low before decrease'.format(table_name))
             write_units = table.write_units
 
+    if read_units == table.read_units and write_units == table.write_units:
+        logger.debug('{0} - No need to update provisioning')
+        return
+
     if not get_global_option('dry_run'):
         try:
             table.update_throughput(int(read_units), int(write_units))
