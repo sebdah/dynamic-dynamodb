@@ -273,6 +273,14 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.3.6 (2013-07-21)**
+
+- [int() argument must be a string or a number, not 'NoneType' (#50)](https://github.com/sebdah/dynamic-dynamodb/issues/50)
+
+**1.3.5 (2013-06-17)**
+
+- [increase_writes_unit parameter is used while it should be decrease_writes_unit (#47)](https://github.com/sebdah/dynamic-dynamodb/issues/47)
+
 **1.3.4 (2013-06-13)**
 
 - [An attempt to update provisioning is made even if the requested values are equal to the tables current values (#46)](https://github.com/sebdah/dynamic-dynamodb/issues/46)

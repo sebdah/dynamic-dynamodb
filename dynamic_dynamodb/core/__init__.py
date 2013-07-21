@@ -207,7 +207,7 @@ def __ensure_provisioning_writes(table_name):
     elif (consumed_write_units_percent <=
         get_table_option(table_name, 'writes_lower_threshold')):
 
-        if get_table_option(table_name, 'increase_writes_unit') == 'percent':
+        if get_table_option(table_name, 'decrease_writes_unit') == 'percent':
             updated_provisioning = calculators.decrease_writes_in_percent(
                 table_name,
                 updated_write_units,
