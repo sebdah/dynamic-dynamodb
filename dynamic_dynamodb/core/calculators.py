@@ -12,9 +12,12 @@ def get_min_provisioned_reads(table_name, current_provisioning):
     :param current_provisioning: The current provisioning
     :returns: int -- Minimum provisioned reads
     """
-    return int(min(
-        get_table_option(table_name, 'min_provisioned_reads'),
-        (current_provisioning * 2)))
+    if get_table_option(table_name, 'min_provisioned_reads'):
+        return int(min(
+            get_table_option(table_name, 'min_provisioned_reads'),
+            (current_provisioning * 2)))
+
+    return int(current_provisioning * 2)
 
 
 def get_min_provisioned_writes(table_name, current_provisioning):
@@ -26,9 +29,12 @@ def get_min_provisioned_writes(table_name, current_provisioning):
     :param current_provisioning: The current provisioning
     :returns: int -- Minimum provisioned writes
     """
-    return int(min(
-        get_table_option(table_name, 'min_provisioned_writes'),
-        (current_provisioning * 2)))
+    if get_table_option(table_name, 'min_provisioned_writes'):
+        return int(min(
+            get_table_option(table_name, 'min_provisioned_writes'),
+            (current_provisioning * 2)))
+
+    return int(current_provisioning * 2)
 
 
 def decrease_reads_in_percent(table_name, current_provisioning, percent):
