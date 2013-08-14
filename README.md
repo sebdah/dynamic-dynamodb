@@ -273,6 +273,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.4.0 (2013-08-14)**
+
+- [Retrying failed DynamoDB connections](https://github.com/sebdah/dynamic-dynamodb/issues/51)
+
 **1.3.6 (2013-07-21)**
 
 - [int() argument must be a string or a number, not 'NoneType' (#50)](https://github.com/sebdah/dynamic-dynamodb/issues/50)

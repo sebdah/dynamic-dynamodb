@@ -316,8 +316,7 @@ def update_throughput(table_name, read_units, write_units):
             dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
             if dynamodb_error == 'LimitExceededException':
                 logger.warning(
-                    '{0} - Scaling limit exeeded. The table can only '
-                    'be scaled down twice per day.'.format(table_name))
+                    '{0} - {1}'.format(table_name, error.body['message']))
 
                 if int(read_units) > table.read_units:
                     logger.info('{0} - Scaling up reads to {1:d}'.format(
