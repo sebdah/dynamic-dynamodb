@@ -13,7 +13,7 @@ import requests
 from boto.exception import DynamoDBResponseError
 
 
-def ensure_provisioning(table_name):
+def ensure_provisioning(table_name, key_name):
     """ Ensure that provisioning is correct
 
     :type table_name: str
@@ -25,9 +25,9 @@ def ensure_provisioning(table_name):
             return None
 
     read_update_needed, updated_read_units = __ensure_provisioning_reads(
-        table_name)
+        table_name, key_name)
     write_update_needed, updated_write_units = __ensure_provisioning_writes(
-        table_name)
+        table_name, key_name)
 
     # Handle throughput updates
     if read_update_needed or write_update_needed:
@@ -37,7 +37,7 @@ def ensure_provisioning(table_name):
                 table_name,
                 int(updated_read_units),
                 int(updated_write_units)))
-        update_throughput(table_name, updated_read_units, updated_write_units)
+        update_throughput(table_name, updated_read_units, updated_write_units, key_name)
     else:
         logger.info('{0} - No need to change provisioning'.format(table_name))
 
@@ -109,7 +109,7 @@ def __circuit_breaker_is_open():
     return True
 
 
-def __ensure_provisioning_reads(table_name):
+def __ensure_provisioning_reads(table_name, key_name):
     """ Ensure that provisioning is correct
 
     :type table_name: str
@@ -123,42 +123,46 @@ def __ensure_provisioning_reads(table_name):
         statistics.get_consumed_read_units_percent(table_name)
 
     if (consumed_read_units_percent == 0 and not
-        get_table_option(table_name, 'allow_scaling_down_reads_on_0_percent')):
+        get_table_option(key_name, 'allow_scaling_down_reads_on_0_percent')):
 
         logger.info(
             '{0} - Scaling down reads is not done when usage is at 0%'.format(
                 table_name))
 
     elif (consumed_read_units_percent >=
-        get_table_option(table_name, 'reads_upper_threshold')):
+        get_table_option(key_name, 'reads_upper_threshold')):
 
-        if get_table_option(table_name, 'increase_reads_unit') == 'percent':
+        if get_table_option(key_name, 'increase_reads_unit') == 'percent':
             updated_provisioning = calculators.increase_reads_in_percent(
                 table_name,
                 updated_read_units,
-                get_table_option(table_name, 'increase_reads_with'))
+                get_table_option(key_name, 'increase_reads_with'),
+                key_name)
         else:
             updated_provisioning = calculators.increase_reads_in_units(
                 table_name,
                 updated_read_units,
-                get_table_option(table_name, 'increase_reads_with'))
+                get_table_option(key_name, 'increase_reads_with'),
+                key_name)
 
         update_needed = True
         updated_read_units = updated_provisioning
 
     elif (consumed_read_units_percent <=
-        get_table_option(table_name, 'reads_lower_threshold')):
+        get_table_option(key_name, 'reads_lower_threshold')):
 
-        if get_table_option(table_name, 'decrease_reads_unit') == 'percent':
+        if get_table_option(key_name, 'decrease_reads_unit') == 'percent':
             updated_provisioning = calculators.decrease_reads_in_percent(
                 table_name,
                 updated_read_units,
-                get_table_option(table_name, 'decrease_reads_with'))
+                get_table_option(key_name, 'decrease_reads_with'),
+                key_name)
         else:
             updated_provisioning = calculators.decrease_reads_in_units(
                 table_name,
                 updated_read_units,
-                get_table_option(table_name, 'decrease_reads_with'))
+                get_table_option(key_name, 'decrease_reads_with'),
+                key_name)
 
         update_needed = True
         updated_read_units = updated_provisioning
@@ -166,7 +170,7 @@ def __ensure_provisioning_reads(table_name):
     return update_needed, int(updated_read_units)
 
 
-def __ensure_provisioning_writes(table_name):
+def __ensure_provisioning_writes(table_name, key_name):
     """ Ensure that provisioning of writes is correct
 
     :type table_name: str
@@ -181,42 +185,46 @@ def __ensure_provisioning_writes(table_name):
 
     # Check if we should update write provisioning
     if (consumed_write_units_percent == 0 and not
-        get_table_option(table_name, 'allow_scaling_down_writes_on_0_percent')):
+        get_table_option(key_name, 'allow_scaling_down_writes_on_0_percent')):
 
         logger.info(
             '{0} - Scaling down writes is not done when usage is at 0%'.format(
                 table_name))
 
     elif (consumed_write_units_percent >=
-        get_table_option(table_name, 'writes_upper_threshold')):
+        get_table_option(key_name, 'writes_upper_threshold')):
 
-        if get_table_option(table_name, 'increase_writes_unit') == 'percent':
+        if get_table_option(key_name, 'increase_writes_unit') == 'percent':
             updated_provisioning = calculators.increase_writes_in_percent(
                 table_name,
                 updated_write_units,
-                get_table_option(table_name, 'increase_writes_with'))
+                get_table_option(key_name, 'increase_writes_with'),
+                key_name)
         else:
             updated_provisioning = calculators.increase_writes_in_units(
                 table_name,
                 updated_write_units,
-                get_table_option(table_name, 'increase_writes_with'))
+                get_table_option(key_name, 'increase_writes_with'),
+                key_name)
 
         update_needed = True
         updated_write_units = updated_provisioning
 
     elif (consumed_write_units_percent <=
-        get_table_option(table_name, 'writes_lower_threshold')):
+        get_table_option(key_name, 'writes_lower_threshold')):
 
-        if get_table_option(table_name, 'decrease_writes_unit') == 'percent':
+        if get_table_option(key_name, 'decrease_writes_unit') == 'percent':
             updated_provisioning = calculators.decrease_writes_in_percent(
                 table_name,
                 updated_write_units,
-                get_table_option(table_name, 'decrease_writes_with'))
+                get_table_option(key_name, 'decrease_writes_with'),
+                key_name)
         else:
             updated_provisioning = calculators.decrease_writes_in_units(
                 table_name,
                 updated_write_units,
-                get_table_option(table_name, 'decrease_writes_with'))
+                get_table_option(key_name, 'decrease_writes_with'),
+                key_name)
 
         update_needed = True
         updated_write_units = updated_provisioning
@@ -255,7 +263,7 @@ def __is_maintenance_window(table_name, maintenance_windows):
     return False
 
 
-def update_throughput(table_name, read_units, write_units):
+def update_throughput(table_name, read_units, write_units, key_name):
     """ Update throughput on the DynamoDB table
 
     :type table_name: str
@@ -268,9 +276,9 @@ def update_throughput(table_name, read_units, write_units):
     table = dynamodb.get_table(table_name)
 
     # Check that we are in the right time frame
-    if get_table_option(table_name, 'maintenance_windows'):
+    if get_table_option(key_name, 'maintenance_windows'):
         if not __is_maintenance_window(table_name,
-            get_table_option(table_name, 'maintenance_windows')):
+            get_table_option(key_name, 'maintenance_windows')):
 
             logger.warning(
                 '{0} - Current time is outside maintenance window'.format(
@@ -289,7 +297,7 @@ def update_throughput(table_name, read_units, write_units):
 
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
-    if get_table_option(table_name, 'always_decrease_rw_together'):
+    if get_table_option(key_name, 'always_decrease_rw_together'):
         if read_units < table.read_units and write_units < table.write_units:
             logger.info('{0} - Both reads and writes will be decreased'.format(
                 table_name))
