@@ -66,4 +66,21 @@ def get_table(table_name):
 
     return table
 
+def list_table():
+    """ Return list of DynamoDB table available from aws
+
+    :returns: List
+    """
+    try:
+        list_table = DYNAMODB_CONNECTION.list_tables()
+    except DynamoDBResponseError as error:
+        dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
+        if dynamodb_error == 'ResourceNotFoundException':
+            logger.error(
+                'No table not found')
+            sys.exit(1)
+        else:
+            raise
+    return list_table
+
 DYNAMODB_CONNECTION = __get_connection_dynamodb()

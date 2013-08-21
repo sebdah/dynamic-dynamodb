@@ -24,8 +24,11 @@ import sys
 import time
 
 import core
+import re
+from dynamic_dynamodb.core import dynamodb
 from daemon import Daemon
 from config_handler import CONFIGURATION as configuration
+from dynamic_dynamodb.log_handler import LOGGER as logger
 
 
 class DynamicDynamoDBDaemon(Daemon):
@@ -38,8 +41,13 @@ class DynamicDynamoDBDaemon(Daemon):
         :param check_interval: Delay in seconds between checks
         """
         while True:
-            for table_name in configuration['tables'].keys():
-                core.ensure_provisioning(table_name)
+            all_table = dynamodb.list_table()
+            logger.info("All dyanamo table:{0}".format(all_table))
+            for table_name in all_table:
+                for key_name in configuration['tables'].keys():
+                    if re.match(key_name,table_name) is not None:
+                        logger.info("{0} table match with key {1}".format(table_name, key_name))
+                        core.ensure_provisioning(table_name, key_name)
             time.sleep(check_interval)
 
 
@@ -64,5 +72,10 @@ def main():
             print 'Valid options for --daemon are start, stop and restart'
             sys.exit(1)
     else:
-        for table_name in configuration['tables'].keys():
-            core.ensure_provisioning(table_name)
+        all_table = dynamodb.list_table()
+        for table_name in all_table:
+            logger.info("All dyanamo table:{0}".format(all_table))
+            for key_name in configuration['tables'].keys():
+                if re.match(key_name,table_name) is not None:
+                    logger.info("{0} table match with key {1}".format(table_name, key_name))
+                    core.ensure_provisioning(table_name, key_name)
