@@ -175,6 +175,8 @@ decrease-writes-unit: percent
 #always-decrease-rw-together: true
 </code></pre>
 
+<p>Note: The configuration of tables support regular expressions so you could write <code>[table: log_* ]</code> if you want to target multiple tables with one config section.</p>
+
 <h2>
 <a name="full---help-output" class="anchor" href="#full---help-output"><span class="octicon octicon-link"></span></a>Full --help output</h2>
 
@@ -304,6 +306,12 @@ Write units scaling properties:
 
 <h2>
 <a name="release-information" class="anchor" href="#release-information"><span class="octicon octicon-link"></span></a>Release information</h2>
+
+<p><strong>1.5.0 (2013-08-22)</strong></p>
+
+<ul>
+<li><a href="https://github.com/sebdah/dynamic-dynamodb/issues/52">Support for regular expressions in config</a></li>
+</ul><p>Thanks <a href="https://github.com/pragnesh">@pragnesh</a> for adding this feature!</p>
 
 <p><strong>1.4.0 (2013-08-14)</strong></p>
 
