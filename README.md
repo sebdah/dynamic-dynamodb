@@ -274,6 +274,12 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.5.1 (2013-08-22)**
+
+- [No module named core](https://github.com/sebdah/dynamic-dynamodb/issues/53) (fixed by [#54](https://github.com/sebdah/dynamic-dynamodb/pull/54))
+
+Fixed bug in the 1.5.0 release.
+
 **1.5.0 (2013-08-22)**
 
 - [Support for regular expressions in config](https://github.com/sebdah/dynamic-dynamodb/issues/52)

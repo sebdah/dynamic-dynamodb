@@ -25,10 +25,10 @@ import time
 
 import core
 import re
-from dynamic_dynamodb.core import dynamodb
+from core import dynamodb
 from daemon import Daemon
 from config_handler import CONFIGURATION as configuration
-from dynamic_dynamodb.log_handler import LOGGER as logger
+from log_handler import LOGGER as logger
 
 
 class DynamicDynamoDBDaemon(Daemon):
