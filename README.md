@@ -142,6 +142,7 @@ Example configuration file
     # of scaling down. Set this to "true" to minimize down scaling.
     #always-decrease-rw-together: true
 
+Note: The configuration of tables support regular expressions so you could write `[table: log_* ]` if you want to target multiple tables with one config section.
 
 Full --help output
 ------------------
@@ -272,6 +273,12 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
+**1.5.0 (2013-08-22)**
+
+- [Support for regular expressions in config](https://github.com/sebdah/dynamic-dynamodb/issues/52)
+
+Thanks [@pragnesh](https://github.com/pragnesh) for adding this feature!
 
 **1.4.0 (2013-08-14)**
 
