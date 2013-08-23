@@ -301,6 +301,12 @@ def update_throughput(table_name, read_units, write_units, key_name):
         if read_units < table.read_units and write_units < table.write_units:
             logger.info('{0} - Both reads and writes will be decreased'.format(
                 table_name))
+        elif read_units < table.read_units and write_units == get_table_option(key_name, 'min-provisioned-writes'):
+            logger.info('{0} - Only reads will be decreased as write is '
+                        'already at minuminum value'.format(table_name))
+        elif write_units < table.write_units and read_units == get_table_option(key_name, 'min-provisioned-reads'):
+            logger.info('{0} - Only writes will be decreased as read is '
+                        'already at minuminum value'.format(table_name))
         elif read_units < table.read_units:
             logger.info(
                 '{0} - Will not decrease reads nor writes, waiting for '
