@@ -67,13 +67,13 @@ def get_table(table_name):
     return table
 
 
-def list_table():
-    """ Return list of DynamoDB table available from AWS
+def list_tables():
+    """ Return list of DynamoDB tables available from AWS
 
     :returns: list -- List of DynamoDB tables
     """
     try:
-        list_table = DYNAMODB_CONNECTION.list_tables()
+        tables = DYNAMODB_CONNECTION.list_tables()
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
 
@@ -83,7 +83,7 @@ def list_table():
         else:
             raise
 
-    return list_table
+    return tables
 
 
 DYNAMODB_CONNECTION = __get_connection_dynamodb()
