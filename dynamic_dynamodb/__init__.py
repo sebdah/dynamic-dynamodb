@@ -42,7 +42,7 @@ class DynamicDynamoDBDaemon(Daemon):
         """
         while True:
             tables = dynamodb.list_tables()
-            logger.info("All dyanamo table:{0}".format(tables))
+            logger.debug("Found tables: {0}".format(tables))
             for table_name in tables:
                 for key_name in configuration['tables'].keys():
                     if re.match(key_name,table_name) is not None:
@@ -75,7 +75,7 @@ def main():
     else:
         tables = dynamodb.list_tables()
         for table_name in tables:
-            logger.info("All dyanamo table:{0}".format(tables))
+            logger.debug("Found tables: {0}".format(tables))
             for key_name in configuration['tables'].keys():
                 if re.match(key_name,table_name) is not None:
                     logger.info("{0} table match with key {1}".format(
