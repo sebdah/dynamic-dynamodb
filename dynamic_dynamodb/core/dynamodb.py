@@ -72,16 +72,29 @@ def list_tables():
 
     :returns: list -- List of DynamoDB tables
     """
+    tables = []
+
     try:
         tables = DYNAMODB_CONNECTION.list_tables()
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
 
         if dynamodb_error == 'ResourceNotFoundException':
-            logger.error('No table not found')
-            sys.exit(1)
+            logger.error('No tables found')
+        elif dynamodb_error == 'AccessDeniedException':
+            logger.warning(
+                'Your AWS API keys lack access to listing tables. '
+                'That is an issue if you are trying to use regular expressions '
+                'in your table configuration.')
         else:
-            raise
+            logger.error(
+                (
+                    'Unhandled exception: {0}: {1}. '
+                    'Please file a bug report at '
+                    'https://github.com/sebdah/dynamic-dynamodb/issues'
+                ).format(
+                dynamodb_error,
+                error.body['message']))
 
     return tables
 
