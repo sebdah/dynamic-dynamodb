@@ -298,9 +298,12 @@ def update_throughput(table_name, read_units, write_units, key_name):
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
     if get_table_option(key_name, 'always_decrease_rw_together'):
-        if read_units < table.read_units and write_units < table.write_units:
-            logger.info('{0} - Both reads and writes will be decreased'.format(
-                table_name))
+        if (read_units < table.read_units) or (table.read_units == get_table_option(key_name, 'min_provisioned_reads')):
+            if (write_units < table.write_units) or (table.write_units == get_table_option(key_name, 'min_provisioned_writes')):
+                logger.info(
+                    '{0} - Both reads and writes will be decreased'.format(
+                        table_name))
+
         elif read_units < table.read_units:
             logger.info(
                 '{0} - Will not decrease reads nor writes, waiting for '
