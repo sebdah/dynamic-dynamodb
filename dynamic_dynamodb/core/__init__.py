@@ -354,6 +354,11 @@ def update_throughput(table_name, read_units, write_units, key_name):
                     table_name,
                     error.body['message']))
 
+            elif dynamodb_error == 'AccessDeniedException':
+                logger.warning('{0} - AccessDeniedException: {1}'.format(
+                    table_name,
+                    error.body['message']))
+
             else:
                 logger.error(
                     (
