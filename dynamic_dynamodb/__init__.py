@@ -41,14 +41,30 @@ class DynamicDynamoDBDaemon(Daemon):
         :param check_interval: Delay in seconds between checks
         """
         while True:
-            all_table = dynamodb.list_table()
-            logger.info("All dyanamo table:{0}".format(all_table))
-            for table_name in all_table:
-                for key_name in configuration['tables'].keys():
-                    if re.match(key_name,table_name) is not None:
-                        logger.info("{0} table match with key {1}".format(table_name, key_name))
-                        core.ensure_provisioning(table_name, key_name)
-            time.sleep(check_interval)
+            used_keys = set()
+            table_names = set()
+            configured_tables = configuration['tables'].keys()
+
+            # Add regexp table names
+            for table_name in dynamodb.list_tables():
+                for key_name in configured_tables:
+                    if re.match(key_name, table_name):
+                        logger.debug("Table {0} match with config key {1}".format(
+                            table_name, key_name))
+                        table_names.add((table_name, key_name))
+                        used_keys.add(key_name)
+
+            # Remove used tables
+            for table_name in used_keys:
+                configured_tables.remove(table_name)
+
+            # Add regular tables
+            for table_name in configured_tables:
+                table_names.add((table_name, table_name))
+
+            # Ensure provisioning
+            for table_name, key_name in sorted(table_names):
+                core.ensure_provisioning(table_name, key_name)
 
 
 def main():
@@ -72,10 +88,27 @@ def main():
             print 'Valid options for --daemon are start, stop and restart'
             sys.exit(1)
     else:
-        all_table = dynamodb.list_table()
-        for table_name in all_table:
-            logger.info("All dyanamo table:{0}".format(all_table))
-            for key_name in configuration['tables'].keys():
-                if re.match(key_name,table_name) is not None:
-                    logger.info("{0} table match with key {1}".format(table_name, key_name))
-                    core.ensure_provisioning(table_name, key_name)
+        table_names = set()
+        used_keys = set()
+        configured_tables = configuration['tables'].keys()
+
+        # Add regexp table names
+        for table_name in dynamodb.list_tables():
+            for key_name in configured_tables:
+                if re.match(key_name, table_name):
+                    logger.debug("Table {0} match with config key {1}".format(
+                        table_name, key_name))
+                    table_names.add((table_name, key_name))
+                    used_keys.add(key_name)
+
+        # Remove used tables
+        for table_name in used_keys:
+            configured_tables.remove(table_name)
+
+        # Add regular tables
+        for table_name in configured_tables:
+            table_names.add((table_name, table_name))
+
+        # Ensure provisioning
+        for table_name, key_name in sorted(table_names):
+            core.ensure_provisioning(table_name, key_name)
