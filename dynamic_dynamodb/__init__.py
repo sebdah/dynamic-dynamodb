@@ -65,6 +65,7 @@ class DynamicDynamoDBDaemon(Daemon):
             # Ensure provisioning
             for table_name, key_name in sorted(table_names):
                 core.ensure_provisioning(table_name, key_name)
+            time.sleep(check_interval)
 
 
 def main():
