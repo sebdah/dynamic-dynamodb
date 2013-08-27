@@ -274,6 +274,13 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.5.2 (2013-08-27)**
+
+- [Issue with always-decrease-rw-together option](https://github.com/sebdah/dynamic-dynamodb/issues/55)
+- [ListTables permission required](https://github.com/sebdah/dynamic-dynamodb/issues/57)
+
+The AWS `ListTables` permission is no longer a hard requirement. It's only needed if you're using regular expressions to configure your DynamoDB tables.
+
 **1.5.1 (2013-08-22)**
 
 - [No module named core](https://github.com/sebdah/dynamic-dynamodb/issues/53) (fixed by [#54](https://github.com/sebdah/dynamic-dynamodb/pull/54))
