@@ -274,6 +274,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.5.3 (2013-08-27)**
+
+- [Added missing sleep statement fixes](https://github.com/sebdah/dynamic-dynamodb/issues/58)
+
 **1.5.2 (2013-08-27)**
 
 - [Issue with always-decrease-rw-together option](https://github.com/sebdah/dynamic-dynamodb/issues/55)
