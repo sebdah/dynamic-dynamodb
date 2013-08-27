@@ -18,6 +18,8 @@ def ensure_provisioning(table_name, key_name):
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
+    :type key_name: str
+    :param key_name: Configuration option key name
     """
     if get_global_option('circuit_breaker_url'):
         if __circuit_breaker_is_open():
@@ -114,6 +116,8 @@ def __ensure_provisioning_reads(table_name, key_name):
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
+    :type key_name: str
+    :param key_name: Configuration option key name
     :returns: (bool, int) -- update_needed, updated_read_units
     """
     update_needed = False
@@ -175,6 +179,8 @@ def __ensure_provisioning_writes(table_name, key_name):
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
+    :type key_name: str
+    :param key_name: Configuration option key name
     :returns: (bool, int) -- update_needed, updated_write_units
     """
     update_needed = False
@@ -272,6 +278,8 @@ def update_throughput(table_name, read_units, write_units, key_name):
     :param read_units: New read unit provisioning
     :type write_units: int
     :param write_units: New write unit provisioning
+    :type key_name: str
+    :param key_name: Configuration option key name
     """
     table = dynamodb.get_table(table_name)
 
@@ -298,9 +306,12 @@ def update_throughput(table_name, read_units, write_units, key_name):
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
     if get_table_option(key_name, 'always_decrease_rw_together'):
-        if read_units < table.read_units and write_units < table.write_units:
-            logger.info('{0} - Both reads and writes will be decreased'.format(
-                table_name))
+        if (read_units < table.read_units) or (table.read_units == get_table_option(key_name, 'min_provisioned_reads')):
+            if (write_units < table.write_units) or (table.write_units == get_table_option(key_name, 'min_provisioned_writes')):
+                logger.info(
+                    '{0} - Both reads and writes will be decreased'.format(
+                        table_name))
+
         elif read_units < table.read_units:
             logger.info(
                 '{0} - Will not decrease reads nor writes, waiting for '
@@ -351,6 +362,11 @@ def update_throughput(table_name, read_units, write_units, key_name):
 
             elif dynamodb_error == 'ResourceInUseException':
                 logger.warning('{0} - ResourceInUseException: {1}'.format(
+                    table_name,
+                    error.body['message']))
+
+            elif dynamodb_error == 'AccessDeniedException':
+                logger.warning('{0} - AccessDeniedException: {1}'.format(
                     table_name,
                     error.body['message']))
 
