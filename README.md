@@ -274,13 +274,17 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.5.4 (2013-08-29)**
+
+- [Added missing `key_name` parameter](https://github.com/sebdah/dynamic-dynamodb/issues/60)
+
 **1.5.3 (2013-08-27)**
 
 - [Added missing sleep statement fixes](https://github.com/sebdah/dynamic-dynamodb/issues/58)
 
 **1.5.2 (2013-08-27)**
 
-- [Issue with always-decrease-rw-together option](https://github.com/sebdah/dynamic-dynamodb/issues/55)
+- [Issue with `always-decrease-rw-together` option](https://github.com/sebdah/dynamic-dynamodb/issues/55)
 - [ListTables permission required](https://github.com/sebdah/dynamic-dynamodb/issues/57)
 
 The AWS `ListTables` permission is no longer a hard requirement. It's only needed if you're using regular expressions to configure your DynamoDB tables.
