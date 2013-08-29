@@ -344,7 +344,8 @@ def update_throughput(table_name, read_units, write_units, key_name):
                     update_throughput(
                         table_name,
                         int(read_units),
-                        int(table.write_units))
+                        int(table.write_units),
+                        key_name)
 
                 elif int(write_units) > table.write_units:
                     logger.info('{0} - Scaling up writes to {1:d}'.format(
@@ -353,7 +354,8 @@ def update_throughput(table_name, read_units, write_units, key_name):
                     update_throughput(
                         table_name,
                         int(table.read_units),
-                        int(write_units))
+                        int(write_units),
+                        key_name)
 
             elif dynamodb_error == 'ValidationException':
                 logger.warning('{0} - ValidationException: {1}'.format(
