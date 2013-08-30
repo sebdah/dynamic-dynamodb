@@ -1,6 +1,5 @@
-Dynamic DynamoDB
-================
-[![Stories in Ready](https://badge.waffle.io/sebdah/dynamic-dynamodb.png)](http://waffle.io/sebdah/dynamic-dynamodb)
+# Dynamic DynamoDB [![Stories in Ready](https://badge.waffle.io/sebdah/dynamic-dynamodb.png)](http://waffle.io/sebdah/dynamic-dynamodb)
+
 
 AWS DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
