@@ -274,6 +274,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.5.5 (2013-08-31)**
+
+- [Change log level of informational message](https://github.com/sebdah/dynamic-dynamodb/issues/62)
+
 **1.5.4 (2013-08-29)**
 
 - [Added missing `key_name` parameter](https://github.com/sebdah/dynamic-dynamodb/issues/60)
