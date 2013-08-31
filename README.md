@@ -1,6 +1,5 @@
-Dynamic DynamoDB
-================
-[![Stories in Ready](https://badge.waffle.io/sebdah/dynamic-dynamodb.png)](http://waffle.io/sebdah/dynamic-dynamodb)
+# Dynamic DynamoDB [![Stories in Ready](https://badge.waffle.io/sebdah/dynamic-dynamodb.png)](http://waffle.io/sebdah/dynamic-dynamodb)
+
 
 AWS DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
@@ -274,6 +273,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
+**1.5.5 (2013-08-31)**
+
+- [Change log level of informational message](https://github.com/sebdah/dynamic-dynamodb/issues/62)
 
 **1.5.4 (2013-08-29)**
 

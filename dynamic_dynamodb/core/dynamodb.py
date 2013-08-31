@@ -82,7 +82,7 @@ def list_tables():
         if dynamodb_error == 'ResourceNotFoundException':
             logger.error('No tables found')
         elif dynamodb_error == 'AccessDeniedException':
-            logger.warning(
+            logger.debug(
                 'Your AWS API keys lack access to listing tables. '
                 'That is an issue if you are trying to use regular expressions '
                 'in your table configuration.')
