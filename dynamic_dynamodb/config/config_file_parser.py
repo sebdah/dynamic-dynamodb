@@ -136,7 +136,7 @@ def parse(config_path):
                 {   'key': 'logstash_port',
                     'option': 'logstash-port',
                     'required': False,
-                    'type': 'str'
+                    'type': 'int'
                 }
 
             ])
