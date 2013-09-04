@@ -27,7 +27,7 @@ import config_handler
 class LogHandler:
     """ Logging class """
     def __init__(self, name='dynamic-dynamodb', level='info',
-                 log_file=None, logstash=False, dry_run=False):
+                 log_file=None, logstash_logger=False, dry_run=False):
         """ Instanciate the logger
 
         :type name: str
@@ -72,7 +72,7 @@ class LogHandler:
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
             
-        if logstash:
+        if logstash_logger:
             self.logger.addHandler(logstash.LogstashHandler(
                config_handler.get_logging_option('logstash_host'),
                config_handler.get_logging_option('logstash_port'),
@@ -109,7 +109,7 @@ def __get_logger():
     elif config_handler.get_logging_option('logstash_host'):
         logger = LogHandler(
             level=config_handler.get_logging_option('log_level'),
-            logstash=True,
+            logstash_logger=True,
             dry_run=config_handler.get_global_option('dry_run'))
     else:
         logger = LogHandler(
