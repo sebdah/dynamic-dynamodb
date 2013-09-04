@@ -106,10 +106,10 @@ def __get_logger():
             log_file=config_handler.get_logging_option('log_file'),
             dry_run=config_handler.get_global_option('dry_run'))
     
-    elif config_handler.get_logging_option('logstash'):
+    elif config_handler.get_logging_option('logstash_host'):
         logger = LogHandler(
             level=config_handler.get_logging_option('log_level'),
-            logstash=config_handler.get_logging_option('logstash'),
+            logstash=True,
             dry_run=config_handler.get_global_option('dry_run'))
     else:
         logger = LogHandler(
