@@ -24,7 +24,8 @@ DEFAULT_OPTIONS = {
         # [logging]
         'log_file': None,
         'log_level': 'info',
-        'logstash_host': None
+        'logstash_host': None,
+        'logstash_port':5959
     },
     'table': {
         'reads_lower_threshold': 30,
