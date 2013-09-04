@@ -19,6 +19,7 @@ limitations under the License.
 """
 import os.path
 import logging
+import logstash
 
 import config_handler
 
@@ -26,7 +27,7 @@ import config_handler
 class LogHandler:
     """ Logging class """
     def __init__(self, name='dynamic-dynamodb', level='info',
-                 log_file=None, dry_run=False):
+                 log_file=None, logstash=False, dry_run=False):
         """ Instanciate the logger
 
         :type name: str
@@ -34,6 +35,7 @@ class LogHandler:
         :type level: str
         :param level: Log level [debug|info|warning|error]
         :type log_file: str
+        :type log_file: bool
         :param log_file: Path to log file (if any)
         :type dry_run: bool
         :param dry_run: Add dry-run to the output
@@ -69,6 +71,14 @@ class LogHandler:
             file_handler = logging.FileHandler(os.path.expanduser(log_file))
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
+            
+         if logstash:
+            self.logger.addHandler(logstash.LogstashHandler(
+               config_handler.get_logging_option('logstash_host'),
+               config_handler.get_logging_option('logstash_port'),
+               'dynamic-dynamodb'))   
+         
+
 
     def debug(self, *args, **kwargs):
         """ Log on debug level """
@@ -94,6 +104,12 @@ def __get_logger():
         logger = LogHandler(
             level=config_handler.get_logging_option('log_level'),
             log_file=config_handler.get_logging_option('log_file'),
+            dry_run=config_handler.get_global_option('dry_run'))
+    
+    elif config_handler.get_logging_option('logstash'):
+        logger = LogHandler(
+            level=config_handler.get_logging_option('log_level'),
+            logstash=config_handler.get_logging_option('logstash'),
             dry_run=config_handler.get_global_option('dry_run'))
     else:
         logger = LogHandler(
