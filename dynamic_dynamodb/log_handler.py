@@ -72,7 +72,7 @@ class LogHandler:
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
             
-         if logstash:
+        if logstash:
             self.logger.addHandler(logstash.LogstashHandler(
                config_handler.get_logging_option('logstash_host'),
                config_handler.get_logging_option('logstash_port'),
