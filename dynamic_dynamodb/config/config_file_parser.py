@@ -128,11 +128,6 @@ def parse(config_path):
                     'required': False,
                     'type': 'str'
                 },
-                {   'key': 'logstash',
-                    'option': 'logstash',
-                    'required': False,
-                    'type': 'bool'
-                },
                 {   'key': 'logstash_host',
                     'option': 'logstash-host',
                     'required': False,
