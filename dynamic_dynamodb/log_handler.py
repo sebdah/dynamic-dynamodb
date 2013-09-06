@@ -37,6 +37,8 @@ class LogHandler:
         :type log_file: str
         :type log_file: bool
         :param log_file: Path to log file (if any)
+        :type logstash_logger: str
+        :type logstash_logger: bool
         :type dry_run: bool
         :param dry_run: Add dry-run to the output
         """
