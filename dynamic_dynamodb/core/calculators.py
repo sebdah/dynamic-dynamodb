@@ -217,7 +217,12 @@ def increase_reads_in_units(table_name, current_provisioning, units, key_name):
     :type key_name: str
     :param key_name: Name of the key
     """
-    updated_provisioning = int(current_provisioning) + int(units)
+    updated_provisioning = 0
+    if int(units) > int(current_provisioning):
+        updated_provisioning = 2 * int(current_provisioning)
+    else:
+        updated_provisioning = int(current_provisioning) + int(units)
+
     logger.debug(
         'Read provisioning will be increased to {0:d} units'.format(
             updated_provisioning))
@@ -280,7 +285,12 @@ def increase_writes_in_units(table_name, current_provisioning, units, key_name):
     :type key_name: str
     :param key_name: Name of the key
     """
-    updated_provisioning = int(current_provisioning) + int(units)
+    updated_provisioning = 0
+    if int(units) > int(current_provisioning):
+        updated_provisioning = 2 * int(current_provisioning)
+    else:
+        updated_provisioning = int(current_provisioning) + int(units)
+
     logger.debug(
         'Write provisioning will be increased to {0:d} units'.format(
             updated_provisioning))
