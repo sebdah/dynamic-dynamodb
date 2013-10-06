@@ -20,15 +20,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import re
 import sys
 import time
 
-import core
-import re
-from core import dynamodb
-from daemon import Daemon
-from config_handler import CONFIGURATION as configuration
-from log_handler import LOGGER as logger
+import dynamic_dynamodb.core as core
+from dynamic_dynamodb.daemon import Daemon
+from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
+from dynamic_dynamodb.log_handler import LOGGER as logger
 
 
 class DynamicDynamoDBDaemon(Daemon):
@@ -46,11 +45,12 @@ class DynamicDynamoDBDaemon(Daemon):
             configured_tables = configuration['tables'].keys()
 
             # Add regexp table names
-            for table_name in dynamodb.list_tables():
+            for table_name in core.dynamodb.list_tables():
                 for key_name in configured_tables:
                     if re.match(key_name, table_name):
-                        logger.debug("Table {0} match with config key {1}".format(
-                            table_name, key_name))
+                        logger.debug(
+                            "Table {0} match with config key {1}".format(
+                                table_name, key_name))
                         table_names.add((table_name, key_name))
                         used_keys.add(key_name)
 
@@ -96,7 +96,7 @@ def main():
         configured_tables = configuration['tables'].keys()
 
         # Add regexp table names
-        for table_name in dynamodb.list_tables():
+        for table_name in core.dynamodb.list_tables():
             for key_name in configured_tables:
                 if re.match(key_name, table_name):
                     logger.debug("Table {0} match with config key {1}".format(

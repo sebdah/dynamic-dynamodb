@@ -4,7 +4,10 @@ Python daemon implementation from:
 
 http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
 """
-import sys, os, time, atexit
+import atexit
+import os
+import sys
+import time
 from signal import SIGTERM
 
 
@@ -95,7 +98,7 @@ class Daemon:
         """ Stop the daemon """
         # Get the pid from the pidfile
         try:
-            pf = file(self.pidfile,'r')
+            pf = file(self.pidfile, 'r')
             pid = int(pf.read().strip())
             pf.close()
         except IOError:
@@ -105,7 +108,7 @@ class Daemon:
             sys.stderr.write(
                 "pidfile {0} does not exist. Daemon not running?\n".format(
                     self.pidfile))
-            return # not an error in a restart
+            return  # not an error in a restart
 
         # Try killing the daemon process
         try:
@@ -126,7 +129,7 @@ class Daemon:
         self.stop()
         self.start()
 
-    def run(self):
+    def run(self, check_interval=1):
         """
         You should override this method when you subclass Daemon.
         It will be called after the process has been

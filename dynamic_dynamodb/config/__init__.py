@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """ Configuration management """
 import sys
-import config_file_parser
-import command_line_parser
+import dynamic_dynamodb.config.config_file_parser as config_file_parser
+import dynamic_dynamodb.config.command_line_parser as command_line_parser
 
 DEFAULT_OPTIONS = {
     'global': {
@@ -64,7 +64,8 @@ def get_configuration():
 
     # If a configuration file is specified, read that as well
     if 'config' in cmd_line_options:
-        conf_file_options = config_file_parser.parse(cmd_line_options['config'])
+        conf_file_options = config_file_parser.parse(
+            cmd_line_options['config'])
     else:
         conf_file_options = None
 
@@ -100,7 +101,7 @@ def __get_cmd_table_options(cmd_line_options):
     :returns: dict -- E.g. { 'table_name': {} }
     """
     table_name = cmd_line_options['table_name']
-    options = { table_name: {} }
+    options = {table_name: {}}
 
     for option in DEFAULT_OPTIONS['table'].keys():
         options[table_name][option] = DEFAULT_OPTIONS['table'][option]
@@ -195,15 +196,17 @@ def __check_table_rules(configuration):
             print('decrease-reads-with must be set to either percent or units')
             sys.exit(1)
         if table['increase_writes_unit'] not in valid_units:
-            print('increase-writes-with must be set to either percent or units')
+            print(
+                'increase-writes-with must be set to either percent or units')
             sys.exit(1)
         if table['decrease_writes_unit'] not in valid_units:
-            print('decrease-writes-with must be set to either percent or units')
+            print(
+                'decrease-writes-with must be set to either percent or units')
             sys.exit(1)
 
         # Check that increase_writes_with is not > 100
         if (table['increase_writes_unit'] == 'percent' and
-            table['increase_writes_with'] > 100):
+                table['increase_writes_with'] > 100):
 
             print(
                 'You can not increase the table throughput with more '
@@ -212,7 +215,7 @@ def __check_table_rules(configuration):
 
         # Check that increase_reads_with is not > 100
         if (table['increase_reads_unit'] == 'percent' and
-            table['increase_reads_with'] > 100):
+                table['increase_reads_with'] > 100):
             print(
                 'You can not increase the table throughput with more '
                 'than 100% at a time. Setting --increase-reads-with to 100.')
