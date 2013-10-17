@@ -127,7 +127,18 @@ def parse(config_path):
                     'option': 'log-file',
                     'required': False,
                     'type': 'str'
+                },
+                {   'key': 'logstash_host',
+                    'option': 'logstash-host',
+                    'required': False,
+                    'type': 'str'
+                },
+                {   'key': 'logstash_port',
+                    'option': 'logstash-port',
+                    'required': False,
+                    'type': 'int'
                 }
+
             ])
 
     #
