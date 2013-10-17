@@ -87,7 +87,7 @@ def main():
         elif configuration['global']['daemon'] == 'restart':
             daemon.restart()
 
-        elif configuration['global']['daemon'] == 'loop':
+        elif configuration['global']['daemon'] in ['foreground', 'fg']:
             daemon.run(
                 check_interval=configuration['global']['check_interval'])
 
