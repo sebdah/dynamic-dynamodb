@@ -9,102 +9,132 @@ def parse():
     """ Parse command line options """
     parser = argparse.ArgumentParser(
         description='Dynamic DynamoDB - Auto provisioning AWS DynamoDB')
-    parser.add_argument('-c', '--config',
+    parser.add_argument(
+        '-c', '--config',
         help='Read configuration from a configuration file')
-    parser.add_argument('--dry-run',
+    parser.add_argument(
+        '--dry-run',
         action='store_true',
         help='Run without making any changes to your DynamoDB table')
-    parser.add_argument('--check-interval',
+    parser.add_argument(
+        '--check-interval',
         type=int,
         help="""How many seconds should we wait between
                 the checks (default: 300)""")
-    parser.add_argument('--log-file',
+    parser.add_argument(
+        '--log-file',
         help='Send output to the given log file')
-    parser.add_argument('--log-level',
+    parser.add_argument(
+        '--log-level',
         default='info',
         help='Log level to use (default: info)')
-    parser.add_argument('--version',
+    parser.add_argument(
+        '--version',
         action='store_true',
         help='Print current version number')
-    parser.add_argument('--aws-access-key-id',
+    parser.add_argument(
+        '--aws-access-key-id',
         help="Override Boto configuration with the following AWS access key")
-    parser.add_argument('--aws-secret-access-key',
+    parser.add_argument(
+        '--aws-secret-access-key',
         help="Override Boto configuration with the following AWS secret key")
     daemon_ag = parser.add_argument_group('Daemon options')
-    daemon_ag.add_argument('--daemon',
-        help='Run Dynamic DynamoDB as a daemon [start|stop|restart]')
-    daemon_ag.add_argument('--instance',
+    daemon_ag.add_argument(
+        '--daemon',
+        help=(
+            'Run Dynamic DynamoDB in daemon mode. Valid modes are '
+            '[start|stop|restart|foreground]'))
+    daemon_ag.add_argument(
+        '--instance',
         default='default',
         help=(
             'Name of the Dynamic DynamoDB instance. '
             'Used to run multiple instances of Dynamic DynamoDB. '
-            'Give each instance a unique name and control them separately with '
-            'the --daemon flag. (default: default)'))
+            'Give each instance a unique name and control them separately '
+            'with the --daemon flag. (default: default)'))
     dynamodb_ag = parser.add_argument_group('DynamoDB options')
-    dynamodb_ag.add_argument('-r', '--region',
+    dynamodb_ag.add_argument(
+        '-r', '--region',
         help='AWS region to operate in (default: us-east-1')
-    dynamodb_ag.add_argument('-t', '--table-name',
+    dynamodb_ag.add_argument(
+        '-t', '--table-name',
         help='How many percent should we decrease the read units with?')
     r_scaling_ag = parser.add_argument_group('Read units scaling properties')
-    r_scaling_ag.add_argument('--reads-upper-threshold',
+    r_scaling_ag.add_argument(
+        '--reads-upper-threshold',
         type=int,
         help="""Scale up the reads with --increase-reads-with percent if
                 the currently consumed read units reaches this many
                 percent (default: 90)""")
-    r_scaling_ag.add_argument('--reads-lower-threshold',
+    r_scaling_ag.add_argument(
+        '--reads-lower-threshold',
         type=int,
         help="""Scale down the reads with --decrease-reads-with percent if the
                 currently consumed read units is as low as this
                 percentage (default: 30)""")
-    r_scaling_ag.add_argument('--increase-reads-with',
+    r_scaling_ag.add_argument(
+        '--increase-reads-with',
         type=int,
         help="""How many percent should we increase the read
                 units with? (default: 50, max: 100)""")
-    r_scaling_ag.add_argument('--decrease-reads-with',
+    r_scaling_ag.add_argument(
+        '--decrease-reads-with',
         type=int,
         help="""How many percent should we decrease the
                 read units with? (default: 50)""")
-    r_scaling_ag.add_argument('--increase-reads-unit',
+    r_scaling_ag.add_argument(
+        '--increase-reads-unit',
         type=str,
         help='Do you want to scale in percent or units? (default: percent)')
-    r_scaling_ag.add_argument('--decrease-reads-unit',
+    r_scaling_ag.add_argument(
+        '--decrease-reads-unit',
         type=str,
         help='Do you want to scale in percent or units? (default: percent)')
-    r_scaling_ag.add_argument('--min-provisioned-reads',
+    r_scaling_ag.add_argument(
+        '--min-provisioned-reads',
         type=int,
         help="""Minimum number of provisioned reads""")
-    r_scaling_ag.add_argument('--max-provisioned-reads',
+    r_scaling_ag.add_argument(
+        '--max-provisioned-reads',
         type=int,
         help="""Maximum number of provisioned reads""")
     w_scaling_ag = parser.add_argument_group('Write units scaling properties')
-    w_scaling_ag.add_argument('--writes-upper-threshold',
+    w_scaling_ag.add_argument(
+        '--writes-upper-threshold',
         type=int,
         help="""Scale up the writes with --increase-writes-with percent
                 if the currently consumed write units reaches this
                 many percent (default: 90)""")
-    w_scaling_ag.add_argument('--writes-lower-threshold',
+    w_scaling_ag.add_argument(
+        '--writes-lower-threshold',
         type=int,
         help="""Scale down the writes with --decrease-writes-with percent
                 if the currently consumed write units is as low as this
                 percentage (default: 30)""")
-    w_scaling_ag.add_argument('--increase-writes-with',
+    w_scaling_ag.add_argument(
+        '--increase-writes-with',
         type=int,
         help="""How many percent should we increase the write
                 units with? (default: 50, max: 100)""")
-    w_scaling_ag.add_argument('--decrease-writes-with',
+    w_scaling_ag.add_argument(
+        '--decrease-writes-with',
         type=int,
         help="""How many percent should we decrease the write
                 units with? (default: 50)""")
-    r_scaling_ag.add_argument('--increase-writes-unit',
+    r_scaling_ag.add_argument(
+        '--increase-writes-unit',
         type=str,
         help='Do you want to scale in percent or units? (default: percent)')
-    r_scaling_ag.add_argument('--decrease-writes-unit',
+    r_scaling_ag.add_argument(
+        '--decrease-writes-unit',
         type=str,
         help='Do you want to scale in percent or units? (default: percent)')
-    w_scaling_ag.add_argument('--min-provisioned-writes',
+    w_scaling_ag.add_argument(
+        '--min-provisioned-writes',
         type=int,
         help="""Minimum number of provisioned writes""")
-    w_scaling_ag.add_argument('--max-provisioned-writes',
+    w_scaling_ag.add_argument(
+        '--max-provisioned-writes',
         type=int,
         help="""Maximum number of provisioned writes""")
     args = parser.parse_args()

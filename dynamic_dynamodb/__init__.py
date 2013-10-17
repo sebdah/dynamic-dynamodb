@@ -87,6 +87,10 @@ def main():
         elif configuration['global']['daemon'] == 'restart':
             daemon.restart()
 
+        elif configuration['global']['daemon'] in ['foreground', 'fg']:
+            daemon.run(
+                check_interval=configuration['global']['check_interval'])
+
         else:
             print 'Valid options for --daemon are start, stop and restart'
             sys.exit(1)

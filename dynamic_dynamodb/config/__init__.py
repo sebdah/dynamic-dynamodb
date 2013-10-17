@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """ Configuration management """
 import sys
-import dynamic_dynamodb.config.config_file_parser as config_file_parser
-import dynamic_dynamodb.config.command_line_parser as command_line_parser
+from dynamic_dynamodb.config import config_file_parser
+from dynamic_dynamodb.config import command_line_parser
 
 DEFAULT_OPTIONS = {
     'global': {

@@ -3,9 +3,9 @@ import re
 import sys
 import datetime
 
-import dynamic_dynamodb.core.dynamodb as dynamodb
-import dynamic_dynamodb.core.statistics as statistics
-import dynamic_dynamodb.core.calculators as calculators
+from dynamic_dynamodb.core import dynamodb
+from dynamic_dynamodb.core import statistics
+from dynamic_dynamodb.core import calculators
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option, get_global_option
 
