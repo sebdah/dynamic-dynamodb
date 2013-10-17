@@ -41,7 +41,9 @@ def parse():
     daemon_ag = parser.add_argument_group('Daemon options')
     daemon_ag.add_argument(
         '--daemon',
-        help='Run Dynamic DynamoDB as a daemon [start|stop|restart]')
+        help=(
+            'Run Dynamic DynamoDB in daemon mode. Valid modes are '
+            '[start|stop|restart|foreground]'))
     daemon_ag.add_argument(
         '--instance',
         default='default',
