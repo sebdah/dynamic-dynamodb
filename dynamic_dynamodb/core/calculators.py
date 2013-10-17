@@ -3,11 +3,9 @@ from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option
 
 
-def get_min_provisioned_reads(table_name, current_provisioning, key_name):
+def get_min_provisioned_reads(current_provisioning, key_name):
     """ Returns the minimum provisioned reads
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :type key_name: str
@@ -22,11 +20,9 @@ def get_min_provisioned_reads(table_name, current_provisioning, key_name):
     return int(current_provisioning * 2)
 
 
-def get_min_provisioned_writes(table_name, current_provisioning, key_name):
+def get_min_provisioned_writes(current_provisioning, key_name):
     """ Returns the minimum provisioned writes
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :returns: int -- Minimum provisioned writes
@@ -41,18 +37,16 @@ def get_min_provisioned_writes(table_name, current_provisioning, key_name):
     return int(current_provisioning * 2)
 
 
-def decrease_reads_in_percent(table_name, current_provisioning, percent, key_name):
+def decrease_reads_in_percent(current_provisioning, percent, key_name):
     """ Decrease the current_provisioning with percent %
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :type percent: int
     :param percent: How many percent should we decrease with
-    :returns: int -- New provisioning value
     :type key_name: str
     :param key_name: Name of the key
+    :returns: int -- New provisioning value
     """
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
@@ -61,7 +55,6 @@ def decrease_reads_in_percent(table_name, current_provisioning, percent, key_nam
             updated_provisioning))
 
     min_provisioned_reads = get_min_provisioned_reads(
-        table_name,
         current_provisioning,
         key_name)
 
@@ -75,11 +68,9 @@ def decrease_reads_in_percent(table_name, current_provisioning, percent, key_nam
     return updated_provisioning
 
 
-def increase_reads_in_percent(table_name, current_provisioning, percent, key_name):
+def increase_reads_in_percent(current_provisioning, percent, key_name):
     """ Increase the current_provisioning with percent %
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :type percent: int
@@ -96,7 +87,7 @@ def increase_reads_in_percent(table_name, current_provisioning, percent, key_nam
 
     if get_table_option(key_name, 'max_provisioned_reads') > 0:
         if (updated_provisioning >
-            get_table_option(key_name, 'max_provisioned_reads')):
+                get_table_option(key_name, 'max_provisioned_reads')):
 
             logger.info('Reached provisioned reads max limit: {0:d}'.format(
                 int(get_table_option(key_name, 'max_provisioned_reads'))))
@@ -106,11 +97,9 @@ def increase_reads_in_percent(table_name, current_provisioning, percent, key_nam
     return updated_provisioning
 
 
-def decrease_writes_in_percent(table_name, current_provisioning, percent, key_name):
+def decrease_writes_in_percent(current_provisioning, percent, key_name):
     """ Decrease the current_provisioning with percent %
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :type percent: int
@@ -126,7 +115,6 @@ def decrease_writes_in_percent(table_name, current_provisioning, percent, key_na
             updated_provisioning))
 
     min_provisioned_writes = get_min_provisioned_writes(
-        table_name,
         current_provisioning,
         key_name)
 
@@ -140,11 +128,9 @@ def decrease_writes_in_percent(table_name, current_provisioning, percent, key_na
     return updated_provisioning
 
 
-def increase_writes_in_percent(table_name, current_provisioning, percent, key_name):
+def increase_writes_in_percent(current_provisioning, percent, key_name):
     """ Increase the current_provisioning with percent %
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :type percent: int
@@ -161,7 +147,7 @@ def increase_writes_in_percent(table_name, current_provisioning, percent, key_na
 
     if get_table_option(key_name, 'max_provisioned_writes') > 0:
         if (updated_provisioning >
-            get_table_option(key_name, 'max_provisioned_writes')):
+                get_table_option(key_name, 'max_provisioned_writes')):
 
             logger.info('Reached provisioned writes max limit: {0:d}'.format(
                 int(get_table_option(key_name, 'max_provisioned_writes'))))
@@ -171,11 +157,9 @@ def increase_writes_in_percent(table_name, current_provisioning, percent, key_na
     return updated_provisioning
 
 
-def decrease_reads_in_units(table_name, current_provisioning, units, key_name):
+def decrease_reads_in_units(current_provisioning, units, key_name):
     """ Decrease the current_provisioning with units units
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :type units: int
@@ -190,7 +174,6 @@ def decrease_reads_in_units(table_name, current_provisioning, units, key_name):
             updated_provisioning))
 
     min_provisioned_reads = get_min_provisioned_reads(
-        table_name,
         current_provisioning,
         key_name)
 
@@ -204,11 +187,9 @@ def decrease_reads_in_units(table_name, current_provisioning, units, key_name):
     return updated_provisioning
 
 
-def increase_reads_in_units(table_name, current_provisioning, units, key_name):
+def increase_reads_in_units(current_provisioning, units, key_name):
     """ Increase the current_provisioning with units units
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :type units: int
@@ -229,7 +210,7 @@ def increase_reads_in_units(table_name, current_provisioning, units, key_name):
 
     if get_table_option(key_name, 'max_provisioned_reads') > 0:
         if (updated_provisioning >
-            get_table_option(key_name, 'max_provisioned_reads')):
+                get_table_option(key_name, 'max_provisioned_reads')):
 
             logger.info('Reached provisioned reads max limit: {0:d}'.format(
                 int(get_table_option(key_name, 'max_provisioned_reads'))))
@@ -239,11 +220,9 @@ def increase_reads_in_units(table_name, current_provisioning, units, key_name):
     return updated_provisioning
 
 
-def decrease_writes_in_units(table_name, current_provisioning, units, key_name):
+def decrease_writes_in_units(current_provisioning, units, key_name):
     """ Decrease the current_provisioning with units units
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :type units: int
@@ -258,7 +237,6 @@ def decrease_writes_in_units(table_name, current_provisioning, units, key_name):
             updated_provisioning))
 
     min_provisioned_writes = get_min_provisioned_writes(
-        table_name,
         current_provisioning,
         key_name)
 
@@ -272,11 +250,9 @@ def decrease_writes_in_units(table_name, current_provisioning, units, key_name):
     return updated_provisioning
 
 
-def increase_writes_in_units(table_name, current_provisioning, units, key_name):
+def increase_writes_in_units(current_provisioning, units, key_name):
     """ Increase the current_provisioning with units units
 
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
     :type units: int
@@ -297,7 +273,7 @@ def increase_writes_in_units(table_name, current_provisioning, units, key_name):
 
     if get_table_option(key_name, 'max_provisioned_writes') > 0:
         if (updated_provisioning >
-            get_table_option(key_name, 'max_provisioned_writes')):
+                get_table_option(key_name, 'max_provisioned_writes')):
 
             logger.info('Reached provisioned writes max limit: {0:d}'.format(
                 int(get_table_option(key_name, 'max_provisioned_writes'))))
