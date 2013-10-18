@@ -276,7 +276,11 @@ def update_throughput(table_name, read_units, write_units, key_name):
     :type key_name: str
     :param key_name: Configuration option key name
     """
-    table = dynamodb.get_table(table_name)
+    try:
+        table = dynamodb.get_table(table_name)
+    except DynamoDBResponseError:
+        # Return if the table does not exist
+        return None
 
     # Check that we are in the right time frame
     if get_table_option(key_name, 'maintenance_windows'):

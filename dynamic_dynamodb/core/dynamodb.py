@@ -1,5 +1,4 @@
 """ Handle most tasks related to DynamoDB interaction """
-import sys
 import time
 
 from boto import dynamodb
@@ -61,9 +60,8 @@ def get_table(table_name):
         if dynamodb_error == 'ResourceNotFoundException':
             logger.error(
                 '{0} - Table {1} not found'.format(table_name, table_name))
-            sys.exit(1)
-        else:
-            raise
+
+        raise
 
     return table
 
