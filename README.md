@@ -274,6 +274,10 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.5.8 (2013-10-18)**
+
+- Fixed bug [Under some circumstances Dynamic DynamoDB crashes when table is deleted #68](https://github.com/sebdah/dynamic-dynamodb/issues/68)
+
 **1.5.7 (2013-10-17)**
 
 - Closed [Support for running dynamic-dynamodb with supervisord #66](https://github.com/sebdah/dynamic-dynamodb/issues/66) with [Pull Request #67](https://github.com/sebdah/dynamic-dynamodb/pull/67). Thanks @pragnesh!
