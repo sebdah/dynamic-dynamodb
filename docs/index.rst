@@ -3,6 +3,16 @@ Dynamic DynamoDB
 
 AWS DynamoDB is a great service, but it lacks support for automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
+Table of contents
+=================
+
+.. toctree::
+    :maxdepth: 3
+
+    installation
+    example_configuration
+    command_line_options
+
 Features in short
 -----------------
 
@@ -43,17 +53,6 @@ Command:
                      --check-interval 300
 
 Please note that using configuration files instead of command line options will give you even more control over the service.
-
-
-Table of contents
-=================
-
-.. toctree::
-    :maxdepth: 3
-
-    installation
-    example_configuration
-    command_line_options
 
 Author
 ------
