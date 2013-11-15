@@ -52,3 +52,4 @@ Table of contents
     :maxdepth: 3
 
     installation
+    example_configuration
