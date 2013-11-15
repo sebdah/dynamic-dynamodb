@@ -1,8 +1,8 @@
-Installing Dynamic DynamoDB
-===========================
+Installation
+============
 
-Install using ``pip``
----------------------
+Using ``pip``
+-------------
 
 Installing Dynamic DynamoDB is pretty straight forward using ``pip``.
 ::
@@ -10,8 +10,8 @@ Installing Dynamic DynamoDB is pretty straight forward using ``pip``.
     pip install dynamic-dynamodb
 
 
-Install from via Git
---------------------
+Manually via Git
+----------------
 
 It is also possible to install Dynamic DynamoDB manually, if you do no have access to ``pip``. First checkout the project from GitHub:
 ::
