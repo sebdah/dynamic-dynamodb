@@ -19,6 +19,7 @@ It is also possible to install Dynamic DynamoDB manually, if you do no have acce
     git clone git@github.com:sebdah/dynamic-dynamodb.git
 
 Then install the ``dynamic-dynamodb`` command locally.
+::
 
     cd dynamic-dynamodb
     make install
