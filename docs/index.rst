@@ -53,3 +53,4 @@ Table of contents
 
     installation
     example_configuration
+    command_line_options
