@@ -58,10 +58,6 @@ class DynamicDynamoDBDaemon(Daemon):
             for table_name in used_keys:
                 configured_tables.remove(table_name)
 
-            # Add regular tables
-            for table_name in configured_tables:
-                table_names.add((table_name, table_name))
-
             # Ensure provisioning
             for table_name, key_name in sorted(table_names):
                 core.ensure_provisioning(table_name, key_name)
@@ -111,10 +107,6 @@ def main():
         # Remove used tables
         for table_name in used_keys:
             configured_tables.remove(table_name)
-
-        # Add regular tables
-        for table_name in configured_tables:
-            table_names.add((table_name, table_name))
 
         # Ensure provisioning
         for table_name, key_name in sorted(table_names):

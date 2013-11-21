@@ -1,5 +1,4 @@
-# Dynamic DynamoDB [![Stories in Ready](https://badge.waffle.io/sebdah/dynamic-dynamodb.png)](http://waffle.io/sebdah/dynamic-dynamodb)
-
+# Dynamic DynamoDB
 
 AWS DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
@@ -16,6 +15,11 @@ Features in short
 - Gives you control over how much reads and writes you want to scale up and down with
 - Dynamic DynamoDB has support for max and min limits so that you always knows how much money you spend at most and how much capacity you can be guaranteed
 - Support for circuit breaker API call. If your service is experiencing disturbances, Dynamic DynamoDB will not scale down your DynamoDB tables
+
+Documentation
+-------------
+
+Project documentation is hosted at [dynamic-dynamodb.readthedocs.org](http://dynamic-dynamodb.readthedocs.org/en/latest/index.html).
 
 Basic usage
 -----------
@@ -54,210 +58,6 @@ The easiest way to install Dynamic DynamoDB is through PyPI:
 
     pip install dynamic-dynamodb
 
-Example configuration file
---------------------------
-
-    [global]
-    # AWS access keys
-    #aws-access-key-id: AWS_ACCESS_KEY
-    #aws-secret-access-key-id: AWS_SECRET_KEY
-
-    # AWS region to use
-    region: us-east-1
-
-    # How often should Dynamic DynamoDB monitor changes (in seconds)
-    check-interval: 300
-
-    # Circuit breaker configuration
-    # No provisioning updates will be made unless this URL returns
-    # a HTTP 200 OK status code
-    #circuit-breaker-url: http://my.service.com/v1/is_up
-    #circuit-breaker-timeout: 500
-
-    [logging]
-    # Log level [debug|info|warning|error]
-    log-level: info
-
-    # Log file (comment out to get only console output)
-    log-file: /var/log/dynamic-dynamodb.log
-
-
-    [table: my_table]
-    #
-    # Read provisioning configuration
-    #
-
-    # Thresholds for scaling up or down the provisioning (%)
-    reads-upper-threshold: 90
-    reads-lower-threshold: 30
-
-    # How many percent should Dynamic DynamoDB increase/decrease provisioning with (%)
-    increase-reads-with: 50
-    decrease-reads-with: 50
-
-    # Units to increase or decrease reads with, must be either percent or units
-    increase-reads-unit: percent
-    decrease-reads-unit: percent
-
-    # Maximum and minimum read provisioning
-    # Dynamic DynamoDB will not provision any more or less reads than this
-    #min-provisioned-reads: 100
-    #max-provisioned-reads: 500
-
-    #
-    # Write provisioning configuration
-    #
-
-    # Thresholds for scaling up or down the provisioning (%)
-    writes-upper-threshold: 90
-    writes-lower-threshold: 30
-
-    # How many percent should Dynamic DynamoDB increase/decrease provisioning with (%)
-    increase-writes-with: 50
-    decrease-writes-with: 50
-
-    # Units to increase or decrease writes with, must be either percent or units
-    increase-writes-unit: percent
-    decrease-writes-unit: percent
-
-    # Maximum and minimum write provisioning
-    # Dynamic DynamoDB will not provision any more or less writes than this
-    #min-provisioned-writes: 100
-    #max-provisioned-writes: 500
-
-    #
-    # Maintenance windows (in UTC)
-    #
-    #maintenance-windows: 22:00-23:59,00:00-06:00
-
-    #
-    # Other settings
-    #
-
-    # Allow down scaling when at 0% consumed reads
-    #allow-scaling-down-reads-on-0-percent: true
-    #allow-scaling-down-writes-on-0-percent: true
-
-    # Restric scale down to only happend when BOTH reads AND writes are in need
-    # of scaling down. Set this to "true" to minimize down scaling.
-    #always-decrease-rw-together: true
-
-Note: The configuration of tables support regular expressions so you could write `[table: log_* ]` if you want to target multiple tables with one config section.
-
-Full --help output
-------------------
-
-    usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run]
-                            [--check-interval CHECK_INTERVAL]
-                            [--log-file LOG_FILE] [--log-level LOG_LEVEL]
-                            [--version] [--aws-access-key-id AWS_ACCESS_KEY_ID]
-                            [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
-                            [--daemon DAEMON] [--instance INSTANCE] [-r REGION]
-                            [-t TABLE_NAME]
-                            [--reads-upper-threshold READS_UPPER_THRESHOLD]
-                            [--reads-lower-threshold READS_LOWER_THRESHOLD]
-                            [--increase-reads-with INCREASE_READS_WITH]
-                            [--decrease-reads-with DECREASE_READS_WITH]
-                            [--increase-reads-unit INCREASE_READS_UNIT]
-                            [--decrease-reads-unit DECREASE_READS_UNIT]
-                            [--min-provisioned-reads MIN_PROVISIONED_READS]
-                            [--max-provisioned-reads MAX_PROVISIONED_READS]
-                            [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
-                            [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
-                            [--increase-writes-with INCREASE_WRITES_WITH]
-                            [--decrease-writes-with DECREASE_WRITES_WITH]
-                            [--increase-writes-unit INCREASE_WRITES_UNIT]
-                            [--decrease-writes-unit DECREASE_WRITES_UNIT]
-                            [--min-provisioned-writes MIN_PROVISIONED_WRITES]
-                            [--max-provisioned-writes MAX_PROVISIONED_WRITES]
-
-    Dynamic DynamoDB - Auto provisioning AWS DynamoDB
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      -c CONFIG, --config CONFIG
-                            Read configuration from a configuration file
-      --dry-run             Run without making any changes to your DynamoDB table
-      --check-interval CHECK_INTERVAL
-                            How many seconds should we wait between the checks
-                            (default: 300)
-      --log-file LOG_FILE   Send output to the given log file
-      --log-level LOG_LEVEL
-                            Log level to use (default: info)
-      --version             Print current version number
-      --aws-access-key-id AWS_ACCESS_KEY_ID
-                            Override Boto configuration with the following AWS
-                            access key
-      --aws-secret-access-key AWS_SECRET_ACCESS_KEY
-                            Override Boto configuration with the following AWS
-                            secret key
-
-    Daemon options:
-      --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
-      --instance INSTANCE   Name of the Dynamic DynamoDB instance. Used to run
-                            multiple instances of Dynamic DynamoDB. Give each
-                            instance a unique name and control them separately
-                            with the --daemon flag. (default: default)
-
-    DynamoDB options:
-      -r REGION, --region REGION
-                            AWS region to operate in (default: us-east-1
-      -t TABLE_NAME, --table-name TABLE_NAME
-                            How many percent should we decrease the read units
-                            with?
-
-    Read units scaling properties:
-      --reads-upper-threshold READS_UPPER_THRESHOLD
-                            Scale up the reads with --increase-reads-with percent
-                            if the currently consumed read units reaches this many
-                            percent (default: 90)
-      --reads-lower-threshold READS_LOWER_THRESHOLD
-                            Scale down the reads with --decrease-reads-with
-                            percent if the currently consumed read units is as low
-                            as this percentage (default: 30)
-      --increase-reads-with INCREASE_READS_WITH
-                            How many percent should we increase the read units
-                            with? (default: 50, max: 100)
-      --decrease-reads-with DECREASE_READS_WITH
-                            How many percent should we decrease the read units
-                            with? (default: 50)
-      --increase-reads-unit INCREASE_READS_UNIT
-                            Do you want to scale in percent or units? (default:
-                            percent)
-      --decrease-reads-unit DECREASE_READS_UNIT
-                            Do you want to scale in percent or units? (default:
-                            percent)
-      --min-provisioned-reads MIN_PROVISIONED_READS
-                            Minimum number of provisioned reads
-      --max-provisioned-reads MAX_PROVISIONED_READS
-                            Maximum number of provisioned reads
-      --increase-writes-unit INCREASE_WRITES_UNIT
-                            Do you want to scale in percent or units? (default:
-                            percent)
-      --decrease-writes-unit DECREASE_WRITES_UNIT
-                            Do you want to scale in percent or units? (default:
-                            percent)
-
-    Write units scaling properties:
-      --writes-upper-threshold WRITES_UPPER_THRESHOLD
-                            Scale up the writes with --increase-writes-with
-                            percent if the currently consumed write units reaches
-                            this many percent (default: 90)
-      --writes-lower-threshold WRITES_LOWER_THRESHOLD
-                            Scale down the writes with --decrease-writes-with
-                            percent if the currently consumed write units is as
-                            low as this percentage (default: 30)
-      --increase-writes-with INCREASE_WRITES_WITH
-                            How many percent should we increase the write units
-                            with? (default: 50, max: 100)
-      --decrease-writes-with DECREASE_WRITES_WITH
-                            How many percent should we decrease the write units
-                            with? (default: 50)
-      --min-provisioned-writes MIN_PROVISIONED_WRITES
-                            Minimum number of provisioned writes
-      --max-provisioned-writes MAX_PROVISIONED_WRITES
-                            Maximum number of provisioned writes
-
 
 Reporting bugs
 --------------
@@ -273,6 +73,12 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 
 Release information
 -------------------
+
+**1.6.0 (2013-11-21)**
+
+- Documented project in Sphinx - [http://dynamic-dynamodb.readthedocs.org](http://dynamic-dynamodb.readthedocs.org)
+- Fixed [Failure on non-matching regular expressions #69](https://github.com/sebdah/dynamic-dynamodb/issues/69)
+- Fixed bug [cleanup logs in case of noop updates #71](https://github.com/sebdah/dynamic-dynamodb/issues/71) - Thanks [@tmorgan](https://github.com/tmorgan)
 
 **1.5.8 (2013-10-18)**
 
