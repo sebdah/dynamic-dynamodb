@@ -74,6 +74,12 @@ This project uses [git-flow](https://github.com/nvie/gitflow) for handling branc
 Release information
 -------------------
 
+**1.6.0 (2013-11-21)**
+
+- Documented project in Sphinx - [http://dynamic-dynamodb.readthedocs.org](http://dynamic-dynamodb.readthedocs.org)
+- Fixed [Failure on non-matching regular expressions #69](https://github.com/sebdah/dynamic-dynamodb/issues/69)
+- Fixed bug [cleanup logs in case of noop updates #71](https://github.com/sebdah/dynamic-dynamodb/issues/71) - Thanks [@tmorgan](https://github.com/tmorgan)
+
 **1.5.8 (2013-10-18)**
 
 - Fixed bug [Under some circumstances Dynamic DynamoDB crashes when table is deleted #68](https://github.com/sebdah/dynamic-dynamodb/issues/68)
