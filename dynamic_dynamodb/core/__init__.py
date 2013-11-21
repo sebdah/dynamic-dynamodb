@@ -149,8 +149,9 @@ def __ensure_provisioning_reads(table_name, key_name):
                 get_table_option(key_name, 'increase_reads_with'),
                 key_name)
 
-        update_needed = True
-        updated_read_units = updated_provisioning
+        if updated_read_units != updated_provisioning:
+            update_needed = True
+            updated_read_units = updated_provisioning
 
     elif (consumed_read_units_percent <=
             get_table_option(key_name, 'reads_lower_threshold')):
@@ -166,8 +167,9 @@ def __ensure_provisioning_reads(table_name, key_name):
                 get_table_option(key_name, 'decrease_reads_with'),
                 key_name)
 
-        update_needed = True
-        updated_read_units = updated_provisioning
+        if updated_read_units != updated_provisioning:
+            update_needed = True
+            updated_read_units = updated_provisioning
 
     return update_needed, int(updated_read_units)
 
@@ -210,8 +212,9 @@ def __ensure_provisioning_writes(table_name, key_name):
                 get_table_option(key_name, 'increase_writes_with'),
                 key_name)
 
-        update_needed = True
-        updated_write_units = updated_provisioning
+        if updated_write_units != updated_provisioning:
+            update_needed = True
+            updated_write_units = updated_provisioning
 
     elif (consumed_write_units_percent <=
             get_table_option(key_name, 'writes_lower_threshold')):
@@ -227,8 +230,9 @@ def __ensure_provisioning_writes(table_name, key_name):
                 get_table_option(key_name, 'decrease_writes_with'),
                 key_name)
 
-        update_needed = True
-        updated_write_units = updated_provisioning
+        if updated_write_units != updated_provisioning:
+            update_needed = True
+            updated_write_units = updated_provisioning
 
     return update_needed, int(updated_write_units)
 
