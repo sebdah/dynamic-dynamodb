@@ -178,7 +178,7 @@ def __ensure_provisioning_reads(table_name, key_name):
             get_table_option(key_name, 'max_provisioned_reads'))
         logger.info(
             'Will not increase writes over max-provisioned-reads '
-            'limit ({} writes)'.format(updated_read_units))
+            'limit ({0} writes)'.format(updated_read_units))
 
     return update_needed, int(updated_read_units)
 
@@ -250,7 +250,7 @@ def __ensure_provisioning_writes(table_name, key_name):
             get_table_option(key_name, 'max_provisioned_writes'))
         logger.info(
             'Will not increase writes over max-provisioned-writes '
-            'limit ({} writes)'.format(updated_write_units))
+            'limit ({0} writes)'.format(updated_write_units))
 
     return update_needed, int(updated_write_units)
 
@@ -324,11 +324,6 @@ def update_throughput(table_name, read_units, write_units, key_name):
         logger.warning(
             '{0} - Not performing throughput changes when table '
             'is in {1} state'.format(table_name, table_status))
-
-    #if (read_units == table.throughput['read'] and
-    #        write_units == table.throughput['write']):
-    #    logger.debug('{} - No need to update provisioning'.format(table_name))
-    #    return
 
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low

@@ -17,7 +17,7 @@ def __get_connection_dynamodb(retries=3):
     """
     connected = False
     while not connected:
-        logger.debug('Connecting to DynamoDB in {}'.format(
+        logger.debug('Connecting to DynamoDB in {0}'.format(
             configuration['global']['region']))
         try:
             if (configuration['global']['aws_access_key_id'] and
@@ -32,7 +32,7 @@ def __get_connection_dynamodb(retries=3):
                 connection = dynamodb2.connect_to_region(
                     configuration['global']['region'])
             connected = True
-            logger.debug('Connected to DynamoDB in {}'.format(
+            logger.debug('Connected to DynamoDB in {0}'.format(
                 configuration['global']['region']))
 
         except Exception as err:

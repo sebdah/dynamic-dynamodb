@@ -98,7 +98,7 @@ def __get_cmd_table_options(cmd_line_options):
 
     :type cmd_line_options: dict
     :param cmd_line_options: Dictionary with all command line options
-    :returns: dict -- E.g. { 'table_name': {} }
+    :returns: dict -- E.g. {'table_name': {}}
     """
     table_name = cmd_line_options['table_name']
     options = {table_name: {}}
@@ -117,7 +117,7 @@ def __get_config_table_options(conf_file_options):
 
     :type conf_file_options: dict
     :param conf_file_options: Dictionary with all config file options
-    :returns: dict -- E.g. { 'table_name': {} }
+    :returns: dict -- E.g. {'table_name': {}}
     """
     options = {}
 
