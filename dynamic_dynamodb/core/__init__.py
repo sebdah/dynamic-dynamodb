@@ -124,8 +124,8 @@ def __ensure_provisioning_reads(table_name, key_name):
     update_needed = False
     updated_read_units = statistics.get_provisioned_read_units(table_name)
 
-    consumed_read_units_percent = \
-        statistics.get_consumed_read_units_percent(table_name)
+    consumed_read_units_percent = statistics.get_consumed_read_units_percent(
+        table_name)
 
     if (consumed_read_units_percent == 0 and not
             get_table_option(
@@ -170,6 +170,15 @@ def __ensure_provisioning_reads(table_name, key_name):
         if updated_read_units != updated_provisioning:
             update_needed = True
             updated_read_units = updated_provisioning
+
+    if (int(updated_read_units) >
+            int(get_table_option(key_name, 'max_provisioned_reads'))):
+        update_needed = True
+        updated_read_units = int(
+            get_table_option(key_name, 'max_provisioned_reads'))
+        logger.info(
+            'Will not increase writes over max-provisioned-reads '
+            'limit ({} writes)'.format(updated_read_units))
 
     return update_needed, int(updated_read_units)
 
@@ -233,6 +242,15 @@ def __ensure_provisioning_writes(table_name, key_name):
         if updated_write_units != updated_provisioning:
             update_needed = True
             updated_write_units = updated_provisioning
+
+    if (int(updated_write_units) >
+            int(get_table_option(key_name, 'max_provisioned_writes'))):
+        update_needed = True
+        updated_write_units = int(
+            get_table_option(key_name, 'max_provisioned_writes'))
+        logger.info(
+            'Will not increase writes over max-provisioned-writes '
+            'limit ({} writes)'.format(updated_write_units))
 
     return update_needed, int(updated_write_units)
 
@@ -301,42 +319,48 @@ def update_throughput(table_name, read_units, write_units, key_name):
                     table_name))
 
     # Check table status
-    if table.status != 'ACTIVE':
+    table_status = dynamodb.get_table_status(table_name)
+    if table_status != 'ACTIVE':
         logger.warning(
             '{0} - Not performing throughput changes when table '
-            'is in {1} state'.format(table_name, table.status))
+            'is in {1} state'.format(table_name, table_status))
+
+    #if (read_units == table.throughput['read'] and
+    #        write_units == table.throughput['write']):
+    #    logger.debug('{} - No need to update provisioning'.format(table_name))
+    #    return
 
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
     if get_table_option(key_name, 'always_decrease_rw_together'):
-        if ((read_units < table.read_units) or
-                (table.read_units == get_table_option(
+        if ((read_units < table.throughput['read']) or
+                (table.throughput['read'] == get_table_option(
                     key_name, 'min_provisioned_reads'))):
-            if ((write_units < table.write_units) or
-                    (table.write_units == get_table_option(
+            if ((write_units < table.throughput['write']) or
+                    (table.throughput['write'] == get_table_option(
                         key_name, 'min_provisioned_writes'))):
                 logger.info(
                     '{0} - Both reads and writes will be decreased'.format(
                         table_name))
 
-        elif read_units < table.read_units:
+        elif read_units < table.throughput['read']:
             logger.info(
                 '{0} - Will not decrease reads nor writes, waiting for '
                 'both to become low before decrease'.format(table_name))
-            read_units = table.read_units
-        elif write_units < table.write_units:
+            read_units = table.throughput['read']
+        elif write_units < table.throughput['write']:
             logger.info(
                 '{0} - Will not decrease reads nor writes, waiting for '
                 'both to become low before decrease'.format(table_name))
-            write_units = table.write_units
-
-    if read_units == table.read_units and write_units == table.write_units:
-        logger.debug('{0} - No need to update provisioning')
-        return
+            write_units = table.throughput['write']
 
     if not get_global_option('dry_run'):
         try:
-            table.update_throughput(int(read_units), int(write_units))
+            table.update(
+                throughput={
+                    'read': int(read_units),
+                    'write': int(write_units)
+                })
             logger.info('Provisioning updated')
         except DynamoDBResponseError as error:
             dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
@@ -344,23 +368,23 @@ def update_throughput(table_name, read_units, write_units, key_name):
                 logger.warning(
                     '{0} - {1}'.format(table_name, error.body['message']))
 
-                if int(read_units) > table.read_units:
+                if int(read_units) > table.throughput['read']:
                     logger.info('{0} - Scaling up reads to {1:d}'.format(
                         table_name,
                         int(read_units)))
                     update_throughput(
                         table_name,
                         int(read_units),
-                        int(table.write_units),
+                        int(table.throughput['write']),
                         key_name)
 
-                elif int(write_units) > table.write_units:
+                elif int(write_units) > table.throughput['write']:
                     logger.info('{0} - Scaling up writes to {1:d}'.format(
                         table_name,
                         int(write_units)))
                     update_throughput(
                         table_name,
-                        int(table.read_units),
+                        int(table.throughput['read']),
                         int(write_units),
                         key_name)
 

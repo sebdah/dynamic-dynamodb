@@ -17,7 +17,8 @@ def __get_connection_dynamodb(retries=3):
     """
     connected = False
     while not connected:
-        logger.debug('Connecting to DynamoDB')
+        logger.debug('Connecting to DynamoDB in {}'.format(
+            configuration['global']['region']))
         try:
             if (configuration['global']['aws_access_key_id'] and
                     configuration['global']['aws_secret_access_key']):
@@ -31,7 +32,7 @@ def __get_connection_dynamodb(retries=3):
                 connection = dynamodb2.connect_to_region(
                     configuration['global']['region'])
             connected = True
-            logger.debug('Connected to region {}'.format(
+            logger.debug('Connected to DynamoDB in {}'.format(
                 configuration['global']['region']))
 
         except Exception as err:
@@ -49,6 +50,16 @@ def __get_connection_dynamodb(retries=3):
     return connection
 
 
+def describe_table(table_name):
+    """ Return table details
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :returns: dict
+    """
+    return DYNAMODB_CONNECTION.describe_table(table_name)
+
+
 def get_table(table_name):
     """ Return the DynamoDB table
 
@@ -57,7 +68,7 @@ def get_table(table_name):
     :returns: boto.dynamodb.table.Table
     """
     try:
-        table = Table(table_name)
+        table = Table(table_name, connection=DYNAMODB_CONNECTION)
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
         if dynamodb_error == 'ResourceNotFoundException':
@@ -69,6 +80,17 @@ def get_table(table_name):
     return table
 
 
+def get_table_status(table_name):
+    """ Return the DynamoDB table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :returns: str
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    return desc[u'Table'][u'TableStatus']
+
+
 def list_tables():
     """ Return list of DynamoDB tables available from AWS
 
@@ -77,8 +99,8 @@ def list_tables():
     tables = []
 
     try:
-        tables = DYNAMODB_CONNECTION.list_tables()
-        print(tables)
+        for table_name in DYNAMODB_CONNECTION.list_tables()[u'TableNames']:
+            tables.append(get_table(table_name))
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
 
