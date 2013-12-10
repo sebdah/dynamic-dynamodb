@@ -1,7 +1,8 @@
 """ Handle most tasks related to DynamoDB interaction """
 import time
 
-from boto import dynamodb
+from boto import dynamodb2
+from boto.dynamodb2.table import Table
 from boto.exception import DynamoDBResponseError
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
@@ -16,19 +17,22 @@ def __get_connection_dynamodb(retries=3):
     """
     connected = False
     while not connected:
+        logger.debug('Connecting to DynamoDB')
         try:
             if (configuration['global']['aws_access_key_id'] and
                     configuration['global']['aws_secret_access_key']):
-                connection = dynamodb.connect_to_region(
+                connection = dynamodb2.connect_to_region(
                     configuration['global']['region'],
                     aws_access_key_id=
                     configuration['global']['aws_access_key_id'],
                     aws_secret_access_key=
                     configuration['global']['aws_secret_access_key'])
             else:
-                connection = dynamodb.connect_to_region(
+                connection = dynamodb2.connect_to_region(
                     configuration['global']['region'])
             connected = True
+            logger.debug('Connected to region {}'.format(
+                configuration['global']['region']))
 
         except Exception as err:
             logger.error('Failed to connect to DynamoDB: {0}'.format(err))
@@ -42,7 +46,6 @@ def __get_connection_dynamodb(retries=3):
                 retries -= 1
                 time.sleep(5)
 
-    logger.debug('Connected to DynamoDB')
     return connection
 
 
@@ -54,7 +57,7 @@ def get_table(table_name):
     :returns: boto.dynamodb.table.Table
     """
     try:
-        table = DYNAMODB_CONNECTION.get_table(table_name)
+        table = Table(table_name)
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
         if dynamodb_error == 'ResourceNotFoundException':
@@ -75,6 +78,7 @@ def list_tables():
 
     try:
         tables = DYNAMODB_CONNECTION.list_tables()
+        print(tables)
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
 
