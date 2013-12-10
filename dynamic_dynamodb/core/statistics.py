@@ -2,8 +2,6 @@
 import math
 from datetime import datetime, timedelta
 
-from boto.exception import DynamoDBResponseError
-
 import dynamodb
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from cloudwatch import CLOUDWATCH_CONNECTION as cloudwatch_connection
@@ -146,15 +144,13 @@ def get_provisioned_read_units(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: int -- Number of read units
     """
-    try:
-        table = dynamodb.get_table(table_name)
-    except DynamoDBResponseError:
-        # Return if the table does not exist
-        return None
+    desc = dynamodb.describe_table(table_name)
+    read_units = int(
+        desc[u'Table'][u'ProvisionedThroughput'][u'ReadCapacityUnits'])
 
     logger.debug('{0} - Provisioned read units: {1:d}'.format(
-        table_name, table.read_units))
-    return int(table.read_units)
+        table_name, read_units))
+    return read_units
 
 
 def get_provisioned_write_units(table_name):
@@ -164,12 +160,10 @@ def get_provisioned_write_units(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: int -- Number of write units
     """
-    try:
-        table = dynamodb.get_table(table_name)
-    except DynamoDBResponseError:
-        # Return if the table does not exist
-        return None
+    desc = dynamodb.describe_table(table_name)
+    write_units = int(
+        desc[u'Table'][u'ProvisionedThroughput'][u'WriteCapacityUnits'])
 
     logger.debug('{0} - Provisioned write units: {1:d}'.format(
-        table_name, table.write_units))
-    return int(table.write_units)
+        table_name, write_units))
+    return write_units

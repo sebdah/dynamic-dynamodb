@@ -45,13 +45,13 @@ class DynamicDynamoDBDaemon(Daemon):
             configured_tables = configuration['tables'].keys()
 
             # Add regexp table names
-            for table_name in core.dynamodb.list_tables():
+            for table in core.dynamodb.list_tables():
                 for key_name in configured_tables:
-                    if re.match(key_name, table_name):
+                    if re.match(key_name, table.table_name):
                         logger.debug(
                             "Table {0} match with config key {1}".format(
-                                table_name, key_name))
-                        table_names.add((table_name, key_name))
+                                table.table_name, key_name))
+                        table_names.add((table.table_name, key_name))
                         used_keys.add(key_name)
 
             # Remove used tables
@@ -96,12 +96,12 @@ def main():
         configured_tables = configuration['tables'].keys()
 
         # Add regexp table names
-        for table_name in core.dynamodb.list_tables():
+        for table in core.dynamodb.list_tables():
             for key_name in configured_tables:
-                if re.match(key_name, table_name):
+                if re.match(key_name, table.table_name):
                     logger.debug("Table {0} match with config key {1}".format(
-                        table_name, key_name))
-                    table_names.add((table_name, key_name))
+                        table.table_name, key_name))
+                    table_names.add((table.table_name, key_name))
                     used_keys.add(key_name)
 
         # Remove used tables

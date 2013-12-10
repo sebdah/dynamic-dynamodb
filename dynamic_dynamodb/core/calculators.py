@@ -50,10 +50,6 @@ def decrease_reads_in_percent(current_provisioning, percent, key_name):
     """
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
-    logger.debug(
-        'Read provisioning will be decreased to {0:d} units'.format(
-            updated_provisioning))
-
     min_provisioned_reads = get_min_provisioned_reads(
         current_provisioning,
         key_name)
@@ -64,6 +60,10 @@ def decrease_reads_in_percent(current_provisioning, percent, key_name):
                 min_provisioned_reads))
 
             return min_provisioned_reads
+
+    logger.debug(
+        'Read provisioning will be decreased to {0:d} units'.format(
+            updated_provisioning))
 
     return updated_provisioning
 
@@ -81,9 +81,6 @@ def increase_reads_in_percent(current_provisioning, percent, key_name):
     """
     increase = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning + increase
-    logger.debug(
-        'Read provisioning will be increased to {0:d} units'.format(
-            updated_provisioning))
 
     if get_table_option(key_name, 'max_provisioned_reads') > 0:
         if (updated_provisioning >
@@ -93,6 +90,10 @@ def increase_reads_in_percent(current_provisioning, percent, key_name):
                 int(get_table_option(key_name, 'max_provisioned_reads'))))
 
             return get_table_option(key_name, 'max_provisioned_reads')
+
+    logger.debug(
+        'Read provisioning will be increased to {0:d} units'.format(
+            updated_provisioning))
 
     return updated_provisioning
 
@@ -110,10 +111,6 @@ def decrease_writes_in_percent(current_provisioning, percent, key_name):
     """
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
-    logger.debug(
-        'Write provisioning will be decreased to {0:d} units'.format(
-            updated_provisioning))
-
     min_provisioned_writes = get_min_provisioned_writes(
         current_provisioning,
         key_name)
@@ -124,6 +121,10 @@ def decrease_writes_in_percent(current_provisioning, percent, key_name):
                 min_provisioned_writes))
 
             return min_provisioned_writes
+
+    logger.debug(
+        'Write provisioning will be decreased to {0:d} units'.format(
+            updated_provisioning))
 
     return updated_provisioning
 
@@ -141,9 +142,6 @@ def increase_writes_in_percent(current_provisioning, percent, key_name):
     """
     increase = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning + increase
-    logger.debug(
-        'Write provisioning will be increased to {0:d} units'.format(
-            updated_provisioning))
 
     if get_table_option(key_name, 'max_provisioned_writes') > 0:
         if (updated_provisioning >
@@ -153,6 +151,10 @@ def increase_writes_in_percent(current_provisioning, percent, key_name):
                 int(get_table_option(key_name, 'max_provisioned_writes'))))
 
             return get_table_option(key_name, 'max_provisioned_writes')
+
+    logger.debug(
+        'Write provisioning will be increased to {0:d} units'.format(
+            updated_provisioning))
 
     return updated_provisioning
 
@@ -169,10 +171,6 @@ def decrease_reads_in_units(current_provisioning, units, key_name):
     :param key_name: Name of the key
     """
     updated_provisioning = int(current_provisioning) - int(units)
-    logger.debug(
-        'Read provisioning will be decreased to {0:d} units'.format(
-            updated_provisioning))
-
     min_provisioned_reads = get_min_provisioned_reads(
         current_provisioning,
         key_name)
@@ -183,6 +181,10 @@ def decrease_reads_in_units(current_provisioning, units, key_name):
                 min_provisioned_reads))
 
             return min_provisioned_reads
+
+    logger.debug(
+        'Read provisioning will be decreased to {0:d} units'.format(
+            updated_provisioning))
 
     return updated_provisioning
 
@@ -199,14 +201,11 @@ def increase_reads_in_units(current_provisioning, units, key_name):
     :param key_name: Name of the key
     """
     updated_provisioning = 0
+
     if int(units) > int(current_provisioning):
         updated_provisioning = 2 * int(current_provisioning)
     else:
         updated_provisioning = int(current_provisioning) + int(units)
-
-    logger.debug(
-        'Read provisioning will be increased to {0:d} units'.format(
-            updated_provisioning))
 
     if get_table_option(key_name, 'max_provisioned_reads') > 0:
         if (updated_provisioning >
@@ -216,6 +215,10 @@ def increase_reads_in_units(current_provisioning, units, key_name):
                 int(get_table_option(key_name, 'max_provisioned_reads'))))
 
             return get_table_option(key_name, 'max_provisioned_reads')
+
+    logger.debug(
+        'Read provisioning will be increased to {0:d} units'.format(
+            updated_provisioning))
 
     return updated_provisioning
 
@@ -232,10 +235,6 @@ def decrease_writes_in_units(current_provisioning, units, key_name):
     :param key_name: Name of the key
     """
     updated_provisioning = int(current_provisioning) - int(units)
-    logger.debug(
-        'Write provisioning will be decreased to {0:d} units'.format(
-            updated_provisioning))
-
     min_provisioned_writes = get_min_provisioned_writes(
         current_provisioning,
         key_name)
@@ -246,6 +245,10 @@ def decrease_writes_in_units(current_provisioning, units, key_name):
                 min_provisioned_writes))
 
             return min_provisioned_writes
+
+    logger.debug(
+        'Write provisioning will be decreased to {0:d} units'.format(
+            updated_provisioning))
 
     return updated_provisioning
 
@@ -267,10 +270,6 @@ def increase_writes_in_units(current_provisioning, units, key_name):
     else:
         updated_provisioning = int(current_provisioning) + int(units)
 
-    logger.debug(
-        'Write provisioning will be increased to {0:d} units'.format(
-            updated_provisioning))
-
     if get_table_option(key_name, 'max_provisioned_writes') > 0:
         if (updated_provisioning >
                 get_table_option(key_name, 'max_provisioned_writes')):
@@ -279,5 +278,9 @@ def increase_writes_in_units(current_provisioning, units, key_name):
                 int(get_table_option(key_name, 'max_provisioned_writes'))))
 
             return get_table_option(key_name, 'max_provisioned_writes')
+
+    logger.debug(
+        'Write provisioning will be increased to {0:d} units'.format(
+            updated_provisioning))
 
     return updated_provisioning

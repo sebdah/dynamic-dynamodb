@@ -133,7 +133,7 @@ def parse(config_path):
     #
     # Handle [table: ]
     #
-    table_config = { 'tables': {} }
+    table_config = {'tables': {}}
 
     # Find the first table definition
     found_table = False
@@ -278,4 +278,3 @@ def parse(config_path):
         global_config.items() +
         logging_config.items() +
         table_config.items())
-
