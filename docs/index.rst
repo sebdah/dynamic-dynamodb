@@ -5,6 +5,7 @@
     installation
     example_configuration
     command_line_options
+    release_notes
     license
 
 Dynamic DynamoDB
