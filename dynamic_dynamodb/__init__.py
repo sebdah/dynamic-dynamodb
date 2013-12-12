@@ -24,7 +24,7 @@ import re
 import sys
 import time
 
-import dynamic_dynamodb.core as core
+from dynamic_dynamodb.core import dynamodb, gsi, table
 from dynamic_dynamodb.daemon import Daemon
 from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
 from dynamic_dynamodb.log_handler import LOGGER as logger
@@ -42,7 +42,8 @@ class DynamicDynamoDBDaemon(Daemon):
         while True:
             # Ensure provisioning
             for table_name, key_name in sorted(self.tables):
-                core.ensure_provisioning(table_name, key_name)
+                table.ensure_provisioning(table_name, key_name)
+                gsi.ensure_gsi_provisioning(table_name, key_name)
 
             # Sleep between the checks
             time.sleep(check_interval)
@@ -55,12 +56,12 @@ def main():
     configured_tables = configuration['tables'].keys()
 
     # Add regexp table names
-    for table in core.dynamodb.list_tables():
+    for table_instance in dynamodb.list_tables():
         for key_name in configured_tables:
-            if re.match(key_name, table.table_name):
+            if re.match(key_name, table_instance.table_name):
                 logger.debug("Table {0} match with config key {1}".format(
-                    table.table_name, key_name))
-                table_names.add((table.table_name, key_name))
+                    table_instance.table_name, key_name))
+                table_names.add((table_instance.table_name, key_name))
                 used_keys.add(key_name)
 
     table_names = sorted(table_names)
@@ -90,4 +91,5 @@ def main():
     else:
         # Ensure provisioning
         for table_name, key_name in table_names:
-            core.ensure_provisioning(table_name, key_name)
+            #table.ensure_provisioning(table_name, key_name)
+            gsi.ensure_gsi_provisioning(table_name, key_name)

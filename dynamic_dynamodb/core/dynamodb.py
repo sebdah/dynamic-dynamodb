@@ -124,4 +124,18 @@ def list_tables():
     return tables
 
 
+def table_gsis(table_name):
+    """ Returns a list of GSIs for the given table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :returns: list -- List of GSI names
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)[u'Table']
+
+    if u'GlobalSecondaryIndexes' in desc:
+        return desc[u'GlobalSecondaryIndexes']
+
+    return []
+
 DYNAMODB_CONNECTION = __get_connection_dynamodb()
