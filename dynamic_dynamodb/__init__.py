@@ -40,26 +40,8 @@ class DynamicDynamoDBDaemon(Daemon):
         :param check_interval: Delay in seconds between checks
         """
         while True:
-            used_keys = set()
-            table_names = set()
-            configured_tables = configuration['tables'].keys()
-
-            # Add regexp table names
-            for table in core.dynamodb.list_tables():
-                for key_name in configured_tables:
-                    if re.match(key_name, table.table_name):
-                        logger.debug(
-                            "Table {0} match with config key {1}".format(
-                                table.table_name, key_name))
-                        table_names.add((table.table_name, key_name))
-                        used_keys.add(key_name)
-
-            # Remove used tables
-            for table_name in used_keys:
-                configured_tables.remove(table_name)
-
             # Ensure provisioning
-            for table_name, key_name in sorted(table_names):
+            for table_name, key_name in sorted(self.tables):
                 core.ensure_provisioning(table_name, key_name)
 
             # Sleep between the checks
@@ -68,10 +50,25 @@ class DynamicDynamoDBDaemon(Daemon):
 
 def main():
     """ Main function called from dynamic-dynamodb """
+    table_names = set()
+    used_keys = set()
+    configured_tables = configuration['tables'].keys()
+
+    # Add regexp table names
+    for table in core.dynamodb.list_tables():
+        for key_name in configured_tables:
+            if re.match(key_name, table.table_name):
+                logger.debug("Table {0} match with config key {1}".format(
+                    table.table_name, key_name))
+                table_names.add((table.table_name, key_name))
+                used_keys.add(key_name)
+
+    table_names = sorted(table_names)
+
     if configuration['global']['daemon']:
         pid_file = '/tmp/dynamic-dynamodb.{0}.pid'.format(
             configuration['global']['instance'])
-        daemon = DynamicDynamoDBDaemon(pid_file)
+        daemon = DynamicDynamoDBDaemon(pid_file, tables=table_names)
 
         if configuration['global']['daemon'] == 'start':
             daemon.start(
@@ -91,23 +88,6 @@ def main():
             print 'Valid options for --daemon are start, stop and restart'
             sys.exit(1)
     else:
-        table_names = set()
-        used_keys = set()
-        configured_tables = configuration['tables'].keys()
-
-        # Add regexp table names
-        for table in core.dynamodb.list_tables():
-            for key_name in configured_tables:
-                if re.match(key_name, table.table_name):
-                    logger.debug("Table {0} match with config key {1}".format(
-                        table.table_name, key_name))
-                    table_names.add((table.table_name, key_name))
-                    used_keys.add(key_name)
-
-        # Remove used tables
-        for table_name in used_keys:
-            configured_tables.remove(table_name)
-
         # Ensure provisioning
-        for table_name, key_name in sorted(table_names):
+        for table_name, key_name in table_names:
             core.ensure_provisioning(table_name, key_name)
