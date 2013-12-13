@@ -26,6 +26,7 @@ import time
 
 from dynamic_dynamodb.core import dynamodb, gsi, table
 from dynamic_dynamodb.daemon import Daemon
+from dynamic_dynamodb.config_handler import get_table_option
 from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
 from dynamic_dynamodb.log_handler import LOGGER as logger
 
@@ -92,4 +93,5 @@ def main():
         # Ensure provisioning
         for table_name, key_name in table_names:
             #table.ensure_provisioning(table_name, key_name)
-            gsi.ensure_gsi_provisioning(table_name, key_name)
+            if get_table_option(table_name, 'gsi_provisioning'):
+                gsi.ensure_gsi_provisioning(table_name, key_name)

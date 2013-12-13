@@ -244,6 +244,108 @@ def parse(config_path):
                     'type': 'int'
                 },
                 {
+                    'key': 'gsi_provisioning',
+                    'option': 'gsi-provisioning',
+                    'required': False,
+                    'type': 'bool'
+                },
+                {
+                    'key': 'gsi_reads_lower_threshold',
+                    'option': 'gsi-reads-lower-threshold',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_reads_upper_threshold',
+                    'option': 'gsi-reads-upper-threshold',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_increase_reads_with',
+                    'option': 'gsi-increase-reads-with',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_decrease_reads_with',
+                    'option': 'gsi-decrease-reads-with',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_increase_reads_unit',
+                    'option': 'gsi-increase-reads-unit',
+                    'required': False,
+                    'type': 'str'
+                },
+                {
+                    'key': 'gsi_decrease_reads_unit',
+                    'option': 'gsi-decrease-reads-unit',
+                    'required': False,
+                    'type': 'str'
+                },
+                {
+                    'key': 'gsi_writes_lower_threshold',
+                    'option': 'gsi-writes-lower-threshold',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_writes_upper_threshold',
+                    'option': 'gsi-writes-upper-threshold',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_increase_writes_with',
+                    'option': 'gsi-increase-writes-with',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_decrease_writes_with',
+                    'option': 'gsi-decrease-writes-with',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_increase_writes_unit',
+                    'option': 'gsi-increase-writes-unit',
+                    'required': False,
+                    'type': 'str'
+                },
+                {
+                    'key': 'gsi_decrease_writes_unit',
+                    'option': 'gsi-decrease-writes-unit',
+                    'required': False,
+                    'type': 'str'
+                },
+                {
+                    'key': 'gsi_min_provisioned_reads',
+                    'option': 'gsi-min-provisioned-reads',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_max_provisioned_reads',
+                    'option': 'gsi-max-provisioned-reads',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_min_provisioned_writes',
+                    'option': 'gsi-min-provisioned-writes',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'gsi_max_provisioned_writes',
+                    'option': 'gsi-max-provisioned-writes',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
                     'key': 'maintenance_windows',
                     'option': 'maintenance-windows',
                     'required': False,
