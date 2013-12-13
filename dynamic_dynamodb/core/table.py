@@ -1,10 +1,10 @@
 """ Core components """
 import datetime
 
+from dynamic_dynamodb.core import calculators
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.core import dynamodb
-from dynamic_dynamodb.core import statistics
-from dynamic_dynamodb.core import calculators
+from dynamic_dynamodb.statistics import table as table_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option, get_global_option
 
@@ -53,9 +53,9 @@ def __ensure_provisioning_reads(table_name, key_name):
     :returns: (bool, int) -- update_needed, updated_read_units
     """
     update_needed = False
-    updated_read_units = statistics.get_provisioned_read_units(table_name)
+    updated_read_units = table_stats.get_provisioned_read_units(table_name)
 
-    consumed_read_units_percent = statistics.get_consumed_read_units_percent(
+    consumed_read_units_percent = table_stats.get_consumed_read_units_percent(
         table_name)
 
     if (consumed_read_units_percent == 0 and not
@@ -124,10 +124,10 @@ def __ensure_provisioning_writes(table_name, key_name):
     :returns: (bool, int) -- update_needed, updated_write_units
     """
     update_needed = False
-    updated_write_units = statistics.get_provisioned_write_units(table_name)
+    updated_write_units = table_stats.get_provisioned_write_units(table_name)
 
     consumed_write_units_percent = \
-        statistics.get_consumed_write_units_percent(table_name)
+        table_stats.get_consumed_write_units_percent(table_name)
 
     # Check if we should update write provisioning
     if (consumed_write_units_percent == 0 and not

@@ -94,4 +94,4 @@ def main():
         for table_name, key_name in table_names:
             #table.ensure_provisioning(table_name, key_name)
             if get_table_option(table_name, 'gsi_provisioning'):
-                gsi.ensure_gsi_provisioning(table_name, key_name)
+                gsi.ensure_provisioning(table_name, key_name)
