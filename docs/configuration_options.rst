@@ -18,3 +18,15 @@ Option                                Type Comment
 ``circuit-breaker-url``               str  URL to poll for circuit breaking. Dynamic DynamoDB will only run if the circuit breaker returns ``HTTP/200``
 ``circuit-breaker-timeout``           int  Timeout for the circuit breaker, in ms
 ===================================== ==== ==========================================
+
+Logging options
+---------------
+
+**Section name:** ``[logging]``
+
+===================================== ==== ==========================================
+Option                                Type Comment
+===================================== ==== ==========================================
+``log-level``                         str  Log level (``debug``, ``info``, ``warning`` or ``error``)
+``log-file``                          str  Path to log file. Logging to stdout if this option is not present
+===================================== ==== ==========================================
