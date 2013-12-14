@@ -1,3 +1,5 @@
+.. _example_configuration_file:
+
 Example configuration file
 ==========================
 
