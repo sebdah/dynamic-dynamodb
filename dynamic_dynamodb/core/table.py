@@ -1,7 +1,7 @@
 """ Core components """
 import datetime
 
-from dynamic_dynamodb.core import calculators
+from dynamic_dynamodb.calculators import table as calculators
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.core import dynamodb
 from dynamic_dynamodb.statistics import table as table_stats
@@ -287,7 +287,7 @@ def update_throughput(table_name, read_units, write_units, key_name):
                     'read': int(read_units),
                     'write': int(write_units)
                 })
-            logger.info('Provisioning updated')
+            logger.info('{0} - Provisioning updated'.format(table_name))
         except DynamoDBResponseError as error:
             dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
             if dynamodb_error == 'LimitExceededException':

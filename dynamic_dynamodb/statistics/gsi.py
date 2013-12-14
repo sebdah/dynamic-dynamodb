@@ -8,11 +8,13 @@ from dynamic_dynamodb.core.cloudwatch import (
     CLOUDWATCH_CONNECTION as cloudwatch_connection)
 
 
-def get_consumed_read_units_percent(table_name, time_frame=300):
+def get_consumed_read_units_percent(table_name, index_name, time_frame=300):
     """ Returns the number of consumed read units in percent
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
+    :type index_name: str
+    :param index_name: Name of the GSI
     :type time_frame: int
     :param time_frame: How many seconds to look at
     :returns: int -- Number of consumed reads
@@ -24,7 +26,10 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
         metric_name='ConsumedReadCapacityUnits',
         namespace='AWS/DynamoDB',
         statistics=['Sum'],
-        dimensions={'TableName': table_name},
+        dimensions={
+            'TableName': table_name,
+            'GlobalSecondaryIndexName': index_name
+        },
         unit='Count')
 
     if metrics:
@@ -36,18 +41,20 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
     consumed_read_units_percent = int(
         math.ceil(
             float(consumed_read_units) /
-            float(get_provisioned_read_units(table_name)) * 100))
+            float(get_provisioned_read_units(table_name, index_name)) * 100))
 
-    logger.info('{0} - Consumed read units: {1:d}%'.format(
-        table_name, consumed_read_units_percent))
+    logger.info('{0} - GSI: {1} - Consumed read units: {2:d}%'.format(
+        table_name, index_name, consumed_read_units_percent))
     return consumed_read_units_percent
 
 
-def get_consumed_write_units_percent(table_name, time_frame=300):
+def get_consumed_write_units_percent(table_name, index_name, time_frame=300):
     """ Returns the number of consumed write units in percent
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
+    :type index_name: str
+    :param index_name: Name of the GSI
     :type time_frame: int
     :param time_frame: How many seconds to look at
     :returns: int -- Number of consumed writes
@@ -59,7 +66,10 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
         metric_name='ConsumedWriteCapacityUnits',
         namespace='AWS/DynamoDB',
         statistics=['Sum'],
-        dimensions={'TableName': table_name},
+        dimensions={
+            'TableName': table_name,
+            'GlobalSecondaryIndexName': index_name
+        },
         unit='Count')
 
     if metrics:
@@ -73,38 +83,48 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
             float(consumed_write_units) /
             float(get_provisioned_write_units(table_name)) * 100))
 
-    logger.info('{0} - Consumed write units: {1:d}%'.format(
-        table_name, consumed_write_units_percent))
+    logger.info('{0} - GSI: {1} - Consumed write units: {2:d}%'.format(
+        table_name, index_name, consumed_write_units_percent))
     return consumed_write_units_percent
 
 
-def get_provisioned_read_units(table_name):
+def get_provisioned_read_units(table_name, index_name):
     """ Returns the number of provisioned read units for the table
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
+    :type index_name: str
+    :param index_name: Name of the GSI
     :returns: int -- Number of read units
     """
     desc = dynamodb.describe_table(table_name)
-    read_units = int(
-        desc[u'Table'][u'ProvisionedThroughput'][u'ReadCapacityUnits'])
+    for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
+        if gsi[u'IndexName'] == index_name:
+            read_units = int(
+                gsi[u'ProvisionedThroughput'][u'ReadCapacityUnits'])
+            break
 
-    logger.debug('{0} - Provisioned read units: {1:d}'.format(
-        table_name, read_units))
+    logger.debug('{0} - GSI: {1} - Provisioned read units: {2:d}'.format(
+        table_name, index_name, read_units))
     return read_units
 
 
-def get_provisioned_write_units(table_name):
+def get_provisioned_write_units(table_name, index_name):
     """ Returns the number of provisioned write units for the table
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
+    :type index_name: str
+    :param index_name: Name of the GSI
     :returns: int -- Number of write units
     """
     desc = dynamodb.describe_table(table_name)
-    write_units = int(
-        desc[u'Table'][u'ProvisionedThroughput'][u'WriteCapacityUnits'])
+    for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
+        if gsi[u'IndexName'] == index_name:
+            write_units = int(
+                gsi[u'ProvisionedThroughput'][u'WriteCapacityUnits'])
+            break
 
-    logger.debug('{0} - Provisioned write units: {1:d}'.format(
-        table_name, write_units))
+    logger.debug('{0} - GSI: {1} - Provisioned write units: {2:d}'.format(
+        table_name, index_name, write_units))
     return write_units
