@@ -1,3 +1,5 @@
+.. _example_configuration_file:
+
 Example configuration file
 ==========================
 
@@ -85,8 +87,8 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #allow-scaling-down-reads-on-0-percent: true
     #allow-scaling-down-writes-on-0-percent: true
 
-    # Restric scale down to only happend when BOTH reads AND writes are in need
+    # Restric scale down to only happen when BOTH reads AND writes are in need
     # of scaling down. Set this to "true" to minimize down scaling.
     #always-decrease-rw-together: true
 
-Note: The configuration of tables support regular expressions so you could write ``[table: log_* ]` if you want to target multiple tables with one config section.
+Note: The configuration of tables support regular expressions so you could write ``[table: log_* ]`` if you want to target multiple tables with one config section.
