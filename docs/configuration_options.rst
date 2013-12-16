@@ -1,5 +1,5 @@
-Dynamic DynamoDB configuration
-==============================
+Configuration options
+=====================
 
 The sections below describe the various options available in the Dynamic DynamoDB configuration file. See :ref:`_example_configuration_file <Example configuration>` for an example configuration file.
 
