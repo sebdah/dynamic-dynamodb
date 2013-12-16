@@ -7,6 +7,7 @@
     example_configuration
     command_line_options
     release_notes
+    bug_reporting
     license
 
 Dynamic DynamoDB
