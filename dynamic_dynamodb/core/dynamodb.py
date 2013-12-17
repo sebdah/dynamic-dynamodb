@@ -99,8 +99,17 @@ def list_tables():
     tables = []
 
     try:
-        for table_name in DYNAMODB_CONNECTION.list_tables()[u'TableNames']:
-            tables.append(get_table(table_name))
+        table_list = DYNAMODB_CONNECTION.list_tables()
+        while True:
+            for table_name in table_list[u'TableNames']:
+                tables.append(get_table(table_name))
+
+            if u'LastEvaluatedTableName' in table_list:
+                table_list = DYNAMODB_CONNECTION.list_tables(table_list[u'LastEvaluatedTableName'])
+            else:
+                break
+
+
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
 
@@ -120,7 +129,6 @@ def list_tables():
                 ).format(
                     dynamodb_error,
                     error.body['message']))
-
     return tables
 
 
