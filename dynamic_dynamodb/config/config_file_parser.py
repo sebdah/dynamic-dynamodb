@@ -244,108 +244,6 @@ def parse(config_path):
                     'type': 'int'
                 },
                 {
-                    'key': 'gsi_provisioning',
-                    'option': 'gsi-provisioning',
-                    'required': False,
-                    'type': 'bool'
-                },
-                {
-                    'key': 'gsi_reads_lower_threshold',
-                    'option': 'gsi-reads-lower-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_reads_upper_threshold',
-                    'option': 'gsi-reads-upper-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_increase_reads_with',
-                    'option': 'gsi-increase-reads-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_decrease_reads_with',
-                    'option': 'gsi-decrease-reads-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_increase_reads_unit',
-                    'option': 'gsi-increase-reads-unit',
-                    'required': False,
-                    'type': 'str'
-                },
-                {
-                    'key': 'gsi_decrease_reads_unit',
-                    'option': 'gsi-decrease-reads-unit',
-                    'required': False,
-                    'type': 'str'
-                },
-                {
-                    'key': 'gsi_writes_lower_threshold',
-                    'option': 'gsi-writes-lower-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_writes_upper_threshold',
-                    'option': 'gsi-writes-upper-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_increase_writes_with',
-                    'option': 'gsi-increase-writes-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_decrease_writes_with',
-                    'option': 'gsi-decrease-writes-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_increase_writes_unit',
-                    'option': 'gsi-increase-writes-unit',
-                    'required': False,
-                    'type': 'str'
-                },
-                {
-                    'key': 'gsi_decrease_writes_unit',
-                    'option': 'gsi-decrease-writes-unit',
-                    'required': False,
-                    'type': 'str'
-                },
-                {
-                    'key': 'gsi_min_provisioned_reads',
-                    'option': 'gsi-min-provisioned-reads',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_max_provisioned_reads',
-                    'option': 'gsi-max-provisioned-reads',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_min_provisioned_writes',
-                    'option': 'gsi-min-provisioned-writes',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'gsi_max_provisioned_writes',
-                    'option': 'gsi-max-provisioned-writes',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
                     'key': 'maintenance_windows',
                     'option': 'maintenance-windows',
                     'required': False,
@@ -375,6 +273,146 @@ def parse(config_path):
         print 'Could not find a [table: <table_name>] section in {0}'.format(
             config_path)
         sys.exit(1)
+
+    # Find the first table definition
+    for current_section in config_file.sections():
+        try:
+            header1, gsi_key, header2, table_key = current_section.split(' ')
+        except ValueError:
+            continue
+
+        if header1 != 'gsi:':
+            continue
+
+        if 'gsis' not in table_config['tables'][table_key]:
+            table_config['tables'][table_key]['gsis'] = {}
+
+        table_config['tables'][table_key]['gsis'][gsi_key] = \
+            __parse_options(
+                config_file,
+                current_section,
+                [
+                    {
+                        'key': 'reads_lower_threshold',
+                        'option': 'reads-lower-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'reads_upper_threshold',
+                        'option': 'reads-upper-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'increase_reads_with',
+                        'option': 'increase-reads-with',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'decrease_reads_with',
+                        'option': 'decrease-reads-with',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'increase_reads_unit',
+                        'option': 'increase-reads-unit',
+                        'required': True,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'decrease_reads_unit',
+                        'option': 'decrease-reads-unit',
+                        'required': True,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'writes_lower_threshold',
+                        'option': 'writes-lower-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'writes_upper_threshold',
+                        'option': 'writes-upper-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'increase_writes_with',
+                        'option': 'increase-writes-with',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'decrease_writes_with',
+                        'option': 'decrease-writes-with',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'increase_writes_unit',
+                        'option': 'increase-writes-unit',
+                        'required': True,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'decrease_writes_unit',
+                        'option': 'decrease-writes-unit',
+                        'required': True,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'min_provisioned_reads',
+                        'option': 'min-provisioned-reads',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'max_provisioned_reads',
+                        'option': 'max-provisioned-reads',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'min_provisioned_writes',
+                        'option': 'min-provisioned-writes',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'max_provisioned_writes',
+                        'option': 'max-provisioned-writes',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'maintenance_windows',
+                        'option': 'maintenance-windows',
+                        'required': False,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'allow_scaling_down_reads_on_0_percent',
+                        'option': 'allow-scaling-down-reads-on-0-percent',
+                        'required': False,
+                        'type': 'bool'
+                    },
+                    {
+                        'key': 'allow_scaling_down_writes_on_0_percent',
+                        'option': 'allow-scaling-down-writes-on-0-percent',
+                        'required': False,
+                        'type': 'bool'
+                    },
+                    {
+                        'key': 'always_decrease_rw_together',
+                        'option': 'always-decrease-rw-together',
+                        'required': False,
+                        'type': 'bool'
+                    },
+                ])
 
     return dict(
         global_config.items() +

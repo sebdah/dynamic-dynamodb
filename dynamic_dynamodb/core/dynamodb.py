@@ -106,6 +106,25 @@ def get_table_status(table_name):
     return desc[u'Table'][u'TableStatus']
 
 
+#def list_gsis():
+#    """ Return a list of DynamoDB global secondary indexes (across all
+#        tables).
+#
+#    :returns: list
+#    """
+#    gsis = []
+#    for table in list_tables():
+#        current_gsis = table_gsis(table.table_name)
+#        if current_gsis:
+#            gsis.append(
+#                (
+#                    table.table_name,
+#                    [gsi[u'IndexName'] for gsi in current_gsis]
+#                ))
+#
+#    return gsis
+
+
 def list_tables():
     """ Return list of DynamoDB tables available from AWS
 
