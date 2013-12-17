@@ -4,22 +4,6 @@ import config
 CONFIGURATION = config.get_configuration()
 
 
-def get_configured_gsis():
-    """ Returns a list of configured global secondary indexes
-
-    :returns: list -- [(gsi_key_name, [table_names])]
-    """
-    gsis = []
-    for gsi_key_name in CONFIGURATION['gsis']:
-        print(CONFIGURATION['gsis'][gsi_key_name])
-        gsis.append(
-            (
-                gsi_key_name,
-                CONFIGURATION['gsis'][gsi_key_name]['table_key_name'],
-            ))
-    return gsis
-
-
 def get_global_option(option):
     """ Returns the value of the option
 

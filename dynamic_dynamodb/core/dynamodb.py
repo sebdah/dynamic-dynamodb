@@ -80,18 +80,18 @@ def get_table(table_name):
     return table
 
 
-def get_gsi_status(table_name, index_name):
+def get_gsi_status(table_name, gsi_name):
     """ Return the DynamoDB table
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
-    :type index_name: str
-    :param index_name: Name of the GSI
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
     :returns: str
     """
     desc = DYNAMODB_CONNECTION.describe_table(table_name)
     for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
-        if gsi[u'IndexName'] == index_name:
+        if gsi[u'IndexName'] == gsi_name:
             return gsi[u'IndexStatus']
 
 

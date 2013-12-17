@@ -286,7 +286,7 @@ def __is_maintenance_window(table_name, maintenance_windows):
 
 
 def __update_throughput(
-        table_name, table_key, gsi_name, read_units, write_units, gsi_key):
+        table_name, table_key, gsi_name, gsi_key, read_units, write_units):
     """ Update throughput on the GSI
 
     :type table_name: str
@@ -319,21 +319,25 @@ def __update_throughput(
                 table_key, gsi_key, 'maintenance_windows'))):
 
             logger.warning(
-                '{0} - Current time is outside maintenance window'.format(
-                    table_name))
+                '{0} - GSI: {1} - '
+                'Current time is outside maintenance window'.format(
+                    table_name,
+                    gsi_name))
             return
         else:
             logger.info(
-                '{0} - Current time is within maintenance window'.format(
-                    table_name))
+                '{0} - GSI: {1} - '
+                'Current time is within maintenance window'.format(
+                    table_name,
+                    gsi_name))
 
     # Check table status
-    gsi_status = dynamodb.get_gsi_status(table_name)
+    gsi_status = dynamodb.get_gsi_status(table_name, gsi_name)
 
     if gsi_status != 'ACTIVE':
         logger.warning(
             '{0} - GSI: {1} - Not performing throughput changes when table '
-            'is in {1} state'.format(table_name, gsi_name, gsi_status))
+            'is in {2} state'.format(table_name, gsi_name, gsi_status))
 
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
