@@ -73,12 +73,14 @@ def __ensure_provisioning_reads(table_name, key_name):
             updated_provisioning = calculators.increase_reads_in_percent(
                 updated_read_units,
                 get_table_option(key_name, 'increase_reads_with'),
-                key_name)
+                key_name,
+                table_name)
         else:
             updated_provisioning = calculators.increase_reads_in_units(
                 updated_read_units,
                 get_table_option(key_name, 'increase_reads_with'),
-                key_name)
+                key_name,
+                table_name)
 
         if updated_read_units != updated_provisioning:
             update_needed = True
@@ -91,12 +93,14 @@ def __ensure_provisioning_reads(table_name, key_name):
             updated_provisioning = calculators.decrease_reads_in_percent(
                 updated_read_units,
                 get_table_option(key_name, 'decrease_reads_with'),
-                key_name)
+                key_name,
+                table_name)
         else:
             updated_provisioning = calculators.decrease_reads_in_units(
                 updated_read_units,
                 get_table_option(key_name, 'decrease_reads_with'),
-                key_name)
+                key_name,
+                table_name)
 
         if updated_read_units != updated_provisioning:
             update_needed = True
@@ -145,12 +149,14 @@ def __ensure_provisioning_writes(table_name, key_name):
             updated_provisioning = calculators.increase_writes_in_percent(
                 updated_write_units,
                 get_table_option(key_name, 'increase_writes_with'),
-                key_name)
+                key_name,
+                table_name)
         else:
             updated_provisioning = calculators.increase_writes_in_units(
                 updated_write_units,
                 get_table_option(key_name, 'increase_writes_with'),
-                key_name)
+                key_name,
+                table_name)
 
         if updated_write_units != updated_provisioning:
             update_needed = True
@@ -163,12 +169,14 @@ def __ensure_provisioning_writes(table_name, key_name):
             updated_provisioning = calculators.decrease_writes_in_percent(
                 updated_write_units,
                 get_table_option(key_name, 'decrease_writes_with'),
-                key_name)
+                key_name,
+                table_name)
         else:
             updated_provisioning = calculators.decrease_writes_in_units(
                 updated_write_units,
                 get_table_option(key_name, 'decrease_writes_with'),
-                key_name)
+                key_name,
+                table_name)
 
         if updated_write_units != updated_provisioning:
             update_needed = True
