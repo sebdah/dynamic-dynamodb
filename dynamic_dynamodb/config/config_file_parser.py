@@ -142,132 +142,135 @@ def parse(config_path):
             continue
 
         found_table = True
-        current_table_name = current_section.rsplit(':', 1)[1].strip()
-        table_config['tables'][current_table_name] = __parse_options(
-            config_file,
-            current_section,
-            [
-                {
-                    'key': 'reads_lower_threshold',
-                    'option': 'reads-lower-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'reads_upper_threshold',
-                    'option': 'reads-upper-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'increase_reads_with',
-                    'option': 'increase-reads-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'decrease_reads_with',
-                    'option': 'decrease-reads-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'increase_reads_unit',
-                    'option': 'increase-reads-unit',
-                    'required': True,
-                    'type': 'str'
-                },
-                {
-                    'key': 'decrease_reads_unit',
-                    'option': 'decrease-reads-unit',
-                    'required': True,
-                    'type': 'str'
-                },
-                {
-                    'key': 'writes_lower_threshold',
-                    'option': 'writes-lower-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'writes_upper_threshold',
-                    'option': 'writes-upper-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'increase_writes_with',
-                    'option': 'increase-writes-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'decrease_writes_with',
-                    'option': 'decrease-writes-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'increase_writes_unit',
-                    'option': 'increase-writes-unit',
-                    'required': True,
-                    'type': 'str'
-                },
-                {
-                    'key': 'decrease_writes_unit',
-                    'option': 'decrease-writes-unit',
-                    'required': True,
-                    'type': 'str'
-                },
-                {
-                    'key': 'min_provisioned_reads',
-                    'option': 'min-provisioned-reads',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'max_provisioned_reads',
-                    'option': 'max-provisioned-reads',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'min_provisioned_writes',
-                    'option': 'min-provisioned-writes',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'max_provisioned_writes',
-                    'option': 'max-provisioned-writes',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'maintenance_windows',
-                    'option': 'maintenance-windows',
-                    'required': False,
-                    'type': 'str'
-                },
-                {
-                    'key': 'allow_scaling_down_reads_on_0_percent',
-                    'option': 'allow-scaling-down-reads-on-0-percent',
-                    'required': False,
-                    'type': 'bool'
-                },
-                {
-                    'key': 'allow_scaling_down_writes_on_0_percent',
-                    'option': 'allow-scaling-down-writes-on-0-percent',
-                    'required': False,
-                    'type': 'bool'
-                },
-                {
-                    'key': 'always_decrease_rw_together',
-                    'option': 'always-decrease-rw-together',
-                    'required': False,
-                    'type': 'bool'
-                },
-            ])
+
+        current_table_names_string = current_section.rsplit(':', 1)[1]
+        current_table_names = map(lambda table_name: table_name.strip(), current_table_names_string.split(','))
+        for current_table_name in current_table_names:
+            table_config['tables'][current_table_name] = __parse_options(
+                config_file,
+                current_section,
+                [
+                    {
+                        'key': 'reads_lower_threshold',
+                        'option': 'reads-lower-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'reads_upper_threshold',
+                        'option': 'reads-upper-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'increase_reads_with',
+                        'option': 'increase-reads-with',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'decrease_reads_with',
+                        'option': 'decrease-reads-with',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'increase_reads_unit',
+                        'option': 'increase-reads-unit',
+                        'required': True,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'decrease_reads_unit',
+                        'option': 'decrease-reads-unit',
+                        'required': True,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'writes_lower_threshold',
+                        'option': 'writes-lower-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'writes_upper_threshold',
+                        'option': 'writes-upper-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'increase_writes_with',
+                        'option': 'increase-writes-with',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'decrease_writes_with',
+                        'option': 'decrease-writes-with',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'increase_writes_unit',
+                        'option': 'increase-writes-unit',
+                        'required': True,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'decrease_writes_unit',
+                        'option': 'decrease-writes-unit',
+                        'required': True,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'min_provisioned_reads',
+                        'option': 'min-provisioned-reads',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'max_provisioned_reads',
+                        'option': 'max-provisioned-reads',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'min_provisioned_writes',
+                        'option': 'min-provisioned-writes',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'max_provisioned_writes',
+                        'option': 'max-provisioned-writes',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'maintenance_windows',
+                        'option': 'maintenance-windows',
+                        'required': False,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'allow_scaling_down_reads_on_0_percent',
+                        'option': 'allow-scaling-down-reads-on-0-percent',
+                        'required': False,
+                        'type': 'bool'
+                    },
+                    {
+                        'key': 'allow_scaling_down_writes_on_0_percent',
+                        'option': 'allow-scaling-down-writes-on-0-percent',
+                        'required': False,
+                        'type': 'bool'
+                    },
+                    {
+                        'key': 'always_decrease_rw_together',
+                        'option': 'always-decrease-rw-together',
+                        'required': False,
+                        'type': 'bool'
+                    },
+                ])
 
     if not found_table:
         print('Could not find a [table: <table_name>] section in {0}'.format(
