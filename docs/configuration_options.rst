@@ -14,7 +14,7 @@ Option                                Type Comment
 aws-access-key-id                     str  AWS access API key
 aws-secret-access-key-id              str  AWS secret API key
 region                                str  AWS region to use. E.g. ``us-east-1``
-check-interval                        int  How many seconds to wait between the checks. Important if running in daemon mode.
+check-interval                        int  How many seconds to wait between the checks. Default is 300 seconds.
 circuit-breaker-url                   str  URL to poll for circuit breaking. Dynamic DynamoDB will only run if the circuit breaker returns ``HTTP/200``
 circuit-breaker-timeout               int  Timeout for the circuit breaker, in ms
 ===================================== ==== ==========================================
