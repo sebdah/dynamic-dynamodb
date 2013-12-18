@@ -254,11 +254,13 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
     return update_needed, int(updated_write_units)
 
 
-def __is_maintenance_window(table_name, maintenance_windows):
+def __is_maintenance_window(table_name, gsi_name, maintenance_windows):
     """ Checks that the current time is within the maintenance window
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
     :type maintenance_windows: str
     :param maintenance_windows: Example: '00:00-01:00,10:00-11:00'
     :returns: bool -- True if within maintenance window
@@ -270,7 +272,8 @@ def __is_maintenance_window(table_name, maintenance_windows):
             start, end = window.split('-', 1)
         except ValueError:
             logger.error(
-                '{0} - Malformatted maintenance window'.format(table_name))
+                '{0} - GSI: {1} - '
+                'Malformatted maintenance window'.format(table_name))
             return False
 
         maintenance_window_list.append((start, end))
@@ -315,7 +318,7 @@ def __update_throughput(
 
     # Check that we are in the right time frame
     if get_gsi_option(table_key, gsi_key, 'maintenance_windows'):
-        if (not __is_maintenance_window(table_name, get_gsi_option(
+        if (not __is_maintenance_window(table_name, gsi_name, get_gsi_option(
                 table_key, gsi_key, 'maintenance_windows'))):
 
             logger.warning(
