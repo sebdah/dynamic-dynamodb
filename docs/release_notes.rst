@@ -9,6 +9,7 @@ Release notes
 -  `Added support for global secondary indexes #73 <https://github.com/sebdah/dynamic-dynamodb/issues/73>`__
 -  Fixed `Log level configuration in configuration file is overridden #75 <https://github.com/sebdah/dynamic-dynamodb/issues/75>`__
 -  `Recursively retrieve all tables #84 <https://github.com/sebdah/dynamic-dynamodb/issues/84>`__. Submitted by `@alxmrtn <https://github.com/alxmrtn>`__
+-  `Loop dynamic-dynamodb in command line mode #91 <https://github.com/sebdah/dynamic-dynamodb/issues/91>`__
 -  `Migrated to ``boto.dynamodb2`` #72 <https://github.com/sebdah/dynamic-dynamodb/issues/72>`__
 -  `Describe configuration options in the documentation #80 <https://github.com/sebdah/dynamic-dynamodb/issues/80>`__
 -  `Move release notes to the documentation #79 <https://github.com/sebdah/dynamic-dynamodb/issues/79>`__
