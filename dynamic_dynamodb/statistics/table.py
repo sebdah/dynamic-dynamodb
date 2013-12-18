@@ -89,7 +89,7 @@ def get_provisioned_read_units(table_name):
     read_units = int(
         desc[u'Table'][u'ProvisionedThroughput'][u'ReadCapacityUnits'])
 
-    logger.debug('{0} - Provisioned read units: {1:d}'.format(
+    logger.debug('{0} - Currently provisioned read units: {1:d}'.format(
         table_name, read_units))
     return read_units
 
@@ -105,6 +105,6 @@ def get_provisioned_write_units(table_name):
     write_units = int(
         desc[u'Table'][u'ProvisionedThroughput'][u'WriteCapacityUnits'])
 
-    logger.debug('{0} - Provisioned write units: {1:d}'.format(
+    logger.debug('{0} - Currently provisioned write units: {1:d}'.format(
         table_name, write_units))
     return write_units

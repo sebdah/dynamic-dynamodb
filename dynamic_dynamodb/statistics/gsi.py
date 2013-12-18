@@ -104,8 +104,9 @@ def get_provisioned_read_units(table_name, gsi_name):
                 gsi[u'ProvisionedThroughput'][u'ReadCapacityUnits'])
             break
 
-    logger.debug('{0} - GSI: {1} - Provisioned read units: {2:d}'.format(
-        table_name, gsi_name, read_units))
+    logger.debug(
+        '{0} - GSI: {1} - Currently provisioned read units: {2:d}'.format(
+            table_name, gsi_name, read_units))
     return read_units
 
 
@@ -125,6 +126,7 @@ def get_provisioned_write_units(table_name, gsi_name):
                 gsi[u'ProvisionedThroughput'][u'WriteCapacityUnits'])
             break
 
-    logger.debug('{0} - GSI: {1} - Provisioned write units: {2:d}'.format(
-        table_name, gsi_name, write_units))
+    logger.debug(
+        '{0} - GSI: {1} - Currently povisioned write units: {2:d}'.format(
+            table_name, gsi_name, write_units))
     return write_units
