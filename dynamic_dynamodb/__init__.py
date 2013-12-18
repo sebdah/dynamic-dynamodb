@@ -93,7 +93,7 @@ def main():
     else:
         # Ensure provisioning
         for table_name, table_key in table_names:
-            #table.ensure_provisioning(table_name, table_key)
+            table.ensure_provisioning(table_name, table_key)
 
             gsi_names = set()
             # Add regexp table names

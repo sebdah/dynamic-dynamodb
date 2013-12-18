@@ -37,7 +37,7 @@ def ensure_provisioning(table_name, key_name):
                 table_name,
                 int(updated_read_units),
                 int(updated_write_units)))
-        update_throughput(
+        __update_throughput(
             table_name, updated_read_units, updated_write_units, key_name)
     else:
         logger.info('{0} - No need to change provisioning'.format(table_name))
@@ -225,7 +225,7 @@ def __is_maintenance_window(table_name, maintenance_windows):
     return False
 
 
-def update_throughput(table_name, read_units, write_units, key_name):
+def __update_throughput(table_name, read_units, write_units, key_name):
     """ Update throughput on the DynamoDB table
 
     :type table_name: str
@@ -263,6 +263,7 @@ def update_throughput(table_name, read_units, write_units, key_name):
         logger.warning(
             '{0} - Not performing throughput changes when table '
             'is in {1} state'.format(table_name, table_status))
+        return
 
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
@@ -295,7 +296,10 @@ def update_throughput(table_name, read_units, write_units, key_name):
                     'read': int(read_units),
                     'write': int(write_units)
                 })
-            logger.info('{0} - Provisioning updated'.format(table_name))
+            logger.info(
+                '{0} - Provisioning updated '
+                'to {1} reads and {2} writes'.format(
+                    table_name, read_units, write_units))
         except DynamoDBResponseError as error:
             dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
             if dynamodb_error == 'LimitExceededException':
@@ -306,7 +310,7 @@ def update_throughput(table_name, read_units, write_units, key_name):
                     logger.info('{0} - Scaling up reads to {1:d}'.format(
                         table_name,
                         int(read_units)))
-                    update_throughput(
+                    __update_throughput(
                         table_name,
                         int(read_units),
                         int(table.throughput['write']),
@@ -316,7 +320,7 @@ def update_throughput(table_name, read_units, write_units, key_name):
                     logger.info('{0} - Scaling up writes to {1:d}'.format(
                         table_name,
                         int(write_units)))
-                    update_throughput(
+                    __update_throughput(
                         table_name,
                         int(table.throughput['read']),
                         int(write_units),

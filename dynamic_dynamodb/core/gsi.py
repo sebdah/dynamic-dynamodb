@@ -310,7 +310,7 @@ def __update_throughput(
 
     current_ru = gsi_stats.get_provisioned_read_units(
         table_name, gsi_name)
-    current_wu = gsi_stats.get_provisioned_read_units(
+    current_wu = gsi_stats.get_provisioned_write_units(
         table_name, gsi_name)
 
     # Check that we are in the right time frame
@@ -333,11 +333,11 @@ def __update_throughput(
 
     # Check table status
     gsi_status = dynamodb.get_gsi_status(table_name, gsi_name)
-
     if gsi_status != 'ACTIVE':
         logger.warning(
             '{0} - GSI: {1} - Not performing throughput changes when table '
             'is in {2} state'.format(table_name, gsi_name, gsi_status))
+        return
 
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
@@ -371,13 +371,18 @@ def __update_throughput(
 
     if not get_global_option('dry_run'):
         try:
-            table.update(
-                throughput={
-                    'read': int(read_units),
-                    'write': int(write_units)
-                })
-            logger.info('{0} - GSI: {1} - Provisioning updated'.format(
-                table_name, gsi_name))
+            dynamodb.update_gsi_provisioning(
+                table_name,
+                gsi_name,
+                int(read_units),
+                int(write_units))
+            logger.info(
+                '{0} - GSI: {1} - '
+                'Provisioning updated to {2} reads and {3} writes'.format(
+                    table_name,
+                    gsi_name,
+                    read_units,
+                    write_units))
         except DynamoDBResponseError as error:
             dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
             if dynamodb_error == 'LimitExceededException':

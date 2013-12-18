@@ -106,25 +106,6 @@ def get_table_status(table_name):
     return desc[u'Table'][u'TableStatus']
 
 
-#def list_gsis():
-#    """ Return a list of DynamoDB global secondary indexes (across all
-#        tables).
-#
-#    :returns: list
-#    """
-#    gsis = []
-#    for table in list_tables():
-#        current_gsis = table_gsis(table.table_name)
-#        if current_gsis:
-#            gsis.append(
-#                (
-#                    table.table_name,
-#                    [gsi[u'IndexName'] for gsi in current_gsis]
-#                ))
-#
-#    return gsis
-
-
 def list_tables():
     """ Return list of DynamoDB tables available from AWS
 
@@ -156,6 +137,33 @@ def list_tables():
                     error.body['message']))
 
     return tables
+
+
+def update_gsi_provisioning(table_name, gsi_name, reads, writes):
+    """ Update provisioning on a global secondary index
+
+    :type table_name: str
+    :param table_name: Name of the table
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
+    :type reads: int
+    :param reads: Number of reads to provision
+    :type writes: int
+    :param writes: Number of writes to provision
+    """
+    DYNAMODB_CONNECTION.update_table(
+        table_name=table_name,
+        global_secondary_index_updates=[
+            {
+                "Update": {
+                    "IndexName": gsi_name,
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": reads,
+                        "WriteCapacityUnits": writes
+                    }
+                }
+            }
+        ])
 
 
 def table_gsis(table_name):
