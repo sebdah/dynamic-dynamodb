@@ -70,6 +70,8 @@ class DynamicDynamoDBDaemon(Daemon):
                         gsi_key)
 
             # Sleep between the checks
+            logger.debug('Sleeping {0} seconds until next check'.format(
+                check_interval))
             time.sleep(check_interval)
 
 
@@ -104,6 +106,7 @@ def main():
 
             elif config['global']['daemon'] == 'stop':
                 daemon.stop()
+                sys.exit(0)
 
             elif config['global']['daemon'] == 'restart':
                 daemon.restart()
