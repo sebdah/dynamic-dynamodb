@@ -270,8 +270,8 @@ def parse(config_path):
             ])
 
     if not found_table:
-        print 'Could not find a [table: <table_name>] section in {0}'.format(
-            config_path)
+        print('Could not find a [table: <table_name>] section in {0}'.format(
+            config_path))
         sys.exit(1)
 
     # Find the first table definition
@@ -283,6 +283,11 @@ def parse(config_path):
 
         if header1 != 'gsi:':
             continue
+
+        if table_key not in table_config['tables']:
+            print('No table configuration matchin {0} found.'.format(
+                table_key))
+            sys.exit(1)
 
         if 'gsis' not in table_config['tables'][table_key]:
             table_config['tables'][table_key]['gsis'] = {}
