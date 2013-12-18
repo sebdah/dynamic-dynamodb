@@ -106,14 +106,15 @@ def __ensure_provisioning_reads(table_name, key_name):
             update_needed = True
             updated_read_units = updated_provisioning
 
-    if (int(updated_read_units) >
-            int(get_table_option(key_name, 'max_provisioned_reads'))):
-        update_needed = True
-        updated_read_units = int(
-            get_table_option(key_name, 'max_provisioned_reads'))
-        logger.info(
-            'Will not increase writes over max-provisioned-reads '
-            'limit ({0} writes)'.format(updated_read_units))
+    if get_table_option(key_name, 'max_provisioned_reads'):
+        if (int(updated_read_units) >
+                int(get_table_option(key_name, 'max_provisioned_reads'))):
+            update_needed = True
+            updated_read_units = int(
+                get_table_option(key_name, 'max_provisioned_reads'))
+            logger.info(
+                'Will not increase writes over max-provisioned-reads '
+                'limit ({0} writes)'.format(updated_read_units))
 
     return update_needed, int(updated_read_units)
 
@@ -182,14 +183,15 @@ def __ensure_provisioning_writes(table_name, key_name):
             update_needed = True
             updated_write_units = updated_provisioning
 
-    if (int(updated_write_units) >
-            int(get_table_option(key_name, 'max_provisioned_writes'))):
-        update_needed = True
-        updated_write_units = int(
-            get_table_option(key_name, 'max_provisioned_writes'))
-        logger.info(
-            'Will not increase writes over max-provisioned-writes '
-            'limit ({0} writes)'.format(updated_write_units))
+    if get_table_option(key_name, 'max_provisioned_writes'):
+        if (int(updated_write_units) >
+                int(get_table_option(key_name, 'max_provisioned_writes'))):
+            update_needed = True
+            updated_write_units = int(
+                get_table_option(key_name, 'max_provisioned_writes'))
+            logger.info(
+                'Will not increase writes over max-provisioned-writes '
+                'limit ({0} writes)'.format(updated_write_units))
 
     return update_needed, int(updated_write_units)
 

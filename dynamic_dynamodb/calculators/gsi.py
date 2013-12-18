@@ -23,7 +23,7 @@ def get_min_provisioned_reads(
     :param gsi_key: Name of the key
     :returns: int -- Minimum provisioned reads
     """
-    min_provisioned_reads = int(current_provisioning * 2)
+    min_provisioned_reads = 1
 
     if get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'):
         if (get_gsi_option(table_key, gsi_key, 'min_provisioned_reads') <
@@ -65,7 +65,7 @@ def get_min_provisioned_writes(
     :param gsi_key: Name of the key
     :returns: int -- Minimum provisioned writes
     """
-    min_provisioned_writes = int(current_provisioning * 2)
+    min_provisioned_writes = 1
 
     if get_gsi_option(table_key, gsi_key, 'min_provisioned_writes'):
         if (get_gsi_option(table_key, gsi_key, 'min_provisioned_writes') <
@@ -115,14 +115,13 @@ def decrease_reads_in_percent(
         gsi_name,
         gsi_key)
 
-    if min_provisioned_reads > 0:
-        if updated_provisioning < min_provisioned_reads:
-            logger.info(
-                '{0} - GSI: {1} - '
-                'Reached provisioned reads min limit: {2:d}'.format(
-                    table_name, gsi_name, min_provisioned_reads))
+    if updated_provisioning < min_provisioned_reads:
+        logger.info(
+            '{0} - GSI: {1} - '
+            'Reached provisioned reads min limit: {2:d}'.format(
+                table_name, gsi_name, min_provisioned_reads))
 
-            return min_provisioned_reads
+        return min_provisioned_reads
 
     logger.debug(
         '{0} - GSI: {1} - '
@@ -207,16 +206,15 @@ def decrease_writes_in_percent(
         gsi_name,
         gsi_key)
 
-    if min_provisioned_writes > 0:
-        if updated_provisioning < min_provisioned_writes:
-            logger.info(
-                '{0} - GSI {1} - '
-                'Reached provisioned writes min limit {2:d}'.format(
-                    table_name,
-                    gsi_name,
-                    min_provisioned_writes))
+    if updated_provisioning < min_provisioned_writes:
+        logger.info(
+            '{0} - GSI {1} - '
+            'Reached provisioned writes min limit {2:d}'.format(
+                table_name,
+                gsi_name,
+                min_provisioned_writes))
 
-            return min_provisioned_writes
+        return min_provisioned_writes
 
     logger.debug(
         '{0} - GSI: {1} - '
@@ -299,16 +297,15 @@ def decrease_reads_in_units(
         table_key,
         gsi_key)
 
-    if min_provisioned_reads > 0:
-        if updated_provisioning < min_provisioned_reads:
-            logger.info(
-                '{0} - GSI: {1} - '
-                'Reached provisioned reads min limit: {2:d}'.format(
-                    table_name,
-                    gsi_name,
-                    min_provisioned_reads))
+    if updated_provisioning < min_provisioned_reads:
+        logger.info(
+            '{0} - GSI: {1} - '
+            'Reached provisioned reads min limit: {2:d}'.format(
+                table_name,
+                gsi_name,
+                min_provisioned_reads))
 
-            return min_provisioned_reads
+        return min_provisioned_reads
 
     logger.debug(
         '{0} - GSI: {1} - '
@@ -394,16 +391,15 @@ def decrease_writes_in_units(
         table_key,
         gsi_key)
 
-    if min_provisioned_writes > 0:
-        if updated_provisioning < min_provisioned_writes:
-            logger.info(
-                '{0} - GSI: {1} - '
-                'Reached provisioned writes min limit: {2:d}'.format(
-                    table_name,
-                    gsi_name,
-                    min_provisioned_writes))
+    if updated_provisioning < min_provisioned_writes:
+        logger.info(
+            '{0} - GSI: {1} - '
+            'Reached provisioned writes min limit: {2:d}'.format(
+                table_name,
+                gsi_name,
+                min_provisioned_writes))
 
-            return min_provisioned_writes
+        return min_provisioned_writes
 
     logger.debug(
         '{0} - GSI: {1} - '

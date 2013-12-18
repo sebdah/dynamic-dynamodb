@@ -147,14 +147,15 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
             update_needed = True
             updated_read_units = updated_provisioning
 
-    if (int(updated_read_units) > int(
-            get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'))):
-        update_needed = True
-        updated_read_units = int(
-            get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'))
-        logger.info(
-            'Will not increase writes over gsi-max-provisioned-reads '
-            'limit ({0} writes)'.format(updated_read_units))
+    if get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'):
+        if (int(updated_read_units) > int(
+                get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'))):
+            update_needed = True
+            updated_read_units = int(
+                get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'))
+            logger.info(
+                'Will not increase writes over gsi-max-provisioned-reads '
+                'limit ({0} writes)'.format(updated_read_units))
 
     return update_needed, int(updated_read_units)
 
@@ -238,18 +239,19 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
             update_needed = True
             updated_write_units = updated_provisioning
 
-    if (int(updated_write_units) > int(get_gsi_option(
-            table_key, gsi_key, 'max_provisioned_writes'))):
-        update_needed = True
-        updated_write_units = int(get_gsi_option(
-            table_key, gsi_key, 'max_provisioned_writes'))
-        logger.info(
-            '{0} - GSI: {1} - '
-            'Will not increase writes over gsi-max-provisioned-writes '
-            'limit ({2} writes)'.format(
-                table_name,
-                gsi_name,
-                updated_write_units))
+    if get_gsi_option(table_key, gsi_key, 'max_provisioned_writes'):
+        if (int(updated_write_units) > int(get_gsi_option(
+                table_key, gsi_key, 'max_provisioned_writes'))):
+            update_needed = True
+            updated_write_units = int(get_gsi_option(
+                table_key, gsi_key, 'max_provisioned_writes'))
+            logger.info(
+                '{0} - GSI: {1} - '
+                'Will not increase writes over gsi-max-provisioned-writes '
+                'limit ({2} writes)'.format(
+                    table_name,
+                    gsi_name,
+                    updated_write_units))
 
     return update_needed, int(updated_write_units)
 
