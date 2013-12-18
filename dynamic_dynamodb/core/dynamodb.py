@@ -80,6 +80,21 @@ def get_table(table_name):
     return table
 
 
+def get_gsi_status(table_name, gsi_name):
+    """ Return the DynamoDB table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
+    :returns: str
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
+        if gsi[u'IndexName'] == gsi_name:
+            return gsi[u'IndexStatus']
+
+
 def get_table_status(table_name):
     """ Return the DynamoDB table
 
@@ -123,5 +138,46 @@ def list_tables():
 
     return tables
 
+
+def update_gsi_provisioning(table_name, gsi_name, reads, writes):
+    """ Update provisioning on a global secondary index
+
+    :type table_name: str
+    :param table_name: Name of the table
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
+    :type reads: int
+    :param reads: Number of reads to provision
+    :type writes: int
+    :param writes: Number of writes to provision
+    """
+    DYNAMODB_CONNECTION.update_table(
+        table_name=table_name,
+        global_secondary_index_updates=[
+            {
+                "Update": {
+                    "IndexName": gsi_name,
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": reads,
+                        "WriteCapacityUnits": writes
+                    }
+                }
+            }
+        ])
+
+
+def table_gsis(table_name):
+    """ Returns a list of GSIs for the given table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :returns: list -- List of GSI names
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)[u'Table']
+
+    if u'GlobalSecondaryIndexes' in desc:
+        return desc[u'GlobalSecondaryIndexes']
+
+    return []
 
 DYNAMODB_CONNECTION = __get_connection_dynamodb()

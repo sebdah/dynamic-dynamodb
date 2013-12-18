@@ -24,9 +24,9 @@ import re
 import sys
 import time
 
-import dynamic_dynamodb.core as core
+from dynamic_dynamodb.core import dynamodb, gsi, table
 from dynamic_dynamodb.daemon import Daemon
-from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
+from dynamic_dynamodb.config_handler import CONFIGURATION as config
 from dynamic_dynamodb.log_handler import LOGGER as logger
 
 
@@ -42,7 +42,8 @@ class DynamicDynamoDBDaemon(Daemon):
         while True:
             # Ensure provisioning
             for table_name, key_name in sorted(self.tables):
-                core.ensure_provisioning(table_name, key_name)
+                table.ensure_provisioning(table_name, key_name)
+                gsi.ensure_gsi_provisioning(table_name, key_name)
 
             # Sleep between the checks
             time.sleep(check_interval)
@@ -51,43 +52,70 @@ class DynamicDynamoDBDaemon(Daemon):
 def main():
     """ Main function called from dynamic-dynamodb """
     table_names = set()
-    used_keys = set()
-    configured_tables = configuration['tables'].keys()
+    configured_tables = config['tables'].keys()
 
     # Add regexp table names
-    for table in core.dynamodb.list_tables():
+    for table_instance in dynamodb.list_tables():
         for key_name in configured_tables:
-            if re.match(key_name, table.table_name):
+            if re.match(key_name, table_instance.table_name):
                 logger.debug("Table {0} match with config key {1}".format(
-                    table.table_name, key_name))
-                table_names.add((table.table_name, key_name))
-                used_keys.add(key_name)
+                    table_instance.table_name, key_name))
+                table_names.add(
+                    (
+                        table_instance.table_name,
+                        key_name
+                    ))
 
     table_names = sorted(table_names)
 
-    if configuration['global']['daemon']:
+    if config['global']['daemon']:
         pid_file = '/tmp/dynamic-dynamodb.{0}.pid'.format(
-            configuration['global']['instance'])
+            config['global']['instance'])
         daemon = DynamicDynamoDBDaemon(pid_file, tables=table_names)
 
-        if configuration['global']['daemon'] == 'start':
+        if config['global']['daemon'] == 'start':
             daemon.start(
-                check_interval=configuration['global']['check_interval'])
+                check_interval=config['global']['check_interval'])
 
-        elif configuration['global']['daemon'] == 'stop':
+        elif config['global']['daemon'] == 'stop':
             daemon.stop()
 
-        elif configuration['global']['daemon'] == 'restart':
+        elif config['global']['daemon'] == 'restart':
             daemon.restart()
 
-        elif configuration['global']['daemon'] in ['foreground', 'fg']:
+        elif config['global']['daemon'] in ['foreground', 'fg']:
             daemon.run(
-                check_interval=configuration['global']['check_interval'])
+                check_interval=config['global']['check_interval'])
 
         else:
             print 'Valid options for --daemon are start, stop and restart'
             sys.exit(1)
     else:
         # Ensure provisioning
-        for table_name, key_name in table_names:
-            core.ensure_provisioning(table_name, key_name)
+        for table_name, table_key in table_names:
+            table.ensure_provisioning(table_name, table_key)
+
+            gsi_names = set()
+            # Add regexp table names
+            for gst_instance in dynamodb.table_gsis(table_name):
+                gsi_name = gst_instance[u'IndexName']
+                for gsi_key in config['tables'][table_key]['gsis'].keys():
+                    if re.match(gsi_key, gsi_name):
+                        logger.debug(
+                            'Table {0} GSI {1} match with '
+                            'GSI config key {2}'.format(
+                                table_name, gsi_name, gsi_key))
+                        gsi_names.add(
+                            (
+                                gsi_name,
+                                gsi_key
+                            ))
+
+            gsi_names = sorted(gsi_names)
+
+            for gsi_name, gsi_key in gsi_names:
+                gsi.ensure_provisioning(
+                    table_name,
+                    table_key,
+                    gsi_name,
+                    gsi_key)

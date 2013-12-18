@@ -46,6 +46,28 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
         'maintenance_windows': None,
+    },
+    'gsi': {
+        'reads_lower_threshold': 30,
+        'reads_upper_threshold': 90,
+        'increase_reads_with': 50,
+        'decrease_reads_with': 50,
+        'increase_reads_unit': 'percent',
+        'decrease_reads_unit': 'percent',
+        'writes_lower_threshold': 30,
+        'writes_upper_threshold': 90,
+        'increase_writes_with': 50,
+        'decrease_writes_with': 50,
+        'increase_writes_unit': 'percent',
+        'decrease_writes_unit': 'percent',
+        'min_provisioned_reads': None,
+        'max_provisioned_reads': None,
+        'min_provisioned_writes': None,
+        'max_provisioned_writes': None,
+        'allow_scaling_down_reads_on_0_percent': False,
+        'allow_scaling_down_writes_on_0_percent': False,
+        'always_decrease_rw_together': False,
+        'maintenance_windows': None,
     }
 }
 
@@ -90,6 +112,11 @@ def get_configuration():
     # Ensure some basic rules
     __check_table_rules(configuration)
 
+    #configuration['gsis'] = __get_config_gsi_options(conf_file_options)
+
+    # Ensure some basic rules
+    __check_gsi_rules(configuration)
+
     return configuration
 
 
@@ -127,12 +154,31 @@ def __get_config_table_options(conf_file_options):
     for table_name in conf_file_options['tables']:
         options[table_name] = {}
 
+        # Regular table options
         for option in DEFAULT_OPTIONS['table'].keys():
             options[table_name][option] = DEFAULT_OPTIONS['table'][option]
 
             if option in conf_file_options['tables'][table_name]:
                 options[table_name][option] = \
                     conf_file_options['tables'][table_name][option]
+
+        # GSI specific options
+        for gsi_name in conf_file_options['tables'][table_name]['gsis']:
+            for option in DEFAULT_OPTIONS['gsi'].keys():
+                if (option in conf_file_options[
+                        'tables'][table_name]['gsis'][gsi_name]):
+                    opt = conf_file_options[
+                        'tables'][table_name]['gsis'][gsi_name][option]
+                else:
+                    opt = DEFAULT_OPTIONS['gsi'][option]
+
+                if 'gsis' not in options[table_name]:
+                    options[table_name]['gsis'] = {}
+
+                if gsi_name not in options[table_name]['gsis']:
+                    options[table_name]['gsis'][gsi_name] = {}
+
+                options[table_name]['gsis'][gsi_name][option] = opt
 
     return options
 
@@ -181,6 +227,54 @@ def __get_logging_options(cmd_line_options, conf_file_options=None):
             options[option] = cmd_line_options[option]
 
     return options
+
+
+def __check_gsi_rules(configuration):
+    """ Do some basic checks on the configuraion """
+    for table_name in configuration['tables']:
+        for gsi_name in configuration['tables'][table_name]['gsis']:
+            gsi = configuration['tables'][table_name]['gsis'][gsi_name]
+            # Check that increase/decrease units is OK
+            valid_units = ['percent', 'units']
+            if gsi['increase_reads_unit'] not in valid_units:
+                print(
+                    'increase-reads-with must be set to '
+                    'either percent or units')
+                sys.exit(1)
+            if gsi['decrease_reads_unit'] not in valid_units:
+                print(
+                    'decrease-reads-with must be set to '
+                    'either percent or units')
+                sys.exit(1)
+            if gsi['increase_writes_unit'] not in valid_units:
+                print(
+                    'increase-writes-with must be set to '
+                    'either percent or units')
+                sys.exit(1)
+            if gsi['decrease_writes_unit'] not in valid_units:
+                print(
+                    'decrease-writes-with must be set to '
+                    'either percent or units')
+                sys.exit(1)
+
+            # Check that increase_writes_with is not > 100
+            if (gsi['increase_writes_unit'] == 'percent' and
+                    gsi['increase_writes_with'] > 100):
+
+                print(
+                    'You can not increase the GSI throughput with more '
+                    'than 100% at a time. '
+                    'Setting --increase-writes-with to 100.')
+                gsi['increase_writes_with'] = 100
+
+            # Check that increase_reads_with is not > 100
+            if (gsi['increase_reads_unit'] == 'percent' and
+                    gsi['increase_reads_with'] > 100):
+                print(
+                    'You can not increase the GSI throughput with more '
+                    'than 100% at a time. '
+                    'Setting --increase-reads-with to 100.')
+                gsi['increase_reads_with'] = 100
 
 
 def __check_table_rules(configuration):

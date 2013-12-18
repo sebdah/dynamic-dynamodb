@@ -12,6 +12,18 @@ def get_global_option(option):
     return CONFIGURATION['global'][option]
 
 
+def get_gsi_option(table_key, gsi_key, option):
+    """ Returns the value of the option
+
+    :type table_key: str
+    :param table_key: Table key name
+    :type gsi_key: str
+    :param gsi_key: GSI key name
+    :returns: str
+    """
+    return CONFIGURATION['tables'][table_key]['gsis'][gsi_key][option]
+
+
 def get_logging_option(option):
     """ Returns the value of the option
 
