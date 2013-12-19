@@ -17,7 +17,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'boto >= 2.6.0',
+        'boto >= 2.20.1',
         'requests >= 0.14.1'
     ],
     classifiers=[
