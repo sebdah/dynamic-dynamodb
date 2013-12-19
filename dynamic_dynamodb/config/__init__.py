@@ -163,22 +163,23 @@ def __get_config_table_options(conf_file_options):
                     conf_file_options['tables'][table_name][option]
 
         # GSI specific options
-        for gsi_name in conf_file_options['tables'][table_name]['gsis']:
-            for option in DEFAULT_OPTIONS['gsi'].keys():
-                if (option in conf_file_options[
-                        'tables'][table_name]['gsis'][gsi_name]):
-                    opt = conf_file_options[
-                        'tables'][table_name]['gsis'][gsi_name][option]
-                else:
-                    opt = DEFAULT_OPTIONS['gsi'][option]
+        if 'gsis' in conf_file_options['tables'][table_name]:
+            for gsi_name in conf_file_options['tables'][table_name]['gsis']:
+                for option in DEFAULT_OPTIONS['gsi'].keys():
+                    if (option in conf_file_options[
+                            'tables'][table_name]['gsis'][gsi_name]):
+                        opt = conf_file_options[
+                            'tables'][table_name]['gsis'][gsi_name][option]
+                    else:
+                        opt = DEFAULT_OPTIONS['gsi'][option]
 
-                if 'gsis' not in options[table_name]:
-                    options[table_name]['gsis'] = {}
+                    if 'gsis' not in options[table_name]:
+                        options[table_name]['gsis'] = {}
 
-                if gsi_name not in options[table_name]['gsis']:
-                    options[table_name]['gsis'][gsi_name] = {}
+                    if gsi_name not in options[table_name]['gsis']:
+                        options[table_name]['gsis'][gsi_name] = {}
 
-                options[table_name]['gsis'][gsi_name][option] = opt
+                    options[table_name]['gsis'][gsi_name][option] = opt
 
     return options
 
@@ -232,6 +233,9 @@ def __get_logging_options(cmd_line_options, conf_file_options=None):
 def __check_gsi_rules(configuration):
     """ Do some basic checks on the configuraion """
     for table_name in configuration['tables']:
+        if not 'gsis' in configuration['tables'][table_name]:
+            continue
+
         for gsi_name in configuration['tables'][table_name]['gsis']:
             gsi = configuration['tables'][table_name]['gsis'][gsi_name]
             # Check that increase/decrease units is OK

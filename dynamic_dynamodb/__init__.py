@@ -125,19 +125,21 @@ def main():
 
                 gsi_names = set()
                 # Add regexp table names
-                for gst_instance in dynamodb.table_gsis(table_name):
-                    gsi_name = gst_instance[u'IndexName']
-                    for gsi_key in config['tables'][table_key]['gsis'].keys():
-                        if re.match(gsi_key, gsi_name):
-                            logger.debug(
-                                'Table {0} GSI {1} match with '
-                                'GSI config key {2}'.format(
-                                    table_name, gsi_name, gsi_key))
-                            gsi_names.add(
-                                (
-                                    gsi_name,
-                                    gsi_key
-                                ))
+                if 'gsis' in config['tables'][table_key]:
+                    for gst_instance in dynamodb.table_gsis(table_name):
+                        gsi_name = gst_instance[u'IndexName']
+                        gsi_keys = config['tables'][table_key]['gsis'].keys()
+                        for gsi_key in gsi_keys:
+                            if re.match(gsi_key, gsi_name):
+                                logger.debug(
+                                    'Table {0} GSI {1} match with '
+                                    'GSI config key {2}'.format(
+                                        table_name, gsi_name, gsi_key))
+                                gsi_names.add(
+                                    (
+                                        gsi_name,
+                                        gsi_key
+                                    ))
 
                 gsi_names = sorted(gsi_names)
 
