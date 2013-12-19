@@ -26,6 +26,7 @@ def get_min_provisioned_reads(current_provisioning, table_name, key_name):
             min_provisioned_reads = int(get_table_option(
                 key_name, 'min_provisioned_reads'))
         else:
+            min_provisioned_reads = int(current_provisioning * 2)
             logger.debug(
                 '{0} - '
                 'Cannot reach min_provisioned_reads as max scale up '
@@ -63,6 +64,7 @@ def get_min_provisioned_writes(current_provisioning, table_name, key_name):
             min_provisioned_writes = int(get_table_option(
                 key_name, 'min_provisioned_writes'))
         else:
+            min_provisioned_writes = int(current_provisioning * 2)
             logger.debug(
                 '{0} - '
                 'Cannot reach min_provisioned_writes as max scale up '
