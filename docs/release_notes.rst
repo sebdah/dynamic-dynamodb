@@ -14,6 +14,8 @@ Release notes
 -  `Describe configuration options in the documentation #80 <https://github.com/sebdah/dynamic-dynamodb/issues/80>`__
 -  `Move release notes to the documentation #79 <https://github.com/sebdah/dynamic-dynamodb/issues/79>`__
 
+Special thanks to the AWS DynamoDB for their support with this release.
+
 1.6.0
 -----
 
