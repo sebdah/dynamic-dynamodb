@@ -261,10 +261,11 @@ def __update_throughput(table_name, read_units, write_units, key_name):
 
     # Check table status
     table_status = dynamodb.get_table_status(table_name)
+    logger.debug('{0} - Table status is {1}'.format(table_name, table_status))
     if table_status != 'ACTIVE':
         logger.warning(
             '{0} - Not performing throughput changes when table '
-            'is in {1} state'.format(table_name, table_status))
+            'is {1}'.format(table_name, table_status))
         return
 
     # If this setting is True, we will only scale down when

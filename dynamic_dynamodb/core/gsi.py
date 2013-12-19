@@ -338,10 +338,12 @@ def __update_throughput(
 
     # Check table status
     gsi_status = dynamodb.get_gsi_status(table_name, gsi_name)
+    logger.debug('{0} - GSI: {1} - GSI status is {2}'.format(
+        table_name, gsi_name, gsi_status))
     if gsi_status != 'ACTIVE':
         logger.warning(
-            '{0} - GSI: {1} - Not performing throughput changes when table '
-            'is in {2} state'.format(table_name, gsi_name, gsi_status))
+            '{0} - GSI: {1} - Not performing throughput changes when GSI '
+            'status is {2}'.format(table_name, gsi_name, gsi_status))
         return
 
     # If this setting is True, we will only scale down when
