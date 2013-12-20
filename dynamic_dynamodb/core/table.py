@@ -293,64 +293,7 @@ def __update_throughput(table_name, read_units, write_units, key_name):
             write_units = table.throughput['write']
 
     if not get_global_option('dry_run'):
-        try:
-            table.update(
-                throughput={
-                    'read': int(read_units),
-                    'write': int(write_units)
-                })
-            logger.info(
-                '{0} - Provisioning updated '
-                'to {1} reads and {2} writes'.format(
-                    table_name, read_units, write_units))
-        except DynamoDBResponseError as error:
-            dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
-            if dynamodb_error == 'LimitExceededException':
-                logger.warning(
-                    '{0} - {1}'.format(table_name, error.body['message']))
-
-                if int(read_units) > table.throughput['read']:
-                    logger.info('{0} - Scaling up reads to {1:d}'.format(
-                        table_name,
-                        int(read_units)))
-                    __update_throughput(
-                        table_name,
-                        int(read_units),
-                        int(table.throughput['write']),
-                        key_name)
-
-                elif int(write_units) > table.throughput['write']:
-                    logger.info('{0} - Scaling up writes to {1:d}'.format(
-                        table_name,
-                        int(write_units)))
-                    __update_throughput(
-                        table_name,
-                        int(table.throughput['read']),
-                        int(write_units),
-                        key_name)
-
-            elif dynamodb_error == 'ValidationException':
-                logger.warning('{0} - ValidationException: {1}'.format(
-                    table_name,
-                    error.body['message']))
-
-            elif dynamodb_error == 'ResourceInUseException':
-                logger.warning('{0} - ResourceInUseException: {1}'.format(
-                    table_name,
-                    error.body['message']))
-
-            elif dynamodb_error == 'AccessDeniedException':
-                logger.warning('{0} - AccessDeniedException: {1}'.format(
-                    table_name,
-                    error.body['message']))
-
-            else:
-                logger.error(
-                    (
-                        '{0} - Unhandled exception: {1}: {2}. '
-                        'Please file a bug report at '
-                        'https://github.com/sebdah/dynamic-dynamodb/issues'
-                    ).format(
-                        table_name,
-                        dynamodb_error,
-                        error.body['message']))
+        dynamodb.update_table_provisioning(
+            table_name,
+            int(read_units),
+            int(write_units))

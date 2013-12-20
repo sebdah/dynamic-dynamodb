@@ -153,6 +153,38 @@ def list_tables():
     return tables
 
 
+def update_table_provisioning(table_name, reads, writes):
+    """"""
+    table = get_table(table_name)
+
+    try:
+        table.update(
+            throughput={
+                'read': reads,
+                'write': writes
+            })
+        logger.info(
+            '{0} - Provisioning updated to {1} reads and {2} writes'.format(
+                table_name, reads, writes))
+    except JSONResponseError as error:
+        exception = error.body['__type'].split('#')[1]
+        know_exceptions = [
+            'LimitExceededException',
+            'ValidationException',
+            'ResourceInUseException']
+
+        if exception in know_exceptions:
+            logger.warning('{0} - {1}: {2}'.format(
+                table_name, exception, error.body['message']))
+        else:
+            logger.error(
+                (
+                    '{0} - Unhandled exception: {1}: {2}. '
+                    'Please file a bug report at '
+                    'https://github.com/sebdah/dynamic-dynamodb/issues'
+                ).format(table_name, exception, error.body['message']))
+
+
 def update_gsi_provisioning(table_name, gsi_name, reads, writes):
     """ Update provisioning on a global secondary index
 
@@ -165,19 +197,34 @@ def update_gsi_provisioning(table_name, gsi_name, reads, writes):
     :type writes: int
     :param writes: Number of writes to provision
     """
-    DYNAMODB_CONNECTION.update_table(
-        table_name=table_name,
-        global_secondary_index_updates=[
-            {
-                "Update": {
-                    "IndexName": gsi_name,
-                    "ProvisionedThroughput": {
-                        "ReadCapacityUnits": reads,
-                        "WriteCapacityUnits": writes
+    try:
+        DYNAMODB_CONNECTION.update_table(
+            table_name=table_name,
+            global_secondary_index_updates=[
+                {
+                    "Update": {
+                        "IndexName": gsi_name,
+                        "ProvisionedThroughput": {
+                            "ReadCapacityUnits": reads,
+                            "WriteCapacityUnits": writes
+                        }
                     }
                 }
-            }
-        ])
+            ])
+    except JSONResponseError as error:
+        exception = error.body['__type'].split('#')[1]
+        know_exceptions = ['LimitExceededException']
+        if exception in know_exceptions:
+            logger.warning('{0} - GSI: {1} - {2}: {3}'.format(
+                table_name, gsi_name, exception, error.body['message']))
+        else:
+            logger.error(
+                (
+                    '{0} - GSI: {1} - Unhandled exception: {2}: {3}. '
+                    'Please file a bug report at '
+                    'https://github.com/sebdah/dynamic-dynamodb/issues'
+                ).format(
+                    table_name, gsi_name, exception, error.body['message']))
 
 
 def table_gsis(table_name):
