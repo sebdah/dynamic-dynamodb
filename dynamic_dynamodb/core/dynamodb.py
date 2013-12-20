@@ -1,9 +1,10 @@
 """ Handle most tasks related to DynamoDB interaction """
 import time
+import sys
 
 from boto import dynamodb2
 from boto.dynamodb2.table import Table
-from boto.exception import DynamoDBResponseError
+from boto.exception import DynamoDBResponseError, JSONResponseError
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
@@ -144,6 +145,11 @@ def list_tables():
                 ).format(
                     dynamodb_error,
                     error.body['message']))
+
+    except JSONResponseError as error:
+        logger.error('Communication error: {0}'.format(error.body['message']))
+        sys.exit(1)
+
     return tables
 
 
