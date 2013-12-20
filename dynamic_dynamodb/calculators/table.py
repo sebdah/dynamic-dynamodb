@@ -21,11 +21,10 @@ def get_min_provisioned_reads(current_provisioning, table_name, key_name):
     min_provisioned_reads = 1
 
     if get_table_option(key_name, 'min_provisioned_reads'):
-        if (get_table_option(key_name, 'min_provisioned_reads') <
-                min_provisioned_reads):
-            min_provisioned_reads = int(get_table_option(
-                key_name, 'min_provisioned_reads'))
-        else:
+        min_provisioned_reads = int(
+            get_table_option(key_name, 'min_provisioned_reads'))
+
+        if min_provisioned_reads > int(current_provisioning * 2):
             min_provisioned_reads = int(current_provisioning * 2)
             logger.debug(
                 '{0} - '
@@ -59,11 +58,10 @@ def get_min_provisioned_writes(current_provisioning, table_name, key_name):
     min_provisioned_writes = 1
 
     if get_table_option(key_name, 'min_provisioned_writes'):
-        if (get_table_option(key_name, 'min_provisioned_writes') <
-                min_provisioned_writes):
-            min_provisioned_writes = int(get_table_option(
-                key_name, 'min_provisioned_writes'))
-        else:
+        min_provisioned_writes = int(
+            get_table_option(key_name, 'min_provisioned_writes'))
+
+        if min_provisioned_writes > int(current_provisioning * 2):
             min_provisioned_writes = int(current_provisioning * 2)
             logger.debug(
                 '{0} - '
