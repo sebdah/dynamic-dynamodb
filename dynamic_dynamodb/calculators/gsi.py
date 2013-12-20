@@ -29,7 +29,7 @@ def get_min_provisioned_reads(
         min_provisioned_reads = int(get_gsi_option(
             table_key, gsi_key, 'min_provisioned_reads'))
 
-        if min_provisioned_reads < int(current_provisioning * 2):
+        if min_provisioned_reads > int(current_provisioning * 2):
             min_provisioned_reads = int(current_provisioning * 2)
             logger.debug(
                 '{0} - GSI: {1} - '
