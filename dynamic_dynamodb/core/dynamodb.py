@@ -120,10 +120,10 @@ def list_tables():
                 tables.append(get_table(table_name))
 
             if u'LastEvaluatedTableName' in table_list:
-                table_list = DYNAMODB_CONNECTION.list_tables(table_list[u'LastEvaluatedTableName'])
+                table_list = DYNAMODB_CONNECTION.list_tables(
+                    table_list[u'LastEvaluatedTableName'])
             else:
                 break
-
 
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
