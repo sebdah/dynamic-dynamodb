@@ -277,6 +277,27 @@ def __check_gsi_rules(configuration):
                     'Setting --increase-reads-with to 100.')
                 gsi['increase_reads_with'] = 100
 
+            # Ensure values > 1 for some important configuration options
+            options = [
+                'reads_lower_threshold',
+                'reads_upper_threshold',
+                'increase_reads_with',
+                'decrease_reads_with',
+                'writes_lower_threshold',
+                'writes_upper_threshold',
+                'increase_writes_with',
+                'decrease_writes_with',
+                'min_provisioned_reads',
+                'max_provisioned_reads',
+                'min_provisioned_writes',
+                'max_provisioned_writes'
+            ]
+            for option in options:
+                if gsi[option] < 1:
+                    print('{0} may not be lower than 1 for GSI {1}'.format(
+                        option, gsi_name))
+                    sys.exit(1)
+
 
 def __check_logging_rules(configuration):
     """ Check that the logging values are proper """
@@ -329,3 +350,24 @@ def __check_table_rules(configuration):
                 'You can not increase the table throughput with more '
                 'than 100% at a time. Setting --increase-reads-with to 100.')
             table['increase_reads_with'] = 100
+
+        # Ensure values > 1 for some important configuration options
+        options = [
+            'reads_lower_threshold',
+            'reads_upper_threshold',
+            'increase_reads_with',
+            'decrease_reads_with',
+            'writes_lower_threshold',
+            'writes_upper_threshold',
+            'increase_writes_with',
+            'decrease_writes_with',
+            'min_provisioned_reads',
+            'max_provisioned_reads',
+            'min_provisioned_writes',
+            'max_provisioned_writes'
+        ]
+        for option in options:
+            if table[option] < 1:
+                print('{0} may not be lower than 1 for table {1}'.format(
+                    option, table_name))
+                sys.exit(1)
