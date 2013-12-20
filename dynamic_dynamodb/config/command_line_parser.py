@@ -26,6 +26,7 @@ def parse():
         help='Send output to the given log file')
     parser.add_argument(
         '--log-level',
+        choices=['debug', 'info', 'warning', 'error'],
         help='Log level to use (default: info)')
     parser.add_argument(
         '--version',
