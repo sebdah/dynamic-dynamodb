@@ -110,12 +110,9 @@ def get_configuration():
         configuration['tables'] = __get_config_table_options(conf_file_options)
 
     # Ensure some basic rules
-    __check_table_rules(configuration)
-
-    #configuration['gsis'] = __get_config_gsi_options(conf_file_options)
-
-    # Ensure some basic rules
     __check_gsi_rules(configuration)
+    __check_logging_rules(configuration)
+    __check_table_rules(configuration)
 
     return configuration
 
@@ -279,6 +276,20 @@ def __check_gsi_rules(configuration):
                     'than 100% at a time. '
                     'Setting --increase-reads-with to 100.')
                 gsi['increase_reads_with'] = 100
+
+
+def __check_logging_rules(configuration):
+    """ Check that the logging values are proper """
+    valid_log_levels = [
+        'debug',
+        'info',
+        'warning',
+        'error'
+    ]
+    if configuration['logging']['log_level'].lower() not in valid_log_levels:
+        print('Log level must be one of {0}'.format(
+            ', '.join(valid_log_levels)))
+        sys.exit(1)
 
 
 def __check_table_rules(configuration):
