@@ -95,10 +95,11 @@ def main():
                         ))
                     not_used_tables.remove(key_name)
 
-        logger.warning(
-            'No tables matching the following configured '
-            'tables found: {0}'.format(
-                ', '.join(not_used_tables)))
+        if not_used_tables:
+            logger.warning(
+                'No tables matching the following configured '
+                'tables found: {0}'.format(
+                    ', '.join(not_used_tables)))
 
         table_names = sorted(table_names)
 
