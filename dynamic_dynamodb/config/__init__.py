@@ -298,6 +298,25 @@ def __check_gsi_rules(configuration):
                         option, gsi_name))
                     sys.exit(1)
 
+            if (int(gsi['min_provisioned_reads']) >
+                    int(gsi['max_provisioned_reads'])):
+                print(
+                    'min_provisioned_reads ({0}) may not be higher than '
+                    'max_provisioned_reads ({1}) for GSI {2}'.format(
+                        gsi['min_provisioned_reads'],
+                        gsi['max_provisioned_reads'],
+                        gsi_name))
+                sys.exit(1)
+            elif (int(gsi['min_provisioned_writes']) >
+                    int(gsi['max_provisioned_writes'])):
+                print(
+                    'min_provisioned_writes ({0}) may not be higher than '
+                    'max_provisioned_writes ({1}) for GSI {2}'.format(
+                        gsi['min_provisioned_writes'],
+                        gsi['max_provisioned_writes'],
+                        gsi_name))
+                sys.exit(1)
+
 
 def __check_logging_rules(configuration):
     """ Check that the logging values are proper """
@@ -371,3 +390,22 @@ def __check_table_rules(configuration):
                 print('{0} may not be lower than 1 for table {1}'.format(
                     option, table_name))
                 sys.exit(1)
+
+        if (int(table['min_provisioned_reads']) >
+                int(table['max_provisioned_reads'])):
+            print(
+                'min_provisioned_reads ({0}) may not be higher than '
+                'max_provisioned_reads ({1}) for table {2}'.format(
+                    table['min_provisioned_reads'],
+                    table['max_provisioned_reads'],
+                    table_name))
+            sys.exit(1)
+        elif (int(table['min_provisioned_writes']) >
+                int(table['max_provisioned_writes'])):
+            print(
+                'min_provisioned_writes ({0}) may not be higher than '
+                'max_provisioned_writes ({1}) for table {2}'.format(
+                    table['min_provisioned_writes'],
+                    table['max_provisioned_writes'],
+                    table_name))
+            sys.exit(1)
