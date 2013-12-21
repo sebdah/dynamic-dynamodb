@@ -33,24 +33,19 @@ def __get_connection_dynamodb(retries=3):
             connection = dynamodb2.connect_to_region(
                 configuration['global']['region'])
 
-        if connection:
+        if not connection:
+            if retries == 0:
+                logger.error('Failed to connect to DynamoDB. Giving up.')
+                raise
+            else:
+                logger.error(
+                    'Failed to connect to DynamoDB. Retrying in 5 seconds')
+                retries -= 1
+                time.sleep(5)
+        else:
             connected = True
             logger.debug('Connected to DynamoDB in {0}'.format(
                 configuration['global']['region']))
-
-        logger.error(
-            'Failed to connect to DynamoDB in region {0}'.format(
-                configuration['global']['region']))
-
-        if retries == 0:
-            logger.error(
-                'Please report an issue at: '
-                'https://github.com/sebdah/dynamic-dynamodb/issues')
-            raise
-        else:
-            logger.error('Retrying in 5 seconds')
-            retries -= 1
-            time.sleep(5)
 
     return connection
 
