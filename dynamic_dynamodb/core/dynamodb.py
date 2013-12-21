@@ -20,33 +20,37 @@ def __get_connection_dynamodb(retries=3):
     while not connected:
         logger.debug('Connecting to DynamoDB in {0}'.format(
             configuration['global']['region']))
-        try:
-            if (configuration['global']['aws_access_key_id'] and
-                    configuration['global']['aws_secret_access_key']):
-                connection = dynamodb2.connect_to_region(
-                    configuration['global']['region'],
-                    aws_access_key_id=
-                    configuration['global']['aws_access_key_id'],
-                    aws_secret_access_key=
-                    configuration['global']['aws_secret_access_key'])
-            else:
-                connection = dynamodb2.connect_to_region(
-                    configuration['global']['region'])
+
+        if (configuration['global']['aws_access_key_id'] and
+                configuration['global']['aws_secret_access_key']):
+            connection = dynamodb2.connect_to_region(
+                configuration['global']['region'],
+                aws_access_key_id=
+                configuration['global']['aws_access_key_id'],
+                aws_secret_access_key=
+                configuration['global']['aws_secret_access_key'])
+        else:
+            connection = dynamodb2.connect_to_region(
+                configuration['global']['region'])
+
+        if connection:
             connected = True
             logger.debug('Connected to DynamoDB in {0}'.format(
                 configuration['global']['region']))
 
-        except Exception as err:
-            logger.error('Failed to connect to DynamoDB: {0}'.format(err))
-            if retries == 0:
-                logger.error(
-                    'Please report an issue at: '
-                    'https://github.com/sebdah/dynamic-dynamodb/issues')
-                raise
-            else:
-                logger.error('Retrying in 5 seconds')
-                retries -= 1
-                time.sleep(5)
+        logger.error(
+            'Failed to connect to DynamoDB in region {0}'.format(
+                configuration['global']['region']))
+
+        if retries == 0:
+            logger.error(
+                'Please report an issue at: '
+                'https://github.com/sebdah/dynamic-dynamodb/issues')
+            raise
+        else:
+            logger.error('Retrying in 5 seconds')
+            retries -= 1
+            time.sleep(5)
 
     return connection
 
