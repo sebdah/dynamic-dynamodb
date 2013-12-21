@@ -8,8 +8,6 @@ from dynamic_dynamodb.statistics import table as table_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option, get_global_option
 
-from boto.exception import DynamoDBResponseError
-
 
 def ensure_provisioning(table_name, key_name):
     """ Ensure that provisioning is correct
@@ -239,11 +237,8 @@ def __update_throughput(table_name, read_units, write_units, key_name):
     :type key_name: str
     :param key_name: Configuration option key name
     """
-    try:
-        table = dynamodb.get_table(table_name)
-    except DynamoDBResponseError:
-        # Return if the table does not exist
-        return None
+    provisioned_reads = table_stats.get_provisioned_read_units(table_name)
+    provisioned_writes = table_stats.get_provisioned_write_units(table_name)
 
     # Check that we are in the right time frame
     if get_table_option(key_name, 'maintenance_windows'):
@@ -271,26 +266,20 @@ def __update_throughput(table_name, read_units, write_units, key_name):
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
     if get_table_option(key_name, 'always_decrease_rw_together'):
-        if ((read_units < table.throughput['read']) or
-                (table.throughput['read'] == get_table_option(
-                    key_name, 'min_provisioned_reads'))):
-            if ((write_units < table.throughput['write']) or
-                    (table.throughput['write'] == get_table_option(
-                        key_name, 'min_provisioned_writes'))):
-                logger.info(
-                    '{0} - Both reads and writes will be decreased'.format(
-                        table_name))
-
-        elif read_units < table.throughput['read']:
+        if read_units < provisioned_reads and write_units < provisioned_writes:
+            logger.debug(
+                '{0} - Both reads and writes will be decreased'.format(
+                    table_name))
+        elif read_units < provisioned_reads:
             logger.info(
                 '{0} - Will not decrease reads nor writes, waiting for '
                 'both to become low before decrease'.format(table_name))
-            read_units = table.throughput['read']
-        elif write_units < table.throughput['write']:
+            return
+        elif write_units < provisioned_writes:
             logger.info(
                 '{0} - Will not decrease reads nor writes, waiting for '
                 'both to become low before decrease'.format(table_name))
-            write_units = table.throughput['write']
+            return
 
     if not get_global_option('dry_run'):
         dynamodb.update_table_provisioning(

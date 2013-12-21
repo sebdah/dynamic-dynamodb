@@ -8,8 +8,6 @@ from dynamic_dynamodb.statistics import gsi as gsi_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_global_option, get_gsi_option
 
-from boto.exception import DynamoDBResponseError
-
 
 def ensure_provisioning(table_name, table_key, gsi_name, gsi_key):
     """ Ensure that provisioning is correct for Global Secondary Indexes
@@ -307,12 +305,6 @@ def __update_throughput(
     :type write_units: int
     :param write_units: New write unit provisioning
     """
-    try:
-        table = dynamodb.get_table(table_name)
-    except DynamoDBResponseError:
-        # Return if the table does not exist
-        return None
-
     current_ru = gsi_stats.get_provisioned_read_units(
         table_name, gsi_name)
     current_wu = gsi_stats.get_provisioned_write_units(
@@ -349,99 +341,37 @@ def __update_throughput(
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
     if get_gsi_option(table_key, gsi_key, 'always_decrease_rw_together'):
-        if ((read_units < current_ru) or
-                (current_ru == get_gsi_option(
-                    table_key, gsi_key, 'min_provisioned_reads'))):
-            if ((write_units < current_wu) or
-                    (current_wu == get_gsi_option(
-                        table_key, gsi_key, 'min_provisioned_writes'))):
-                logger.info(
-                    '{0} - GSI: {1} - '
-                    'Both reads and writes will be decreased'.format(
-                        table_name,
-                        gsi_name))
-
+        if read_units < current_ru and write_units < current_wu:
+            logger.debug(
+                '{0} - GSI: {1} - '
+                'Both reads and writes will be decreased'.format(
+                    table_name,
+                    gsi_name))
         elif read_units < current_ru:
             logger.info(
                 '{0} - GSI: {1} - '
                 'Will not decrease reads nor writes, waiting for '
                 'both to become low before decrease'.format(
                     table_name, gsi_name))
-            read_units = current_ru
+            return
         elif write_units < current_wu:
             logger.info(
                 '{0} - GSI: {1} - '
                 'Will not decrease reads nor writes, waiting for '
                 'both to become low before decrease'.format(
                     table_name, gsi_name))
-            write_units = current_wu
+            return
 
     if not get_global_option('dry_run'):
-        try:
-            dynamodb.update_gsi_provisioning(
+        dynamodb.update_gsi_provisioning(
+            table_name,
+            gsi_name,
+            int(read_units),
+            int(write_units))
+        logger.info(
+            '{0} - GSI: {1} - '
+            'Provisioning updated to {2} reads and {3} writes'.format(
                 table_name,
                 gsi_name,
-                int(read_units),
-                int(write_units))
-            logger.info(
-                '{0} - GSI: {1} - '
-                'Provisioning updated to {2} reads and {3} writes'.format(
-                    table_name,
-                    gsi_name,
-                    read_units,
-                    write_units))
-        except DynamoDBResponseError as error:
-            dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
-            if dynamodb_error == 'LimitExceededException':
-                logger.warning(
-                    '{0} - {1}'.format(table_name, error.body['message']))
-
-                if int(read_units) > table.throughput['read']:
-                    logger.info('{0} - Scaling up reads to {1:d}'.format(
-                        table_name,
-                        int(read_units)))
-                    __update_throughput(
-                        table_name,
-                        table_key,
-                        gsi_name,
-                        gsi_key,
-                        int(read_units),
-                        int(table.throughput['write']))
-
-                elif int(write_units) > table.throughput['write']:
-                    logger.info('{0} - Scaling up writes to {1:d}'.format(
-                        table_name,
-                        int(write_units)))
-                    __update_throughput(
-                        table_name,
-                        table_key,
-                        gsi_name,
-                        gsi_key,
-                        int(table.throughput['read']),
-                        int(write_units))
-
-            elif dynamodb_error == 'ValidationException':
-                logger.warning('{0} - ValidationException: {1}'.format(
-                    table_name,
-                    error.body['message']))
-
-            elif dynamodb_error == 'ResourceInUseException':
-                logger.warning('{0} - ResourceInUseException: {1}'.format(
-                    table_name,
-                    error.body['message']))
-
-            elif dynamodb_error == 'AccessDeniedException':
-                logger.warning('{0} - AccessDeniedException: {1}'.format(
-                    table_name,
-                    error.body['message']))
-
-            else:
-                logger.error(
-                    (
-                        '{0} - Unhandled exception: {1}: {2}. '
-                        'Please file a bug report at '
-                        'https://github.com/sebdah/dynamic-dynamodb/issues'
-                    ).format(
-                        table_name,
-                        dynamodb_error,
-                        error.body['message']))
+                read_units,
+                write_units))
