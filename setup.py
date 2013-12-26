@@ -22,7 +22,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'boto >= 2.20.1',
+        'boto >= 2.21.0',
         'requests >= 0.14.1'
     ],
     classifiers=[
