@@ -237,6 +237,7 @@ def decrease_reads_in_units(current_provisioning, units, key_name, table_name):
     updated_provisioning = int(current_provisioning) - int(units)
     min_provisioned_reads = get_min_provisioned_reads(
         current_provisioning,
+        table_name,
         key_name)
 
     if updated_provisioning < min_provisioned_reads:
@@ -311,6 +312,7 @@ def decrease_writes_in_units(
     updated_provisioning = int(current_provisioning) - int(units)
     min_provisioned_writes = get_min_provisioned_writes(
         current_provisioning,
+        table_name,
         key_name)
 
     if updated_provisioning < min_provisioned_writes:

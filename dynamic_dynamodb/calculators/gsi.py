@@ -248,20 +248,23 @@ def increase_writes_in_percent(
     increase = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning + increase
 
-    if get_gsi_option(table_key, gsi_key, 'max_provisioned_writes') > 0:
-        if (updated_provisioning > get_gsi_option(
-                table_key, gsi_key, 'max_provisioned_writes')):
+    if get_gsi_option(table_key, gsi_key, 'max_provisioned_writes'):
+        max_provisioned_writes = int(get_gsi_option(
+            table_key, gsi_key, 'max_provisioned_writes'))
+    else:
+        max_provisioned_writes = 0
+
+    if (max_provisioned_writes > 0 and
+            updated_provisioning > max_provisioned_writes):
 
             logger.info(
                 '{0} - GSI: {1} - '
                 'Reached provisioned writes max limit: {2:d}'.format(
                     table_name,
                     gsi_name,
-                    int(get_gsi_option(
-                        table_key, gsi_key, 'max_provisioned_writes'))))
+                    max_provisioned_writes))
 
-            return get_gsi_option(
-                table_key, gsi_key, 'max_provisioned_writes')
+            return max_provisioned_writes
 
     logger.debug(
         '{0} - GSI: {1}'
@@ -294,7 +297,9 @@ def decrease_reads_in_units(
     updated_provisioning = int(current_provisioning) - int(units)
     min_provisioned_reads = get_min_provisioned_reads(
         current_provisioning,
+        table_name,
         table_key,
+        gsi_name,
         gsi_key)
 
     if updated_provisioning < min_provisioned_reads:
@@ -342,20 +347,22 @@ def increase_reads_in_units(
     else:
         updated_provisioning = int(current_provisioning) + int(units)
 
-    if get_gsi_option(table_key, gsi_key, 'max_provisioned_reads') > 0:
-        if (updated_provisioning > get_gsi_option(
-                table_key, gsi_key, 'max_provisioned_reads')):
+    if get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'):
+        max_provisioned_reads = int(get_gsi_option(
+            table_key, gsi_key, 'max_provisioned_reads'))
+    else:
+        max_provisioned_reads = 0
 
+    if (max_provisioned_reads > 0 and
+            updated_provisioning > max_provisioned_reads):
             logger.info(
                 '{0} - GSI: {1} - '
                 'Reached provisioned reads max limit: {2:d}'.format(
                     table_name,
                     gsi_name,
-                    int(get_gsi_option(
-                        table_key, gsi_key, 'max_provisioned_reads'))))
+                    max_provisioned_reads))
 
-            return get_gsi_option(
-                table_key, gsi_key, 'max_provisioned_reads')
+            return max_provisioned_reads
 
     logger.debug(
         '{0} - GSI: {1} - '
@@ -388,7 +395,9 @@ def decrease_writes_in_units(
     updated_provisioning = int(current_provisioning) - int(units)
     min_provisioned_writes = get_min_provisioned_writes(
         current_provisioning,
+        table_name,
         table_key,
+        gsi_name,
         gsi_key)
 
     if updated_provisioning < min_provisioned_writes:
