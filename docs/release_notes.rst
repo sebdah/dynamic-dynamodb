@@ -13,6 +13,11 @@ Release notes
 -  `Migrated to ``boto.dynamodb2`` #72 <https://github.com/sebdah/dynamic-dynamodb/issues/72>`__
 -  `Describe configuration options in the documentation #80 <https://github.com/sebdah/dynamic-dynamodb/issues/80>`__
 -  `Move release notes to the documentation #79 <https://github.com/sebdah/dynamic-dynamodb/issues/79>`__
+- Better exception handling fixed in `#96 <https://github.com/sebdah/dynamic-dynamodb/issues/96>`__, `#97 <https://github.com/sebdah/dynamic-dynamodb/issues/97>`__ and `#98 <https://github.com/sebdah/dynamic-dynamodb/issues/98>`__
+-  `Silently skipping configured tables that does not exist in DynamoDB #94 <https://github.com/sebdah/dynamic-dynamodb/issues/94>`__
+- Enhanced `configuration validation #93 <https://github.com/sebdah/dynamic-dynamodb/issues/93>`__
+
+A full list of closed issues can be found `here <https://github.com/sebdah/dynamic-dynamodb/issues?milestone=29&page=1&state=closed>`__
 
 Special thanks to the AWS DynamoDB for their support with this release.
 
