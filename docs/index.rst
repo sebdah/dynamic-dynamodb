@@ -3,8 +3,11 @@
     :maxdepth: 3
 
     installation
+    configuration_options
     example_configuration
     command_line_options
+    release_notes
+    bug_reporting
     license
 
 Dynamic DynamoDB

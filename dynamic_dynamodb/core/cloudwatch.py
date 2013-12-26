@@ -10,12 +10,12 @@ def __get_connection_cloudwatch():
     """ Ensure connection to CloudWatch """
     try:
         if (configuration['global']['aws_access_key_id'] and
-            configuration['global']['aws_secret_access_key']):
+                configuration['global']['aws_secret_access_key']):
             connection = cloudwatch.connect_to_region(
                 configuration['global']['region'],
                 aws_access_key_id=configuration['global']['aws_access_key_id'],
-                aws_secret_access_key=\
-                    configuration['global']['aws_secret_access_key'])
+                aws_secret_access_key=
+                configuration['global']['aws_secret_access_key'])
         else:
             connection = cloudwatch.connect_to_region(
                 configuration['global']['region'])
@@ -27,9 +27,9 @@ def __get_connection_cloudwatch():
             'https://github.com/sebdah/dynamic-dynamodb/issues')
         raise
 
-    logger.debug('Connected to CloudWatch')
+    logger.debug('Connected to CloudWatch in {0}'.format(
+        configuration['global']['region']))
     return connection
-
 
 
 CLOUDWATCH_CONNECTION = __get_connection_cloudwatch()

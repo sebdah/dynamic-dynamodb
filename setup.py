@@ -1,10 +1,15 @@
 """ Setup script for PyPI """
+import os
 from setuptools import setup
+from ConfigParser import SafeConfigParser
+
+settings = SafeConfigParser()
+settings.read(os.path.realpath('dynamic_dynamodb/dynamic-dynamodb.conf'))
 
 
 setup(
     name='dynamic-dynamodb',
-    version='1.6.0',
+    version=settings.get('general', 'version'),
     license='Apache License, Version 2.0',
     description='Automatic provisioning for AWS DynamoDB tables',
     author='Sebastian Dahlgren',
@@ -17,7 +22,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'boto >= 2.6.0',
+        'boto >= 2.21.0',
         'requests >= 0.14.1'
     ],
     classifiers=[

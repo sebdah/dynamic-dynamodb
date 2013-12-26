@@ -17,12 +17,14 @@ class Daemon:
     Usage: subclass the Daemon class and override the run() method
     """
     def __init__(self, pidfile, stdin='/dev/null',
-                 stdout='/dev/null', stderr='/dev/null'):
+                 stdout='/dev/null', stderr='/dev/null',
+                 tables=[]):
         """ Constructor """
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
         self.pidfile = pidfile
+        self.tables = tables
 
     def daemonize(self):
         """ Do the UNIX double-fork magic

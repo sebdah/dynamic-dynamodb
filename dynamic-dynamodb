@@ -23,7 +23,11 @@ import dynamic_dynamodb
 
 
 if __name__ == '__main__':
-    dynamic_dynamodb.main()
+    try:
+        dynamic_dynamodb.main()
+    except KeyboardInterrupt:
+        print('')
+        sys.exit(0)
     sys.exit(0)
 
 sys.exit(1)
