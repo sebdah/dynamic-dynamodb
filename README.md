@@ -1,4 +1,5 @@
-# Dynamic DynamoDB
+Dynamic DynamoDB
+================
 
 <a href="https://crate.io/packages/dynamic-dynamodb/"><img src="https://pypip.in/d/dynamic-dynamodb/badge.png"></a>
 
