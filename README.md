@@ -9,6 +9,8 @@ All you need to do is to tell Dynamic DynamoDB at which point and how much you w
 
 See an example of how to configure Dynamic DynamoDB under **Basic usage** or checkout `dynamic-dynamodb --help`.
 
+**Gratefully receiving donations at [Gittip](https://www.gittip.com/sebdah/).**
+
 Features in short
 -----------------
 
@@ -83,6 +85,8 @@ Author
 ------
 
 This project is maintained by [Sebastian Dahlgren](http://www.sebastiandahlgren.se) ([GitHub](https://github.com/sebdah) | [Twitter](https://twitter.com/sebdah) | [LinkedIn](http://www.linkedin.com/in/sebastiandahlgren))
+
+Gratefully receiving donations at [Gittip](https://www.gittip.com/sebdah/).
 
 License
 -------
