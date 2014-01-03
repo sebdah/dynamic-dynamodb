@@ -80,7 +80,7 @@ def main():
     while True:
         table_names = set()
         configured_tables = config['tables'].keys()
-        not_used_tables = configured_tables
+        not_used_tables = set(configured_tables)
 
         # Add regexp table names
         for table_instance in dynamodb.list_tables():
@@ -93,7 +93,10 @@ def main():
                             table_instance.table_name,
                             key_name
                         ))
-                    not_used_tables.remove(key_name)
+                    not_used_tables.discard(key_name)
+                else:
+                    logger.debug("Table {0} did not match with config key {1}".format(
+                        table_instance.table_name, key_name))
 
         if not_used_tables:
             logger.warning(
