@@ -1,4 +1,6 @@
 """ Module with various calculators """
+import math
+
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option
 
@@ -126,7 +128,7 @@ def increase_reads_in_percent(
     :type table_name: str
     :param table_name: Name of the DynamoDB table
     """
-    increase = int(float(current_provisioning)*(float(percent)/100))
+    increase = int(math.ceil(float(current_provisioning)*(float(percent)/100)))
     updated_provisioning = current_provisioning + increase
 
     if get_table_option(key_name, 'max_provisioned_reads') > 0:
@@ -199,7 +201,7 @@ def increase_writes_in_percent(
     :type table_name: str
     :param table_name: Name of the DynamoDB table
     """
-    increase = int(float(current_provisioning)*(float(percent)/100))
+    increase = int(math.ceil(float(current_provisioning)*(float(percent)/100)))
     updated_provisioning = current_provisioning + increase
 
     if get_table_option(key_name, 'max_provisioned_writes') > 0:

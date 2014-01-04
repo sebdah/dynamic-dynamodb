@@ -1,4 +1,6 @@
 """ Module with various calculators """
+import math
+
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_gsi_option
 
@@ -150,7 +152,7 @@ def increase_reads_in_percent(
     :type gsi_key: str
     :param gsi_key: Name of the key
     """
-    increase = int(float(current_provisioning)*(float(percent)/100))
+    increase = int(math.ceil(float(current_provisioning)*(float(percent)/100)))
     updated_provisioning = current_provisioning + increase
 
     if get_gsi_option(table_key, gsi_key, 'max_provisioned_reads') > 0:
@@ -245,7 +247,7 @@ def increase_writes_in_percent(
     :param gsi_key: Name of the key
     :returns: int -- New provisioning value
     """
-    increase = int(float(current_provisioning)*(float(percent)/100))
+    increase = int(math.ceil(float(current_provisioning)*(float(percent)/100)))
     updated_provisioning = current_provisioning + increase
 
     if get_gsi_option(table_key, gsi_key, 'max_provisioned_writes'):
