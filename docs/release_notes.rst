@@ -1,10 +1,18 @@
 Release notes
 =============
 
+1.7.1
+-----
+
+**Release date:** 2014-01-04
+
+-  `Rounding increase values up #100 <https://github.com/sebdah/dynamic-dynamodb/issues/100>`__
+-  `Fixed bug with configuration for multiple tables #101 <https://github.com/sebdah/dynamic-dynamodb/issues/100>`__. Thanks `@msh9 <https://github.com/msh9>`__!
+
 1.7.0
 -----
 
-**Release date:**
+**Release date:** 2013-12-26
 
 -  `Added support for global secondary indexes #73 <https://github.com/sebdah/dynamic-dynamodb/issues/73>`__
 -  Fixed `Log level configuration in configuration file is overridden #75 <https://github.com/sebdah/dynamic-dynamodb/issues/75>`__
