@@ -95,8 +95,9 @@ def main():
                         ))
                     not_used_tables.discard(key_name)
                 else:
-                    logger.debug("Table {0} did not match with config key {1}".format(
-                        table_instance.table_name, key_name))
+                    logger.debug(
+                        "Table {0} did not match with config key {1}".format(
+                            table_instance.table_name, key_name))
 
         if not_used_tables:
             logger.warning(
