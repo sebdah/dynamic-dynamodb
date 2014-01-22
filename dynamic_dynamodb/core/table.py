@@ -51,7 +51,7 @@ def __ensure_provisioning_reads(table_name, key_name):
     :returns: (bool, int) -- update_needed, updated_read_units
     """
     update_needed = False
-    updated_read_units = table_stats.get_provisioned_read_units(table_name)
+    updated_read_units = dynamodb.get_provisioned_table_read_units(table_name)
 
     consumed_read_units_percent = table_stats.get_consumed_read_units_percent(
         table_name)
@@ -127,7 +127,8 @@ def __ensure_provisioning_writes(table_name, key_name):
     :returns: (bool, int) -- update_needed, updated_write_units
     """
     update_needed = False
-    updated_write_units = table_stats.get_provisioned_write_units(table_name)
+    updated_write_units = dynamodb.get_provisioned_table_write_units(
+        table_name)
 
     consumed_write_units_percent = \
         table_stats.get_consumed_write_units_percent(table_name)
@@ -237,8 +238,8 @@ def __update_throughput(table_name, read_units, write_units, key_name):
     :type key_name: str
     :param key_name: Configuration option key name
     """
-    provisioned_reads = table_stats.get_provisioned_read_units(table_name)
-    provisioned_writes = table_stats.get_provisioned_write_units(table_name)
+    provisioned_reads = dynamodb.get_provisioned_table_read_units(table_name)
+    provisioned_writes = dynamodb.get_provisioned_table_write_units(table_name)
 
     # Check that we are in the right time frame
     if get_table_option(key_name, 'maintenance_windows'):

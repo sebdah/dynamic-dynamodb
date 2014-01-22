@@ -169,8 +169,8 @@ def update_table_provisioning(
         logger.warning(
             '{0} - Retrying to update provisioning, '
             'excluding any decreases'.format(table_name))
-        current_reads = int(get_provisioned_read_units(table_name))
-        current_writes = int(get_provisioned_write_units(table_name))
+        current_reads = int(get_provisioned_table_read_units(table_name))
+        current_writes = int(get_provisioned_table_write_units(table_name))
 
         if current_reads > reads:
             reads = current_reads
@@ -277,7 +277,7 @@ def table_gsis(table_name):
     return []
 
 
-def get_provisioned_read_units(table_name):
+def get_provisioned_table_read_units(table_name):
     """ Returns the number of provisioned read units for the table
 
     :type table_name: str
@@ -293,7 +293,7 @@ def get_provisioned_read_units(table_name):
     return read_units
 
 
-def get_provisioned_write_units(table_name):
+def get_provisioned_table_write_units(table_name):
     """ Returns the number of provisioned write units for the table
 
     :type table_name: str
