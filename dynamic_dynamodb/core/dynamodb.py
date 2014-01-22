@@ -152,7 +152,8 @@ def list_tables():
     return tables
 
 
-def update_table_provisioning(table_name, reads, writes):
+def update_table_provisioning(
+        table_name, reads, writes, retry_with_only_increase=False):
     """ Update provisioning for a given table
 
     :type table_name: str
@@ -163,6 +164,22 @@ def update_table_provisioning(table_name, reads, writes):
     :param writes: New number of provisioned write units
     """
     table = get_table(table_name)
+
+    if retry_with_only_increase:
+        logger.warning(
+            '{0} - Retrying to update provisioning, '
+            'excluding any decreases'.format(table_name))
+        current_reads = int(get_provisioned_read_units(table_name))
+        current_writes = int(get_provisioned_write_units(table_name))
+
+        if current_reads > reads:
+            reads = current_reads
+        if current_writes > writes:
+            writes = current_writes
+        logger.info(
+            '{0} - Retrying to update provisioning, excluding any decreases. '
+            'Setting new reads to {1} and new writes to {2}'.format(
+                table_name, reads, writes))
 
     try:
         table.update(
@@ -190,6 +207,17 @@ def update_table_provisioning(table_name, reads, writes):
                     'Please file a bug report at '
                     'https://github.com/sebdah/dynamic-dynamodb/issues'
                 ).format(table_name, exception, error.body['message']))
+
+        if (not retry_with_only_increase and
+                exception == 'LimitExceededException'):
+            logger.info(
+                '{0} - Will retry to update provisioning '
+                'with only increases'.format(table_name))
+            update_table_provisioning(
+                table_name,
+                reads,
+                writes,
+                retry_with_only_increase=True)
 
 
 def update_gsi_provisioning(table_name, gsi_name, reads, writes):
@@ -247,5 +275,37 @@ def table_gsis(table_name):
         return desc[u'GlobalSecondaryIndexes']
 
     return []
+
+
+def get_provisioned_read_units(table_name):
+    """ Returns the number of provisioned read units for the table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :returns: int -- Number of read units
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    read_units = int(
+        desc[u'Table'][u'ProvisionedThroughput'][u'ReadCapacityUnits'])
+
+    logger.debug('{0} - Currently provisioned read units: {1:d}'.format(
+        table_name, read_units))
+    return read_units
+
+
+def get_provisioned_write_units(table_name):
+    """ Returns the number of provisioned write units for the table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :returns: int -- Number of write units
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    write_units = int(
+        desc[u'Table'][u'ProvisionedThroughput'][u'WriteCapacityUnits'])
+
+    logger.debug('{0} - Currently provisioned write units: {1:d}'.format(
+        table_name, write_units))
+    return write_units
 
 DYNAMODB_CONNECTION = __get_connection_dynamodb()
