@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.7.2
+-----
+
+**Release date:** 2014-01-23
+
+-  `CU increases fail if decreases fail due to exceeded limits #103 <https://github.com/sebdah/dynamic-dynamodb/issues/103>`__
+
 1.7.1
 -----
 
