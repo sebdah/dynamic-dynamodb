@@ -153,7 +153,15 @@ def list_tables():
 
 
 def update_table_provisioning(table_name, reads, writes):
-    """"""
+    """ Update provisioning for a given table
+
+    :type table_name: str
+    :param table_name: Name of the table
+    :type reads: int
+    :param reads: New number of provisioned read units
+    :type writes: int
+    :param writes: New number of provisioned write units
+    """
     table = get_table(table_name)
 
     try:
