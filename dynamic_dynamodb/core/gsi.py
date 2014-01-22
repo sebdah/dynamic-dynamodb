@@ -78,7 +78,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
     :returns: (bool, int) -- update_needed, updated_read_units
     """
     update_needed = False
-    updated_read_units = gsi_stats.get_provisioned_read_units(
+    updated_read_units = dynamodb.get_provisioned_gsi_read_units(
         table_name, gsi_name)
 
     consumed_read_units_percent = gsi_stats.get_consumed_read_units_percent(
@@ -172,7 +172,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
     :returns: (bool, int) -- update_needed, updated_write_units
     """
     update_needed = False
-    updated_write_units = gsi_stats.get_provisioned_write_units(
+    updated_write_units = dynamodb.get_provisioned_gsi_write_units(
         table_name, gsi_name)
 
     consumed_write_units_percent = \
@@ -305,9 +305,9 @@ def __update_throughput(
     :type write_units: int
     :param write_units: New write unit provisioning
     """
-    current_ru = gsi_stats.get_provisioned_read_units(
+    current_ru = dynamodb.get_provisioned_gsi_read_units(
         table_name, gsi_name)
-    current_wu = gsi_stats.get_provisioned_write_units(
+    current_wu = dynamodb.get_provisioned_gsi_write_units(
         table_name, gsi_name)
 
     # Check that we are in the right time frame
