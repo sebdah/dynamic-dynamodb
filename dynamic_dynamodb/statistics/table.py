@@ -36,7 +36,8 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
     consumed_read_units_percent = int(
         math.ceil(
             float(consumed_read_units) /
-            float(get_provisioned_read_units(table_name)) * 100))
+            float(dynamodb.get_provisioned_table_read_units(table_name)) *
+            100))
 
     logger.info('{0} - Consumed read units: {1:d}%'.format(
         table_name, consumed_read_units_percent))
@@ -71,40 +72,9 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
     consumed_write_units_percent = int(
         math.ceil(
             float(consumed_write_units) /
-            float(get_provisioned_write_units(table_name)) * 100))
+            float(dynamodb.get_provisioned_table_write_units(table_name)) *
+            100))
 
     logger.info('{0} - Consumed write units: {1:d}%'.format(
         table_name, consumed_write_units_percent))
     return consumed_write_units_percent
-
-
-def get_provisioned_read_units(table_name):
-    """ Returns the number of provisioned read units for the table
-
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
-    :returns: int -- Number of read units
-    """
-    desc = dynamodb.describe_table(table_name)
-    read_units = int(
-        desc[u'Table'][u'ProvisionedThroughput'][u'ReadCapacityUnits'])
-
-    logger.debug('{0} - Currently provisioned read units: {1:d}'.format(
-        table_name, read_units))
-    return read_units
-
-
-def get_provisioned_write_units(table_name):
-    """ Returns the number of provisioned write units for the table
-
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
-    :returns: int -- Number of write units
-    """
-    desc = dynamodb.describe_table(table_name)
-    write_units = int(
-        desc[u'Table'][u'ProvisionedThroughput'][u'WriteCapacityUnits'])
-
-    logger.debug('{0} - Currently provisioned write units: {1:d}'.format(
-        table_name, write_units))
-    return write_units

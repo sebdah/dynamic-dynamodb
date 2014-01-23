@@ -95,6 +95,82 @@ def get_gsi_status(table_name, gsi_name):
             return gsi[u'IndexStatus']
 
 
+def get_provisioned_gsi_read_units(table_name, gsi_name):
+    """ Returns the number of provisioned read units for the table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
+    :returns: int -- Number of read units
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
+        if gsi[u'IndexName'] == gsi_name:
+            read_units = int(
+                gsi[u'ProvisionedThroughput'][u'ReadCapacityUnits'])
+            break
+
+    logger.debug(
+        '{0} - GSI: {1} - Currently provisioned read units: {2:d}'.format(
+            table_name, gsi_name, read_units))
+    return read_units
+
+
+def get_provisioned_gsi_write_units(table_name, gsi_name):
+    """ Returns the number of provisioned write units for the table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
+    :returns: int -- Number of write units
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
+        if gsi[u'IndexName'] == gsi_name:
+            write_units = int(
+                gsi[u'ProvisionedThroughput'][u'WriteCapacityUnits'])
+            break
+
+    logger.debug(
+        '{0} - GSI: {1} - Currently povisioned write units: {2:d}'.format(
+            table_name, gsi_name, write_units))
+    return write_units
+
+
+def get_provisioned_table_read_units(table_name):
+    """ Returns the number of provisioned read units for the table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :returns: int -- Number of read units
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    read_units = int(
+        desc[u'Table'][u'ProvisionedThroughput'][u'ReadCapacityUnits'])
+
+    logger.debug('{0} - Currently provisioned read units: {1:d}'.format(
+        table_name, read_units))
+    return read_units
+
+
+def get_provisioned_table_write_units(table_name):
+    """ Returns the number of provisioned write units for the table
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :returns: int -- Number of write units
+    """
+    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    write_units = int(
+        desc[u'Table'][u'ProvisionedThroughput'][u'WriteCapacityUnits'])
+
+    logger.debug('{0} - Currently provisioned write units: {1:d}'.format(
+        table_name, write_units))
+    return write_units
+
+
 def get_table_status(table_name):
     """ Return the DynamoDB table
 
@@ -152,9 +228,35 @@ def list_tables():
     return tables
 
 
-def update_table_provisioning(table_name, reads, writes):
-    """"""
+def update_table_provisioning(
+        table_name, reads, writes, retry_with_only_increase=False):
+    """ Update provisioning for a given table
+
+    :type table_name: str
+    :param table_name: Name of the table
+    :type reads: int
+    :param reads: New number of provisioned read units
+    :type writes: int
+    :param writes: New number of provisioned write units
+    :type retry_with_only_increase: bool
+    :param retry_with_only_increase: Set to True to ensure only increases
+    """
     table = get_table(table_name)
+
+    if retry_with_only_increase:
+        current_reads = int(get_provisioned_table_read_units(table_name))
+        current_writes = int(get_provisioned_table_write_units(table_name))
+
+        # Ensure that we are only doing increases
+        if current_reads > reads:
+            reads = current_reads
+        if current_writes > writes:
+            writes = current_writes
+
+        logger.info(
+            '{0} - Retrying to update provisioning, excluding any decreases. '
+            'Setting new reads to {1} and new writes to {2}'.format(
+                table_name, reads, writes))
 
     try:
         table.update(
@@ -183,8 +285,20 @@ def update_table_provisioning(table_name, reads, writes):
                     'https://github.com/sebdah/dynamic-dynamodb/issues'
                 ).format(table_name, exception, error.body['message']))
 
+        if (not retry_with_only_increase and
+                exception == 'LimitExceededException'):
+            logger.info(
+                '{0} - Will retry to update provisioning '
+                'with only increases'.format(table_name))
+            update_table_provisioning(
+                table_name,
+                reads,
+                writes,
+                retry_with_only_increase=True)
 
-def update_gsi_provisioning(table_name, gsi_name, reads, writes):
+
+def update_gsi_provisioning(
+        table_name, gsi_name, reads, writes, retry_with_only_increase=False):
     """ Update provisioning on a global secondary index
 
     :type table_name: str
@@ -195,7 +309,24 @@ def update_gsi_provisioning(table_name, gsi_name, reads, writes):
     :param reads: Number of reads to provision
     :type writes: int
     :param writes: Number of writes to provision
+    :type retry_with_only_increase: bool
+    :param retry_with_only_increase: Set to True to ensure only increases
     """
+    if retry_with_only_increase:
+        current_reads = int(get_provisioned_table_read_units(table_name))
+        current_writes = int(get_provisioned_table_write_units(table_name))
+
+        # Ensure that we are only doing increases
+        if current_reads > reads:
+            reads = current_reads
+        if current_writes > writes:
+            writes = current_writes
+
+        logger.info(
+            '{0} - Retrying to update provisioning, excluding any decreases. '
+            'Setting new reads to {1} and new writes to {2}'.format(
+                table_name, reads, writes))
+
     try:
         DYNAMODB_CONNECTION.update_table(
             table_name=table_name,
@@ -224,6 +355,18 @@ def update_gsi_provisioning(table_name, gsi_name, reads, writes):
                     'https://github.com/sebdah/dynamic-dynamodb/issues'
                 ).format(
                     table_name, gsi_name, exception, error.body['message']))
+
+        if (not retry_with_only_increase and
+                exception == 'LimitExceededException'):
+            logger.info(
+                '{0} - GSI: {1} - Will retry to update provisioning '
+                'with only increases'.format(table_name, gsi_name))
+            update_gsi_provisioning(
+                table_name,
+                gsi_name,
+                reads,
+                writes,
+                retry_with_only_increase=True)
 
 
 def table_gsis(table_name):
