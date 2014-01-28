@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.7.3
+-----
+
+**Release date:** 2014-01-28
+
+-  `circuit breaker option bailing out w/ exception #105 <https://github.com/sebdah/dynamic-dynamodb/issues/105>`__
+
 1.7.2
 -----
 

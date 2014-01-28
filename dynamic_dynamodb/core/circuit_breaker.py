@@ -8,7 +8,7 @@ from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_global_option
 
 
-def __circuit_breaker_is_open():
+def is_open():
     """ Checks wether the circuit breaker is open
 
     :returns: bool -- True if the circuit is open
