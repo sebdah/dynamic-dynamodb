@@ -13,6 +13,6 @@
 
 # Author: Sebastian Dahlgren <sebastian.dahlgren@gmail.com>
 
-pip install -U -r /etc/dynamic-dynamodb/version.txt
+pip install -U -r /etc/dynamic-dynamodb/requirements.txt
 
 exit $?
