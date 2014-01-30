@@ -2,6 +2,7 @@ Dynamic DynamoDB
 ================
 
 <a href="https://crate.io/packages/dynamic-dynamodb/"><img src="https://pypip.in/d/dynamic-dynamodb/badge.png"></a>
+<a href="https://crate.io/packages/dynamic-dynamodb/"><img src="https://pypip.in/license/dynamic-dynamodb/badge.png"></a>
 
 AWS DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
