@@ -1,0 +1,18 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          dynamic-dynamodb
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0
+# Short-Description: Installs the latest version of Dynamic DynamoDB
+# Description:       This script installs the latest version of Dynamic
+#                    DynamoDB. The version can be controlled via
+#                    /etc/dynamic-dynamodb/version.txt
+### END INIT INFO
+
+# Author: Sebastian Dahlgren <sebastian.dahlgren@gmail.com>
+
+pip install -U -r /etc/dynamic-dynamodb/version.txt
+
+exit $?
