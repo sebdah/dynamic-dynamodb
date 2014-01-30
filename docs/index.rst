@@ -6,6 +6,7 @@
     configuration_options
     example_configuration
     command_line_options
+    pre_bundled_ami
     release_notes
     bug_reporting
     license
