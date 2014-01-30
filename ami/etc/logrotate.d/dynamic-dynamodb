@@ -1,0 +1,13 @@
+/var/log/dynamic-dynamodb.log
+{
+    rotate 7
+    daily
+    missingok
+    notifempty
+    compress
+    delaycompress
+    sharedscripts
+    postrotate
+        reload dynamic-dynamodb >/dev/null 2>&1 || true
+    endscript
+}
