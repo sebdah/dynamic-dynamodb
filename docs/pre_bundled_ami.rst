@@ -43,7 +43,9 @@ Dynamic DynamoDB version
 ------------------------
 
 The AMI will automatically install the latest version of Dynamic DynamoDB
-1.x.x. You can define a custom version number in ``/etc/dynamic-dynamodb/requirements.txt``,
+1.x.x.
+
+You can define a custom version number in ``/etc/dynamic-dynamodb/requirements.txt``,
 if you want to run a specific version of Dynamic DynamoDB. You can read about the
 ``requirements.txt`` in the `pip documentation <http://www.pip-installer.org/en/latest/logic.html#requirements-file-format>`__.
 
