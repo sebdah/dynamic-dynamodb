@@ -1,10 +1,10 @@
 Pre-bundled AMI
 ===============
 
-The project provides an [AMI](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html)
+The project provides an `AMI <http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html>`__
 pre-bundled with Dynamic DynamoDB. It is perfect for running on a t1.micro instance!
 
-The AMI is based on a clean [Ubuntu 13.10](http://releases.ubuntu.com/saucy/) image.
+The AMI is based on a clean `Ubuntu 13.10 <http://releases.ubuntu.com/saucy/>`__ image.
 
 
 Launch the AMI
