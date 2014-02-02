@@ -142,6 +142,12 @@ def parse(config_path):
                     'option': 'log-file',
                     'required': False,
                     'type': 'str'
+                },
+                {
+                    'key': 'log_config_file',
+                    'option': 'log-config-file',
+                    'required': False,
+                    'type': 'str'
                 }
             ])
 

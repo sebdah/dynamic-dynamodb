@@ -59,10 +59,10 @@ LOG_CONFIG = {
     }
 }
 
-if config_handler.get_logging_option('logging_config'):
+if config_handler.get_logging_option('log_config_file'):
     # Read configuration from an external Python logging file
     logging.config.fileConfig(os.path.expanduser(
-        config_handler.get_logging_option('logging_config')))
+        config_handler.get_logging_option('log_config_file')))
 else:
     # Configure a custom log level
     if config_handler.get_logging_option('log_level'):

@@ -8,7 +8,7 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             [--check-interval CHECK_INTERVAL]
                             [--log-file LOG_FILE]
                             [--log-level {debug,info,warning,error}]
-                            [--logging-config LOGGING_CONFIG] [--version]
+                            [--log-config-file LOG_CONFIG_FILE] [--version]
                             [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
                             [--daemon DAEMON] [--instance INSTANCE] [-r REGION]
@@ -43,8 +43,9 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
       --log-file LOG_FILE   Send output to the given log file
       --log-level {debug,info,warning,error}
                             Log level to use (default: info)
-      --logging-config LOGGING_CONFIG
-                            Use a custom Python logging configuration file
+      --log-config-file LOG_CONFIG_FILE
+                            Use a custom Python logging configuration file.
+                            Overrides both --log-level and --log-file.
       --version             Print current version number
       --aws-access-key-id AWS_ACCESS_KEY_ID
                             Override Boto configuration with the following AWS

@@ -24,7 +24,7 @@ DEFAULT_OPTIONS = {
         # [logging]
         'log_file': None,
         'log_level': 'info',
-        'logging_config': None
+        'log_config_file': None
     },
     'table': {
         'reads_lower_threshold': 30,
