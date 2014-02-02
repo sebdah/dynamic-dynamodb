@@ -6,8 +6,10 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
 
     usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run]
                             [--check-interval CHECK_INTERVAL]
-                            [--log-file LOG_FILE] [--log-level LOG_LEVEL]
-                            [--version] [--aws-access-key-id AWS_ACCESS_KEY_ID]
+                            [--log-file LOG_FILE]
+                            [--log-level {debug,info,warning,error}]
+                            [--logging-config LOGGING_CONFIG] [--version]
+                            [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
                             [--daemon DAEMON] [--instance INSTANCE] [-r REGION]
                             [-t TABLE_NAME]
@@ -39,8 +41,10 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             How many seconds should we wait between the checks
                             (default: 300)
       --log-file LOG_FILE   Send output to the given log file
-      --log-level LOG_LEVEL
+      --log-level {debug,info,warning,error}
                             Log level to use (default: info)
+      --logging-config LOGGING_CONFIG
+                            Use a custom Python logging configuration file
       --version             Print current version number
       --aws-access-key-id AWS_ACCESS_KEY_ID
                             Override Boto configuration with the following AWS
@@ -50,7 +54,8 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             secret key
 
     Daemon options:
-      --daemon DAEMON       Run Dynamic DynamoDB as a daemon [start|stop|restart]
+      --daemon DAEMON       Run Dynamic DynamoDB in daemon mode. Valid modes are
+                            [start|stop|restart|foreground]
       --instance INSTANCE   Name of the Dynamic DynamoDB instance. Used to run
                             multiple instances of Dynamic DynamoDB. Give each
                             instance a unique name and control them separately
