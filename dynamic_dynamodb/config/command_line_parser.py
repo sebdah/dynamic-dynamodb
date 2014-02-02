@@ -29,6 +29,9 @@ def parse():
         choices=['debug', 'info', 'warning', 'error'],
         help='Log level to use (default: info)')
     parser.add_argument(
+        '--logging-config',
+        help='Use a custom Python logging configuration file')
+    parser.add_argument(
         '--version',
         action='store_true',
         help='Print current version number')
