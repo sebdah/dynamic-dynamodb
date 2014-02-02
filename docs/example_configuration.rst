@@ -31,6 +31,7 @@ This is a full example of a Dynamic DynamoDB configuration file.
     log-file: /var/log/dynamic-dynamodb.log
 
     # External Python logging configuration file
+    # Overrides both log-level and log-file
     # log-config-file: /path/to/logging.conf
 
     [table: ^my_table$]
