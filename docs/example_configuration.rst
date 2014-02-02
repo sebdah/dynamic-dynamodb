@@ -30,6 +30,8 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # Log file (comment out to get only console output)
     log-file: /var/log/dynamic-dynamodb.log
 
+    # External Python logging configuration file
+    # log-config-file: /path/to/logging.conf
 
     [table: ^my_table$]
     #
