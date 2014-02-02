@@ -1,7 +1,10 @@
 .. _example_configuration_file:
 
-Example configuration file
-==========================
+Example configuration files
+===========================
+
+Example ``dynamic-dynamodb.conf``
+---------------------------------
 
 This is a full example of a Dynamic DynamoDB configuration file.
 ::
@@ -155,3 +158,40 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #always-decrease-rw-together: true
 
 Note: The configuration of tables support regular expressions so you could write ``[table: log_* ]`` if you want to target multiple tables with one config section.
+
+
+Example ``logging.conf``
+------------------------
+
+Below is an example of a logging configuration file used with the ``--log-config-file`` and ``log-config-file`` options. This kind of external logging configuration enables users to log through syslog, via custom log handlers or to other external services. It will also give control over logrotation and similar log management functions.
+::
+
+    [loggers]
+    keys=root
+
+    [logger_root]
+    handlers=console,file
+    level=NOTSET
+
+    [formatters]
+    keys=default
+
+    [formatter_default]
+    format=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+
+    [handlers]
+    keys=file,console
+
+    [handler_file]
+    class=handlers.TimedRotatingFileHandler
+    interval=midnight
+    backupCount=7
+    formatter=default
+    level=DEBUG
+    args=('/Users/sebastian/dynamic-dynamodb2.log',)
+
+    [handler_console]
+    class=StreamHandler
+    formatter=default
+    level=INFO
+    args=(sys.stdout,)
