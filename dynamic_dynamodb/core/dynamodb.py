@@ -222,7 +222,7 @@ def list_tables():
                     error.body['message']))
 
     except JSONResponseError as error:
-        logger.error('Communication error: {0}'.format(error.body['message']))
+        logger.error('Communication error: {0}'.format(error))
         sys.exit(1)
 
     return tables
