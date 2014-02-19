@@ -32,7 +32,7 @@ log-file                              str  Path to log file. Logging to stdout i
 log-config-file                       str  Path to external Python logging configuration file. Overrides both ``log-level`` and ``log-file``. An example can be found in the Example configuration section.
 ===================================== ==== ==========================================
 
-
+Dynamic DynamoDB will rotate the ``log-file`` nightly per default and keep 5 days of backups. If you want to override this behavior, please have a look at the ``log-config-file`` option which allows you to use custom Python logging configuration files.
 
 Table configuration
 -------------------
