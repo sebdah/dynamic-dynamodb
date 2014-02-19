@@ -29,6 +29,7 @@ Option                                Type Comment
 ===================================== ==== ==========================================
 log-level                             str  Log level (``debug``, ``info``, ``warning`` or ``error``)
 log-file                              str  Path to log file. Logging to stdout if this option is not present
+log-config-file                       str  Path to external Python logging configuration file. Overrides both ``log-level`` and ``log-file``
 ===================================== ==== ==========================================
 
 Table configuration
