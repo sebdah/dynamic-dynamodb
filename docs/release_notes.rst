@@ -1,6 +1,14 @@
 Release notes
 =============
 
+1.8.0
+-----
+
+**Release date:** 2014-02-19
+
+- `Add support for external logging configuration file #74 <https://github.com/sebdah/dynamic-dynamodb/issues/74>`__
+- `logging through syslog #49 <https://github.com/sebdah/dynamic-dynamodb/issues/49>`__
+
 1.7.3
 -----
 

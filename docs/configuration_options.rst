@@ -1,7 +1,7 @@
 Configuration options
 =====================
 
-The sections below describe the various options available in the Dynamic DynamoDB configuration file. See :ref:`_example_configuration_file <Example configuration>` for an example configuration file.
+The sections below describe the various options available in the Dynamic DynamoDB configuration file. See :ref:`_example_configuration <Example configuration>` for an example configuration file.
 
 Global configuration
 --------------------
@@ -29,7 +29,10 @@ Option                                Type Comment
 ===================================== ==== ==========================================
 log-level                             str  Log level (``debug``, ``info``, ``warning`` or ``error``)
 log-file                              str  Path to log file. Logging to stdout if this option is not present
+log-config-file                       str  Path to external Python logging configuration file. Overrides both ``log-level`` and ``log-file``. An example can be found in the Example configuration section.
 ===================================== ==== ==========================================
+
+Dynamic DynamoDB will rotate the ``log-file`` nightly per default and keep 5 days of backups. If you want to override this behavior, please have a look at the ``log-config-file`` option which allows you to use custom Python logging configuration files.
 
 Table configuration
 -------------------

@@ -3,7 +3,7 @@
 Logging management for Dynamic DynamoDB
 
 APACHE LICENSE 2.0
-Copyright 2013 Sebastian Dahlgren
+Copyright 2013-2014 Sebastian Dahlgren
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,88 +19,81 @@ limitations under the License.
 """
 import os.path
 import logging
+import logging.config
 
 import config_handler
 
+LOG_CONFIG = {
+    'version': 1,
+    'disable_existing_LOGGERs': False,
+    'formatters': {
+        'standard': {
+            'format': (
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            )
+        },
+        'dry-run': {
+            'format': (
+                '%(asctime)s - %(name)s - %(levelname)s - dryrun - %(message)s'
+            )
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': True
+        },
+        'dynamic-dynamodb': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False
+        }
+    }
+}
 
-class LogHandler:
-    """ Logging class """
-    def __init__(self, name='dynamic-dynamodb', level='info',
-                 log_file=None, dry_run=False):
-        """ Instanciate the logger
+if config_handler.get_logging_option('log_config_file'):
+    # Read configuration from an external Python logging file
+    logging.config.fileConfig(os.path.expanduser(
+        config_handler.get_logging_option('log_config_file')))
+else:
+    # Configure a custom log level
+    if config_handler.get_logging_option('log_level'):
+        LOG_CONFIG['handlers']['console']['level'] = \
+            config_handler.get_logging_option('log_level').upper()
+        if 'file' in LOG_CONFIG['handlers']:
+            LOG_CONFIG['handlers']['file']['level'] = \
+                config_handler.get_logging_option('log_level').upper()
 
-        :type name: str
-        :param name: Logger name
-        :type level: str
-        :param level: Log level [debug|info|warning|error]
-        :type log_file: str
-        :param log_file: Path to log file (if any)
-        :type dry_run: bool
-        :param dry_run: Add dry-run to the output
-        """
-        # Set up the logger
-        self.logger = logging.getLogger(name)
-        if level.lower() == 'debug':
-            self.logger.setLevel(logging.DEBUG)
-        elif level.lower() == 'info':
-            self.logger.setLevel(logging.INFO)
-        elif level.lower() == 'warning':
-            self.logger.setLevel(logging.WARNING)
-        elif level.lower() == 'error':
-            self.logger.setLevel(logging.ERROR)
-        else:
-            self.logger.setLevel(logging.INFO)
+    # Add dry-run to the formatter if in dry-run mode
+    if config_handler.get_global_option('dry_run'):
+        LOG_CONFIG['handlers']['console']['formatter'] = 'dry-run'
+        if 'file' in LOG_CONFIG['handlers']:
+            LOG_CONFIG['handlers']['file']['formatter'] = 'dry-run'
 
-        # Formatting
-        if dry_run:
-            formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - dryrun - %(message)s')
-        else:
-            formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-        # Console handler
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(formatter)
-        self.logger.addHandler(console_handler)
-
-        # File handler
-        if log_file:
-            file_handler = logging.FileHandler(os.path.expanduser(log_file))
-            file_handler.setFormatter(formatter)
-            self.logger.addHandler(file_handler)
-
-    def debug(self, *args, **kwargs):
-        """ Log on debug level """
-        self.logger.debug(*args, **kwargs)
-
-    def error(self, *args, **kwargs):
-        """ Log on error level """
-        self.logger.error(*args, **kwargs)
-
-    def info(self, *args, **kwargs):
-        """ Log on info level """
-        self.logger.info(*args, **kwargs)
-
-    def warning(self, *args, **kwargs):
-        """ Log on warning level """
-        self.logger.warning(*args, **kwargs)
-
-
-def __get_logger():
-    """ Returns the logger """
-    # Instanciate a new logger
+    # File handler
     if config_handler.get_logging_option('log_file'):
-        logger = LogHandler(
-            level=config_handler.get_logging_option('log_level'),
-            log_file=config_handler.get_logging_option('log_file'),
-            dry_run=config_handler.get_global_option('dry_run'))
-    else:
-        logger = LogHandler(
-            level=config_handler.get_logging_option('log_level'),
-            dry_run=config_handler.get_global_option('dry_run'))
+        log_file = os.path.expanduser(
+            config_handler.get_logging_option('log_file'))
+        LOG_CONFIG['handlers']['file'] = {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'standard',
+            'filename': log_file,
+            'when': 'midnight',
+            'backupCount': 5
+        }
+        LOG_CONFIG['loggers']['']['handlers'].append('file')
+        LOG_CONFIG['loggers']['dynamic-dynamodb']['handlers'].append(
+            'file')
 
-    return logger
+    logging.config.dictConfig(LOG_CONFIG)
 
-
-LOGGER = __get_logger()
+LOGGER = logging.getLogger('dynamic-dynamodb')
