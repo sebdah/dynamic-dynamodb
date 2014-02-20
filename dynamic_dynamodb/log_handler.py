@@ -19,7 +19,8 @@ limitations under the License.
 """
 import os.path
 import logging
-import logging.config
+
+from logutils import dictconfig
 
 import config_handler
 
@@ -94,6 +95,6 @@ else:
         LOG_CONFIG['loggers']['dynamic-dynamodb']['handlers'].append(
             'file')
 
-    logging.config.dictConfig(LOG_CONFIG)
+    dictconfig.dictConfig(LOG_CONFIG)
 
 LOGGER = logging.getLogger('dynamic-dynamodb')

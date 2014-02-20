@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.8.1
+-----
+
+**Release date:** 2014-02-20
+
+- `Python dictConfig is not available in Python 2.6 #119 <https://github.com/sebdah/dynamic-dynamodb/issues/119>`__
+
 1.8.0
 -----
 
