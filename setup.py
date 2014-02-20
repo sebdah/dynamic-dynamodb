@@ -23,7 +23,8 @@ setup(
     zip_safe=False,
     install_requires=[
         'boto >= 2.21.0',
-        'requests >= 0.14.1'
+        'requests >= 0.14.1',
+        'logutils >= 0.3.3'
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
