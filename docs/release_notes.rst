@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.8.2
+-----
+
+**Release date:** 2014-02-21
+
+- `The dyn-run tag is not visible in log files #120 <https://github.com/sebdah/dynamic-dynamodb/issues/120>`__
+
 1.8.1
 -----
 

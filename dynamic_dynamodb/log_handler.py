@@ -65,20 +65,6 @@ if config_handler.get_logging_option('log_config_file'):
     logging.config.fileConfig(os.path.expanduser(
         config_handler.get_logging_option('log_config_file')))
 else:
-    # Configure a custom log level
-    if config_handler.get_logging_option('log_level'):
-        LOG_CONFIG['handlers']['console']['level'] = \
-            config_handler.get_logging_option('log_level').upper()
-        if 'file' in LOG_CONFIG['handlers']:
-            LOG_CONFIG['handlers']['file']['level'] = \
-                config_handler.get_logging_option('log_level').upper()
-
-    # Add dry-run to the formatter if in dry-run mode
-    if config_handler.get_global_option('dry_run'):
-        LOG_CONFIG['handlers']['console']['formatter'] = 'dry-run'
-        if 'file' in LOG_CONFIG['handlers']:
-            LOG_CONFIG['handlers']['file']['formatter'] = 'dry-run'
-
     # File handler
     if config_handler.get_logging_option('log_file'):
         log_file = os.path.expanduser(
@@ -94,6 +80,20 @@ else:
         LOG_CONFIG['loggers']['']['handlers'].append('file')
         LOG_CONFIG['loggers']['dynamic-dynamodb']['handlers'].append(
             'file')
+
+    # Configure a custom log level
+    if config_handler.get_logging_option('log_level'):
+        LOG_CONFIG['handlers']['console']['level'] = \
+            config_handler.get_logging_option('log_level').upper()
+        if 'file' in LOG_CONFIG['handlers']:
+            LOG_CONFIG['handlers']['file']['level'] = \
+                config_handler.get_logging_option('log_level').upper()
+
+    # Add dry-run to the formatter if in dry-run mode
+    if config_handler.get_global_option('dry_run'):
+        LOG_CONFIG['handlers']['console']['formatter'] = 'dry-run'
+        if 'file' in LOG_CONFIG['handlers']:
+            LOG_CONFIG['handlers']['file']['formatter'] = 'dry-run'
 
     dictconfig.dictConfig(LOG_CONFIG)
 
