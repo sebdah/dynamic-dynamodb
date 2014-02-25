@@ -23,7 +23,7 @@ The following will create a new CloudFormation stack. This will launch a new EC2
 
     a. In the **Name** text box, enter the name of the stack. For example: ``DynamicDynamoDB``.
 
-    b. In the **Template** section, click **Upload template file**. Click **Choose File** and select.
+    b. In the **Template** section, click **Upload template file**. Click **Choose File** and select the file you downloaded in step 1.
 
     c. Click **Next step**.
 
@@ -33,7 +33,7 @@ The following will create a new CloudFormation stack. This will launch a new EC2
 
     b. In the **AWSSecretKey** text box, enter your secret access key.
 
-    c. In the **ConfigFileS3Bucket** text box, enter a URI for your Amazon S3 bucket. For example: ``s3://bucket-name/dynamic-dynamodb/``.  The URI **must** have a trailing slash (``/``). This should be the same bucket and path as you used in step 1.
+    c. In the **ConfigFileS3Bucket** text box, enter a URI for your Amazon S3 bucket. For example: ``s3://bucket-name/dynamic-dynamodb/``.  The URI **must** have a trailing slash (``/``). This should be the same bucket and path as you used in step 2.
 
     d. In the **KeyPair** text box, enter the name of your `Amazon EC2 key pair <https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:>`__
 
