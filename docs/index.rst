@@ -6,7 +6,7 @@
     configuration_options
     example_configuration
     command_line_options
-    cf_template
+    cloudformation_template
     release_notes
     bug_reporting
     license
