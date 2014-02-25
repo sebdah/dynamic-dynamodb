@@ -83,6 +83,8 @@ And you can stop it by running:
 Deleting the stack
 ------------------
 
+If you wish to remove the CloudFormation stack, follow these steps:
+
 1. From the `AWS CloudFormation dashboard <https://console.aws.amazon.com/cloudformation/home>`__, select your stack.
 
 2. Click **Delete stack** and then **Yes, delete**, when prompted.
