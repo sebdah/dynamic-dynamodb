@@ -8,8 +8,11 @@ To make the installation as smooth as possible, the Dynamic DynamoDB project pro
 
 Please note that this will be charged towards your AWS account. The cost for a t1.micro server in us-east-1 is less than 15 USD / month.
 
-Creating a new stack
---------------------
+Setup instructions
+------------------
+
+Starting the CloudFormation stack
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following will create a new CloudFormation stack. This will launch a new EC2 instance.
 
@@ -44,6 +47,38 @@ The following will create a new CloudFormation stack. This will launch a new EC2
 7. On the **Review page**, review the options for your stack
 
 8. If you are OK with all configuration, click **Create**
+
+CloudFormation will now create your stack, it will take a few minutes. You can follow the progress by watching the **Events** tab on your stack.
+
+Accessing the EC2 instance
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can find your instance in the `EC2 instance list <https://console.aws.amazon.com/ec2/v2/home?#Instances:search=name:dynamic-dynamodb>`__. The instance name is ``dynamic-dynamodb``.
+
+You can then access the instance via SSH:
+::
+
+    ssh -i /path/to/key.pem ec2-user@<hostname>
+
+Updating configuration
+^^^^^^^^^^^^^^^^^^^^^^
+
+You can update the configuration directly on the EC2 instance. Simply modify ``/etc/dynamic-dynamodb/dynamic-dynamodb.conf`` and restart Dynamic DynamoDB.
+
+Starting and stopping Dynamic DynamoDB
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Dynamic DynamoDB runs in daemon mode on the EC2 instance.
+
+You can start the daemon by running:
+::
+
+    service dynamic-dynamodb start
+
+And you can stop it by running:
+::
+
+    service dynamic-dynamodb stop
 
 Deleting the stack
 ------------------
