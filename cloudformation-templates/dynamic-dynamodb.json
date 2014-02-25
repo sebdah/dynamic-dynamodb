@@ -407,7 +407,7 @@
   "Outputs": {
     "URL": {
       "Description": "EC2 instance",
-      "Value": "You can find your EC2 instance at https://console.aws.amazon.com/ec2/v2/home?#Instances:search=name:dynamic-dynamodb"
+      "Value": "You can find your EC2 instance at https://console.aws.amazon.com/ec2/v2/home?#Instances:search=dynamic-dynamodb"
     }
   }
 }

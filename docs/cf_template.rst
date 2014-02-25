@@ -53,7 +53,7 @@ CloudFormation will now create your stack, it will take a few minutes. You can f
 Accessing the EC2 instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can find your instance in the `EC2 instance list <https://console.aws.amazon.com/ec2/v2/home?#Instances:search=name:dynamic-dynamodb>`__. The instance name is ``dynamic-dynamodb``.
+You can find your instance in the `EC2 instance list <https://console.aws.amazon.com/ec2/v2/home?#Instances:search=dynamic-dynamodb>`__. The instance name is ``dynamic-dynamodb``.
 
 You can then access the instance via SSH:
 ::
