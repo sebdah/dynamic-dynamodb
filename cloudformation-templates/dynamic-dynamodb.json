@@ -6,20 +6,20 @@
   "Parameters": {
     "AWSAccessKey": {
       "Type": "String",
-      "Default": "Access-key",
+      "Default": "access-key",
       "Description": "Remove this default value and enter your Access key"
     },
 
     "AWSSecretKey": {
       "Type": "String",
-      "Default": "Secret-key",
+      "Default": "secret-key",
       "Description": "Remove this default value and enter your Secret key"
     },
 
     "S3Bucket": {
       "Type": "String",
       "Default": "s3://bucket-name/folder-path-if-applicable/",
-      "Description": "Remove this default value and enter your pre-created S3 Bucket url upto folder name. (Please include the trailing /. Example: https://s3.amazonaws.com/my-bucket/ should be input as s3://my-bucket/). It will be used for storing a copy of Dynamic DynamoDB configuration file and a file that lists DNS name of EC2 host that runs Dynamic DynamoDB service"
+      "Description": "Remove this default value and enter your pre-created S3 Bucket url upto folder name. (Please include the trailing /. Example: https://s3.amazonaws.com/my-bucket/ should be input as s3://my-bucket/). It will be used for storing a copy of Dynamic DynamoDB configuration file."
     },
 
     "KeyPair": {
@@ -150,14 +150,6 @@
                   " || error_exit 'Failed to initialize config file'"
                 ]]
               },
-              "GET http://169.254.169.254/latest/meta-data/public-hostname > /home/ec2-user/ec2-dns-hostname.txt || error_exit 'Failed to write dns host name to /home/ec2-user/ec2-dns-hostname.txt'",
-              {
-                "Fn::Join": [ "", [
-                  "aws s3 cp /home/ec2-user/ec2-dns-hostname.txt ", { "Ref": "S3Bucket" }, "ec2-dns-hostname.txt",
-                  " || error_exit 'Failed to upload /home/ec2-user/ec2-dns-hostname.txt to ", { "Ref": "S3Bucket" }, "ec2-dns-hostname.txt'"
-                ]]
-              },
-              "log \"Uploaded Public DNS Name to S3\"",
               "service dynamic-dynamodb start || error_exit 'Failed to start dynamic-dynamodb service. Check /etc/dynamic-dynamodb/logs/service.log'",
               "log \"Dynamic dynamodb service started\"",
               {
@@ -414,13 +406,8 @@
   },
   "Outputs": {
     "URL": {
-      "Description": "DNS for EC2 instance",
-      "Value": {
-        "Fn::Join": [ "", [
-          "You can find the DNS for EC2 instance at ", { "Ref": "S3Bucket" },
-          "ec2-dns-hostname.txt. You may use https://console.aws.amazon.com/s3/home to navigate to your bucket and access the dns file."
-        ]]
-      }
+      "Description": "EC2 instance",
+      "Value": "You can find your EC2 instance at https://console.aws.amazon.com/ec2/v2/home?#Instances:search=name:dynamic-dynamodb"
     }
   }
 }
