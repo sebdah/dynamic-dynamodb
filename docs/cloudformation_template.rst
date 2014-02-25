@@ -4,7 +4,7 @@ CloudFormation template
 Overview
 --------
 
-To make the installation as smooth as possible, the Dynamic DynamoDB project provides a `CloudFormation <http://aws.amazon.com/cloudformation/>`__ template. This template will launch an t1.micro instance with Dynamic DynamoDB pre-installed. All you need to do is to provide a Dynamic DynamoDB configuration file to use.
+To make it as easy as possible to get Dynamic DynamoDB up and running we provide a `CloudFormation <http://aws.amazon.com/cloudformation/>`__ template. This template will launch an t1.micro instance with Dynamic DynamoDB pre-installed. All you need to do is to provide a Dynamic DynamoDB configuration file to use.
 
 Please note that this will be charged towards your AWS account. The cost for a t1.micro server in us-east-1 is less than 15 USD / month.
 
