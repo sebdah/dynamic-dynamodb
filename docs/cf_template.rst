@@ -1,0 +1,46 @@
+CloudFormation template instructions
+====================================
+
+To make the installation as smooth as possible, the Dynamic DynamoDB project provides a `CloudFormation <http://aws.amazon.com/cloudformation/>`__ template. This template will launch an t1.micro instance with Dynamic DynamoDB pre-installed. All you need to do is to provide a Dynamic DynamoDB configuration file to use.
+
+Creating the CloudFormation stack
+---------------------------------
+
+The following will create a new CloudFormation stack. This will launch a new EC2 instance. Please note that this will be charged towards your AWS account. The cost for a t1.micro server in us-east-1 is less than 15 USD / month.
+
+1. Upload your CloudFormation template to AWS S3. Take a note of the bucket name and path.
+
+2. From the `AWS CloudFormation dashboard <https://console.aws.amazon.com/cloudformation/home>`__ click **Create stack**
+
+3. On the **Template page**:
+
+    a. In the **Name** text box, enter the name of the stack. For example: ``DynamicDynamoDB``.
+
+    b. In the **Template** section, click Upload template file. Click Choose File and select.
+
+    c. Click **Next step**.
+
+4. On the **Parameters page**:
+
+    a. In the **AWSAccessKey** text box, enter your AWS access key ID.
+
+    b. In the **AWSSecretKey** text box, enter your secret access key.
+
+    c. In the **ConfigFileS3Bucket** text box, enter a URI for your Amazon S3 bucket. For example: ``s3://bucket-name/dynamic-dynamodb/``.  The URI **must** have a trailing slash (``/``). This should be the same bucket and path as you used in step 1.
+
+    d. In the **KeyPair** text box, enter the name of your `Amazon EC2 key pair <https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:>`__
+
+    e. Click **Next Step**.
+
+5. On the **Options page**, click **Next Step**. There are no tasks to perform on this page.
+
+6. On the **Review page**, review the options for your stack
+
+7. If you are OK with all configuration, click **Create**
+
+Deleting your CloudFormation stack
+----------------------------------
+
+1. From the `AWS CloudFormation dashboard <https://console.aws.amazon.com/cloudformation/home>`__, select your stack.
+
+2. Click **Delete stack** and then **Yes, delete**, when prompted.
