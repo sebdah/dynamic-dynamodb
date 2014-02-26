@@ -19,18 +19,7 @@ def get_consumed_read_units_percent(table_name, gsi_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of consumed reads
     """
-    metrics = cloudwatch_connection.get_metric_statistics(
-        period=time_frame,
-        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
-        end_time=datetime.utcnow()-timedelta(minutes=10),
-        metric_name='ConsumedReadCapacityUnits',
-        namespace='AWS/DynamoDB',
-        statistics=['Sum'],
-        dimensions={
-            'TableName': table_name,
-            'GlobalSecondaryIndexName': gsi_name
-        },
-        unit='Count')
+    metrics = _get_aws_metric(table_name, gsi_name, time_frame, 'ConsumedReadCapacityUnits')
 
     if metrics:
         consumed_read_units = int(
@@ -59,18 +48,7 @@ def get_throttled_read_event_count(table_name, gsi_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of throttled read events
     """
-    metrics = cloudwatch_connection.get_metric_statistics(
-        period=time_frame,
-        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
-        end_time=datetime.utcnow()-timedelta(minutes=10),
-        metric_name='ReadThrottleEvents',
-        namespace='AWS/DynamoDB',
-        statistics=['Sum'],
-        dimensions={
-            'TableName': table_name,
-            'GlobalSecondaryIndexName': gsi_name
-        },
-        unit='Count')
+    metrics = _get_aws_metric(table_name, gsi_name, time_frame, 'ReadThrottleEvents')
 
     if metrics:
         throttled_read_events = int(
@@ -94,18 +72,7 @@ def get_consumed_write_units_percent(table_name, gsi_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of consumed writes
     """
-    metrics = cloudwatch_connection.get_metric_statistics(
-        period=time_frame,
-        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
-        end_time=datetime.utcnow()-timedelta(minutes=10),
-        metric_name='ConsumedWriteCapacityUnits',
-        namespace='AWS/DynamoDB',
-        statistics=['Sum'],
-        dimensions={
-            'TableName': table_name,
-            'GlobalSecondaryIndexName': gsi_name
-        },
-        unit='Count')
+    metrics = _get_aws_metric(table_name, gsi_name, time_frame, 'ConsumedWriteCapacityUnits')
 
     if metrics:
         consumed_write_units = int(
@@ -134,18 +101,7 @@ def get_throttled_write_event_count(table_name, gsi_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of throttled write events
     """
-    metrics = cloudwatch_connection.get_metric_statistics(
-        period=time_frame,
-        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
-        end_time=datetime.utcnow()-timedelta(minutes=10),
-        metric_name='WriteThrottleEvents',
-        namespace='AWS/DynamoDB',
-        statistics=['Sum'],
-        dimensions={
-            'TableName': table_name,
-            'GlobalSecondaryIndexName': gsi_name
-        },
-        unit='Count')
+    metrics = _get_aws_metric(table_name, gsi_name, time_frame, 'WriteThrottleEvents')
 
     if metrics:
         throttled_write_events = int(
@@ -156,3 +112,29 @@ def get_throttled_write_event_count(table_name, gsi_name, time_frame=300):
     logger.info('{0} - GSI: {1} - Consumed read units: {}'.format(
         table_name, gsi_name, throttled_write_events))
     return throttled_write_events
+    
+def _get_aws_metric(table_name, gsi_name, time_frame, metric_name):
+    """ Returns a  metric list from the AWS CloudWatch service, may return None if no metric exists
+    
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type gsi_name: str
+    :param gsi_name: Name of a GSI on the given DynamoDB table
+    :type time_frame: int
+    :param time_frame: How many seconds to look at
+    :type metric_name str
+    :param metric_name Name of the metric to retrieve from CloudWatch
+    :returns: list -- A list of time series data for the given metric, may be None if there was no data
+    """
+    return cloudwatch_connection.get_metric_statistics(
+        period=time_frame,
+        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
+        end_time=datetime.utcnow()-timedelta(minutes=10),
+        metric_name=metric_name,
+        namespace='AWS/DynamoDB',
+        statistics=['Sum'],
+        dimensions={
+            'TableName': table_name,
+            'GlobalSecondaryIndexName': gsi_name
+        },
+        unit='Count')
