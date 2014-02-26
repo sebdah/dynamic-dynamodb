@@ -53,7 +53,7 @@ def get_throttled_read_event_count(table_name, time_frame=300):
     else:
         throttled_read_count = 0
 
-    logger.info('{0} - Read throttle count: {}'.format(
+    logger.info('{0} - Read throttle count: {1:d}'.format(
         table_name, throttled_read_count))
     return throttled_read_count
 
@@ -102,7 +102,7 @@ def get_throttled_write_event_count(table_name, time_frame=300):
     else:
         throttled_write_count = 0
 
-    logger.info('{0} - Write throttle count: {}'.format(
+    logger.info('{0} - Write throttle count: {1:d}'.format(
         table_name, throttled_write_count))
     return throttled_write_count
     

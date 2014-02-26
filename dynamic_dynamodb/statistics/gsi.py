@@ -58,7 +58,7 @@ def get_throttled_read_event_count(table_name, gsi_name, time_frame=300):
     else:
         throttled_read_events = 0
 
-    logger.info('{0} - GSI: {1} - Consumed read units: {}'.format(
+    logger.info('{0} - GSI: {1} - Consumed read units: {2:d}'.format(
         table_name, gsi_name, throttled_read_events))
     return throttled_read_events
 
@@ -113,7 +113,7 @@ def get_throttled_write_event_count(table_name, gsi_name, time_frame=300):
     else:
         throttled_write_events = 0
 
-    logger.info('{0} - GSI: {1} - Consumed read units: {}'.format(
+    logger.info('{0} - GSI: {1} - Consumed read units: {2:d}'.format(
         table_name, gsi_name, throttled_write_events))
     return throttled_write_events
     
