@@ -84,7 +84,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
     consumed_read_units_percent = gsi_stats.get_consumed_read_units_percent(
         table_name, gsi_name)
         
-     throttled_read_count = gsi_stats.get_throttled_read_event_count(
+    throttled_read_count = gsi_stats.get_throttled_read_event_count(
         table_name, gsi_name)
 
     if (consumed_read_units_percent == 0 and not
@@ -206,7 +206,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
     consumed_write_units_percent = \
         gsi_stats.get_consumed_write_units_percent(table_name, gsi_name)
         
-     throttled_write_count = gsi_stats.get_throttled_write_event_count(
+    throttled_write_count = gsi_stats.get_throttled_write_event_count(
         table_name, gsi_name)
 
     # Check if we should update write provisioning

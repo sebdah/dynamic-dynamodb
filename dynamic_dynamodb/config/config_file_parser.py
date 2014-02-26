@@ -182,7 +182,7 @@ def parse(config_path):
                 },
                 {
                     'key':'throttled_read_upper_threshold',
-                    'option':'throttled-read-upper-threshold'
+                    'option':'throttled-read-upper-threshold',
                     'required':False,
                     'type': 'int'
                 },
@@ -224,7 +224,7 @@ def parse(config_path):
                 },
                 {
                     'key':'throttled_write_upper_threshold',
-                    'option':'throttled-write-upper-threshold'
+                    'option':'throttled-write-upper-threshold',
                     'required':False,
                     'type': 'int'
                 },
@@ -344,7 +344,7 @@ def parse(config_path):
                     },
                     {
                         'key':'throttled_read_upper_threshold',
-                        'option':'throttled-read-upper-threshold'
+                        'option':'throttled-read-upper-threshold',
                         'required':False,
                         'type': 'int'
                     },
@@ -386,7 +386,7 @@ def parse(config_path):
                     },
                     {
                         'key':'throttled_write_upper_threshold',
-                        'option':'throttled-write-upper-threshold'
+                        'option':'throttled-write-upper-threshold',
                         'required':False,
                         'type': 'int'
                     },
