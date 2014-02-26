@@ -107,6 +107,7 @@
               },
               "  exit 1",
               "}",
+              "INSTALLER_LOG_FILE_LOCATION=/etc/dynamic-dynamodb/logs/installer.log",
               "mkdir -p /etc/dynamic-dynamodb/{scripts,logs} || error_exit 'Failed to create /etc/dynamic-dynamodb'",
               {
                 "Fn::Join": [ " ", [
@@ -118,7 +119,6 @@
                   ]
                 ]
               },
-              "INSTALLER_LOG_FILE_LOCATION=/etc/dynamic-dynamodb/logs/installer.log",
               "",
               "if [[ -f $INSTALLER_LOG_FILE_LOCATION ]]; then",
               "  backup_file_locally $INSTALLER_LOG_FILE_LOCATION",
