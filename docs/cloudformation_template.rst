@@ -18,7 +18,7 @@ The following will create a new CloudFormation stack. This will launch a new EC2
 
 1. Download the `Dynamic DynamoDB CloudFormation template <https://raw.github.com/sebdah/dynamic-dynamodb/develop/cloudformation-templates/dynamic-dynamodb.json>`__ to your computer.
 
-2. Upload your Dynamic DynamoDB configuration to AWS S3. Take a note of the bucket name and path. You need to call the configuration ``dynamic-dynamodb.conf``.
+2. If you are already using Dynamic DynamoDB and have an existing configuration file, upload it to AWS S3. Take a note of the bucket name and path. You need to call the configuration ``dynamic-dynamodb.conf``.
 
 3. From the `AWS CloudFormation dashboard <https://console.aws.amazon.com/cloudformation/home>`__ click **Create stack**
 
@@ -36,7 +36,7 @@ The following will create a new CloudFormation stack. This will launch a new EC2
 
     b. In the **AWSSecretKey** text box, enter your secret access key.
 
-    c. In the **ConfigFileS3Bucket** text box, enter a URI for your Amazon S3 bucket. For example: ``s3://bucket-name/dynamic-dynamodb/``.  The URI **must** have a trailing slash (``/``). This should be the same bucket and path as you used in step 2.
+    c. In the **S3bucket** text box, enter a URI for your Amazon S3 bucket. For example: ``s3://bucket-name/dynamic-dynamodb/``.  The URI **must** have a trailing slash (``/``). This should be the same bucket and path as you used in step 2. If you did not upload a template in step 2, choose any S3 bucket and path.
 
     d. In the **KeyPair** text box, enter the name of your `Amazon EC2 key pair <https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:>`__
 
