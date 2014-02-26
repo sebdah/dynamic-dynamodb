@@ -17,7 +17,8 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of consumed reads
     """
-    metrics = _get_aws_metric(table_name, time_frame, 'ConsumedReadCapacityUnits')
+    metrics = __get_aws_metric(table_name, time_frame, 
+        'ConsumedReadCapacityUnits')
 
     if metrics:
         consumed_read_units = int(
@@ -44,7 +45,7 @@ def get_throttled_read_event_count(table_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of throttled read events during the time period
     """
-    metrics = _get_aws_metric(table_name, time_frame, 'ReadThrottleEvents')
+    metrics = __get_aws_metric(table_name, time_frame, 'ReadThrottleEvents')
 
     if metrics:
         throttled_read_count = int(
@@ -65,7 +66,8 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of consumed writes
     """
-    metrics = _get_aws_metric(table_name, time_frame, 'ConsumedWriteCapacityUnits')
+    metrics = __get_aws_metric(table_name, time_frame, 
+        'ConsumedWriteCapacityUnits')
 
     if metrics:
         consumed_write_units = int(
@@ -92,7 +94,7 @@ def get_throttled_write_event_count(table_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of throttled write events during the time period
     """
-    metrics = _get_aws_metric(table_name, time_frame, 'WriteThrottleEvents')
+    metrics = __get_aws_metric(table_name, time_frame, 'WriteThrottleEvents')
 
     if metrics:
         throttled_write_count = int(
@@ -104,8 +106,9 @@ def get_throttled_write_event_count(table_name, time_frame=300):
         table_name, throttled_write_count))
     return throttled_write_count
     
-def _get_aws_metric(table_name, time_frame, metric_name):
-    """ Returns a  metric list from the AWS CloudWatch service, may return None if no metric exists
+def __get_aws_metric(table_name, time_frame, metric_name):
+    """ Returns a  metric list from the AWS CloudWatch service, may return
+    None if no metric exists
     
     :type table_name: str
     :param table_name: Name of the DynamoDB table
@@ -113,7 +116,8 @@ def _get_aws_metric(table_name, time_frame, metric_name):
     :param time_frame: How many seconds to look at
     :type metric_name str
     :param metric_name Name of the metric to retrieve from CloudWatch
-    :returns: list -- A list of time series data for the given metric, may be None if there was no data
+    :returns: list -- A list of time series data for the given metric, may 
+    be None if there was no data
     """
     return cloudwatch_connection.get_metric_statistics(
         period=time_frame,
