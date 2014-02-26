@@ -43,6 +43,34 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
         table_name, consumed_read_units_percent))
     return consumed_read_units_percent
 
+def get_throttled_read_event_count(table_name, time_frame=300):
+    """ Returns the number of throttled read events during a given time frame
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type time_frame: int
+    :param time_frame: How many seconds to look at
+    :returns: int -- Number of throttled read events during the time period
+    """
+     metrics = cloudwatch_connection.get_metric_statistics(
+        period=time_frame,
+        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
+        end_time=datetime.utcnow()-timedelta(minutes=10),
+        metric_name='ReadThrottleEvents',
+        namespace='AWS/DynamoDB',
+        statistics=['Sum'],
+        dimensions={'TableName': table_name},
+        unit='Count')
+
+    if metrics:
+        throttled_read_count = int(
+            math.ceil(float(metrics[0]['Sum'])/float(time_frame)))
+    else:
+        throttled_read_count = 0
+
+    logger.info('{0} - Read throttle count: {}'.format(
+        table_name, throttled_read_count))
+    return throttled_read_count
 
 def get_consumed_write_units_percent(table_name, time_frame=300):
     """ Returns the number of consumed write units in percent
@@ -78,3 +106,32 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
     logger.info('{0} - Consumed write units: {1:d}%'.format(
         table_name, consumed_write_units_percent))
     return consumed_write_units_percent
+    
+def get_throttled_write_event_count(table_name, time_frame=300):
+    """ Returns the number of throttled write events during a given time frame
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type time_frame: int
+    :param time_frame: How many seconds to look at
+    :returns: int -- Number of throttled write events during the time period
+    """
+     metrics = cloudwatch_connection.get_metric_statistics(
+        period=time_frame,
+        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
+        end_time=datetime.utcnow()-timedelta(minutes=10),
+        metric_name='WriteThrottleEvents',
+        namespace='AWS/DynamoDB',
+        statistics=['Sum'],
+        dimensions={'TableName': table_name},
+        unit='Count')
+
+    if metrics:
+        throttled_write_count = int(
+            math.ceil(float(metrics[0]['Sum'])/float(time_frame)))
+    else:
+        throttled_write_count = 0
+
+    logger.info('{0} - Write throttle count: {}'.format(
+        table_name, throttled_read_count))
+    return throttled_write_count
