@@ -211,6 +211,9 @@ def list_tables():
                 'Your AWS API keys lack access to listing tables. '
                 'That is an issue if you are trying to use regular '
                 'expressions in your table configuration.')
+        elif dynamodb_error == 'UnrecognizedClientException':
+            logger.error(
+                'Invalid security token. Are your AWS API keys correct?')
         else:
             logger.error(
                 (
