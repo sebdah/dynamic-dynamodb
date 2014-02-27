@@ -53,12 +53,11 @@ def get_throttled_read_event_count(table_name, gsi_name, time_frame=300):
         'ReadThrottleEvents')
 
     if metrics:
-        throttled_read_events = int(
-            math.ceil(float(metrics[0]['Sum'])/float(time_frame)))
+        throttled_read_events = int(metrics[0]['Sum'])
     else:
         throttled_read_events = 0
 
-    logger.info('{0} - GSI: {1} - Consumed read units: {2:d}'.format(
+    logger.info('{0} - GSI: {1} - Read throttle count: {2:d}'.format(
         table_name, gsi_name, throttled_read_events))
     return throttled_read_events
 
@@ -108,12 +107,11 @@ def get_throttled_write_event_count(table_name, gsi_name, time_frame=300):
         'WriteThrottleEvents')
 
     if metrics:
-        throttled_write_events = int(
-            math.ceil(float(metrics[0]['Sum'])/float(time_frame)))
+        throttled_write_events = int(metrics[0]['Sum'])
     else:
         throttled_write_events = 0
 
-    logger.info('{0} - GSI: {1} - Consumed read units: {2:d}'.format(
+    logger.info('{0} - GSI: {1} - Write throttle count: {2:d}'.format(
         table_name, gsi_name, throttled_write_events))
     return throttled_write_events
     

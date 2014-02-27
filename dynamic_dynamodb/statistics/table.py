@@ -48,8 +48,7 @@ def get_throttled_read_event_count(table_name, time_frame=300):
     metrics = __get_aws_metric(table_name, time_frame, 'ReadThrottleEvents')
 
     if metrics:
-        throttled_read_count = int(
-            math.ceil(float(metrics[0]['Sum'])/float(time_frame)))
+        throttled_read_count = int(metrics[0]['Sum'])
     else:
         throttled_read_count = 0
 
@@ -97,8 +96,7 @@ def get_throttled_write_event_count(table_name, time_frame=300):
     metrics = __get_aws_metric(table_name, time_frame, 'WriteThrottleEvents')
 
     if metrics:
-        throttled_write_count = int(
-            math.ceil(float(metrics[0]['Sum'])/float(time_frame)))
+        throttled_write_count = int(metrics[0]['Sum'])
     else:
         throttled_write_count = 0
 
