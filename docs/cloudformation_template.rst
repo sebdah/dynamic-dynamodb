@@ -50,6 +50,13 @@ The following will create a new CloudFormation stack. This will launch a new EC2
 
 CloudFormation will now create your stack, it will take a few minutes. You can follow the progress by watching the **Events** tab on your stack.
 
+Debugging template errors
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you need to debug errors in the template setup, you'll want to disable CloudFormation rollbacks. You can do that when you deploy the CloudFormation template in the section above. On the **Options page** (step 6), click **Advanced** and select **No** under **Rollback on failure**.
+
+This will keep the EC2 instance running and allow you to log in and debug any issues you might experience.
+
 Accessing the EC2 instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
