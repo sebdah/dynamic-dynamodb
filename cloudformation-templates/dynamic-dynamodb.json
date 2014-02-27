@@ -135,8 +135,8 @@
               {
                 "Fn::Join": [ "", [
                   "echo \"aws s3 cp /etc/dynamic-dynamodb/dynamic-dynamodb.conf ", { "Ref": "S3Bucket" }, "dynamic-dynamodb.conf ",
-                  " || echo 'Failed to /etc/dynamic-dynamodb/dynamic-dynamodb.conf to ",
-                  { "Ref": "S3Bucket" }, "' ; exit 1\">/etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh",
+                  " || (echo 'Failed to /etc/dynamic-dynamodb/dynamic-dynamodb.conf to ",
+                  { "Ref": "S3Bucket" }, "' ; exit 1)\">/etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh",
                   " || error_exit 'Failed to create /etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh'"
                 ]]
               },
