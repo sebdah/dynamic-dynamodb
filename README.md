@@ -5,9 +5,9 @@ Dynamic DynamoDB
 <a href="https://crate.io/packages/dynamic-dynamodb/"><img src="https://pypip.in/d/dynamic-dynamodb/badge.png"></a>
 <a href="https://crate.io/packages/dynamic-dynamodb/"><img src="https://pypip.in/license/dynamic-dynamodb/badge.png"></a>
 
-AWS DynamoDB is a great service, but it falls short when it comes to automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
+AWS NoSQL database DynamoDB is a great service, but it lacks automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
-All you need to do is to tell Dynamic DynamoDB at which point and how much you want to scale up or down your DynamoDB. An example is in place. Let’s say you have way more traffic on your database during sales hours 4pm - 10pm. DynamicDB can monitor the increased throughput on your DynamoDB instance (via CloudWatch) and provision more throughput as needed. When the load is reducing Dynamic DynamoDB will sence that and automatically reduce your provisioning.
+All you need to do is to tell Dynamic DynamoDB at which point and how much you want to scale up or down your DynamoDB tables. An example is in place. Let’s say you have way more traffic on your database during sales hours 4pm - 10pm. DynamicDB can monitor the increased throughput on your DynamoDB instance (via CloudWatch) and provision more throughput as needed. When the load is reducing Dynamic DynamoDB will sence that and automatically reduce your provisioning.
 
 See an example of how to configure Dynamic DynamoDB under **Basic usage** or checkout `dynamic-dynamodb --help`.
 
