@@ -97,11 +97,11 @@
               "error_exit(){",
               "  log \"$1\"",
               {
-                "Fn::Join": [ " ", [
+                "Fn::Join": [ "", [
                     "/opt/aws/bin/cfn-signal ",
-                    "  -e 1 ", { "Ref": "AWS::StackId" },
-                    "  -r \"$1\"",
-                    "  '", { "Ref" : "WaitHandle" }, "'"
+                    " -e 1 ",
+                    " -r \"$1\"",
+                    " '", { "Ref" : "WaitHandle" }, "'\n"
                   ]
                 ]
               },
@@ -135,8 +135,8 @@
               {
                 "Fn::Join": [ "", [
                   "echo \"aws s3 cp /etc/dynamic-dynamodb/dynamic-dynamodb.conf ", { "Ref": "S3Bucket" }, "dynamic-dynamodb.conf ",
-                  " || error_exit 'Failed to /etc/dynamic-dynamodb/dynamic-dynamodb.conf to ",
-                  { "Ref": "S3Bucket" }, "'\">/etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh",
+                  " || echo 'Failed to /etc/dynamic-dynamodb/dynamic-dynamodb.conf to ",
+                  { "Ref": "S3Bucket" }, "' ; exit 1\">/etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh",
                   " || error_exit 'Failed to create /etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh'"
                 ]]
               },
