@@ -73,6 +73,12 @@ def parse():
                 the currently consumed read units reaches this many
                 percent (default: 90)""")
     r_scaling_ag.add_argument(
+        '--throttled-read-upper-threshold',
+        type=int,
+        help="""Scale up the reads with --increase-reads-with percent if
+                the count of throttled read events exceeds this 
+                count (default: 100)""")
+    r_scaling_ag.add_argument(
         '--reads-lower-threshold',
         type=int,
         help="""Scale down the reads with --decrease-reads-with percent if the
@@ -111,6 +117,12 @@ def parse():
         help="""Scale up the writes with --increase-writes-with percent
                 if the currently consumed write units reaches this
                 many percent (default: 90)""")
+    w_scaling_ag.add_argument(
+        '--throttled-write-upper-threshold',
+        type=int,
+        help="""Scale up the reads with --increase-writes-with percent if
+                the count of throttled write events exceeds this 
+                count (default: 100)""")
     w_scaling_ag.add_argument(
         '--writes-lower-threshold',
         type=int,
