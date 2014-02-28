@@ -181,9 +181,9 @@ def parse(config_path):
                     'type': 'int'
                 },
                 {
-                    'key':'throttled_read_upper_threshold',
-                    'option':'throttled-read-upper-threshold',
-                    'required':False,
+                    'key': 'throttled_reads_upper_threshold',
+                    'option': 'throttled-reads-upper-threshold',
+                    'required': False,
                     'type': 'int'
                 },
                 {
@@ -223,9 +223,9 @@ def parse(config_path):
                     'type': 'int'
                 },
                 {
-                    'key':'throttled_write_upper_threshold',
-                    'option':'throttled-write-upper-threshold',
-                    'required':False,
+                    'key': 'throttled_writes_upper_threshold',
+                    'option': 'throttled-writes-upper-threshold',
+                    'required': False,
                     'type': 'int'
                 },
                 {
@@ -343,9 +343,9 @@ def parse(config_path):
                         'type': 'int'
                     },
                     {
-                        'key':'throttled_read_upper_threshold',
-                        'option':'throttled-read-upper-threshold',
-                        'required':False,
+                        'key': 'throttled_reads_upper_threshold',
+                        'option': 'throttled-reads-upper-threshold',
+                        'required': False,
                         'type': 'int'
                     },
                     {
@@ -385,9 +385,9 @@ def parse(config_path):
                         'type': 'int'
                     },
                     {
-                        'key':'throttled_write_upper_threshold',
-                        'option':'throttled-write-upper-threshold',
-                        'required':False,
+                        'key': 'throttled_writes_upper_threshold',
+                        'option': 'throttled-writes-upper-threshold',
+                        'required': False,
                         'type': 'int'
                     },
                     {

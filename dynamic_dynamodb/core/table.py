@@ -55,8 +55,9 @@ def __ensure_provisioning_reads(table_name, key_name):
 
     consumed_read_units_percent = table_stats.get_consumed_read_units_percent(
         table_name)
-        
-    throttled_read_count = table_stats.get_throttled_read_event_count(table_name)
+
+    throttled_read_count = table_stats.get_throttled_read_event_count(
+        table_name)
 
     if (consumed_read_units_percent == 0 and not
             get_table_option(
@@ -85,10 +86,10 @@ def __ensure_provisioning_reads(table_name, key_name):
         if updated_read_units != updated_provisioning:
             update_needed = True
             updated_read_units = updated_provisioning
-            
-    elif (throttled_read_count >= 
-            get_table_option(key_name, 'throttled_read_upper_threshold')):
-            
+
+    elif (throttled_read_count >=
+            get_table_option(key_name, 'throttled_reads_upper_threshold')):
+
         if get_table_option(key_name, 'increase_reads_unit') == 'percent':
             updated_provisioning = calculators.increase_reads_in_percent(
                 updated_read_units,
@@ -154,7 +155,7 @@ def __ensure_provisioning_writes(table_name, key_name):
 
     consumed_write_units_percent = \
         table_stats.get_consumed_write_units_percent(table_name)
-        
+
     throttled_write_count = \
         table_stats.get_throttled_write_event_count(table_name)
 
@@ -186,10 +187,10 @@ def __ensure_provisioning_writes(table_name, key_name):
         if updated_write_units != updated_provisioning:
             update_needed = True
             updated_write_units = updated_provisioning
-            
-    elif (throttled_write_count >= 
-            get_table_option(key_name, 'throttled_write_upper_threshold')):
-            
+
+    elif (throttled_write_count >=
+            get_table_option(key_name, 'throttled_writes_upper_threshold')):
+
         if get_table_option(key_name, 'increase_writes_unit') == 'percent':
             updated_provisioning = calculators.increase_writes_in_percent(
                 updated_write_units,
