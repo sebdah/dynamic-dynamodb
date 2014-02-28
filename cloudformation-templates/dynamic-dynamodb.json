@@ -7,12 +7,14 @@
     "AWSAccessKey": {
       "Type": "String",
       "Default": "access-key",
+      "NoEcho": "true",
       "Description": "Remove this default value and enter your Access key"
     },
 
     "AWSSecretKey": {
       "Type": "String",
       "Default": "secret-key",
+      "NoEcho": "true",
       "Description": "Remove this default value and enter your Secret key"
     },
 
