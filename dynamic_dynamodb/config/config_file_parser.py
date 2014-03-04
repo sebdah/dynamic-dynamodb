@@ -181,6 +181,12 @@ def parse(config_path):
                     'type': 'int'
                 },
                 {
+                    'key':'throttled_read_upper_threshold',
+                    'option':'throttled-read-upper-threshold',
+                    'required':False,
+                    'type': 'int'
+                },
+                {
                     'key': 'increase_reads_with',
                     'option': 'increase-reads-with',
                     'required': False,
@@ -214,6 +220,12 @@ def parse(config_path):
                     'key': 'writes_upper_threshold',
                     'option': 'writes-upper-threshold',
                     'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key':'throttled_write_upper_threshold',
+                    'option':'throttled-write-upper-threshold',
+                    'required':False,
                     'type': 'int'
                 },
                 {
@@ -331,6 +343,12 @@ def parse(config_path):
                         'type': 'int'
                     },
                     {
+                        'key':'throttled_read_upper_threshold',
+                        'option':'throttled-read-upper-threshold',
+                        'required':False,
+                        'type': 'int'
+                    },
+                    {
                         'key': 'increase_reads_with',
                         'option': 'increase-reads-with',
                         'required': False,
@@ -364,6 +382,12 @@ def parse(config_path):
                         'key': 'writes_upper_threshold',
                         'option': 'writes-upper-threshold',
                         'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key':'throttled_write_upper_threshold',
+                        'option':'throttled-write-upper-threshold',
+                        'required':False,
                         'type': 'int'
                     },
                     {
