@@ -14,6 +14,7 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             [--daemon DAEMON] [--instance INSTANCE] [-r REGION]
                             [-t TABLE_NAME]
                             [--reads-upper-threshold READS_UPPER_THRESHOLD]
+                            [--throttled-reads-upper-threshold THROTTLED_READS_UPPER_THRESHOLD]
                             [--reads-lower-threshold READS_LOWER_THRESHOLD]
                             [--increase-reads-with INCREASE_READS_WITH]
                             [--decrease-reads-with DECREASE_READS_WITH]
@@ -22,6 +23,7 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             [--min-provisioned-reads MIN_PROVISIONED_READS]
                             [--max-provisioned-reads MAX_PROVISIONED_READS]
                             [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
+                            [--throttled-writes-upper-threshold THROTTLED_WRITES_UPPER_THRESHOLD]
                             [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
                             [--increase-writes-with INCREASE_WRITES_WITH]
                             [--decrease-writes-with DECREASE_WRITES_WITH]
@@ -74,6 +76,10 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             Scale up the reads with --increase-reads-with percent
                             if the currently consumed read units reaches this many
                             percent (default: 90)
+      --throttled-reads-upper-threshold THROTTLED_READS_UPPER_THRESHOLD
+                            Scale up the reads with --increase-reads-with percent
+                            if the count of throttled read events exceeds this
+                            count (default: 100)
       --reads-lower-threshold READS_LOWER_THRESHOLD
                             Scale down the reads with --decrease-reads-with
                             percent if the currently consumed read units is as low
@@ -106,6 +112,10 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             Scale up the writes with --increase-writes-with
                             percent if the currently consumed write units reaches
                             this many percent (default: 90)
+      --throttled-writes-upper-threshold THROTTLED_WRITES_UPPER_THRESHOLD
+                            Scale up the reads with --increase-writes-with percent
+                            if the count of throttled write events exceeds this
+                            count (default: 100)
       --writes-lower-threshold WRITES_LOWER_THRESHOLD
                             Scale down the writes with --decrease-writes-with
                             percent if the currently consumed write units is as
