@@ -181,6 +181,12 @@ def parse(config_path):
                     'type': 'int'
                 },
                 {
+                    'key': 'throttled_reads_upper_threshold',
+                    'option': 'throttled-reads-upper-threshold',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
                     'key': 'increase_reads_with',
                     'option': 'increase-reads-with',
                     'required': False,
@@ -213,6 +219,12 @@ def parse(config_path):
                 {
                     'key': 'writes_upper_threshold',
                     'option': 'writes-upper-threshold',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'throttled_writes_upper_threshold',
+                    'option': 'throttled-writes-upper-threshold',
                     'required': False,
                     'type': 'int'
                 },
@@ -331,6 +343,12 @@ def parse(config_path):
                         'type': 'int'
                     },
                     {
+                        'key': 'throttled_reads_upper_threshold',
+                        'option': 'throttled-reads-upper-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
                         'key': 'increase_reads_with',
                         'option': 'increase-reads-with',
                         'required': False,
@@ -363,6 +381,12 @@ def parse(config_path):
                     {
                         'key': 'writes_upper_threshold',
                         'option': 'writes-upper-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'throttled_writes_upper_threshold',
+                        'option': 'throttled-writes-upper-threshold',
                         'required': False,
                         'type': 'int'
                     },
