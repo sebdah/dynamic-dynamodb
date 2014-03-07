@@ -1,6 +1,20 @@
 Release notes
 =============
 
+1.9.0
+-----
+
+**Release date:** 2014-03-07
+
+- `Introducing support for throttled request mitigation #120 <https://github.com/sebdah/dynamic-dynamodb/issues/120>`__. Many thanks to `@msh9 <https://github.com/msh9>`__ for his pull request!
+
+1.8.3
+-----
+
+**Release date:** 2014-02-27
+
+- Fixes in configuration and CloudFormation template
+
 1.8.2
 -----
 
