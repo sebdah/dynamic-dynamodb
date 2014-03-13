@@ -50,16 +50,6 @@ def __get_connection_dynamodb(retries=3):
     return connection
 
 
-def describe_table(table_name):
-    """ Return table details
-
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
-    :returns: dict
-    """
-    return DYNAMODB_CONNECTION.describe_table(table_name)
-
-
 def get_table(table_name):
     """ Return the DynamoDB table
 
