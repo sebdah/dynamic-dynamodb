@@ -79,7 +79,11 @@ def get_gsi_status(table_name, gsi_name):
     :param gsi_name: Name of the GSI
     :returns: str
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
         if gsi[u'IndexName'] == gsi_name:
             return gsi[u'IndexStatus']
@@ -94,7 +98,11 @@ def get_provisioned_gsi_read_units(table_name, gsi_name):
     :param gsi_name: Name of the GSI
     :returns: int -- Number of read units
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
         if gsi[u'IndexName'] == gsi_name:
             read_units = int(
@@ -116,7 +124,11 @@ def get_provisioned_gsi_write_units(table_name, gsi_name):
     :param gsi_name: Name of the GSI
     :returns: int -- Number of write units
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
         if gsi[u'IndexName'] == gsi_name:
             write_units = int(
@@ -136,7 +148,11 @@ def get_provisioned_table_read_units(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: int -- Number of read units
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     read_units = int(
         desc[u'Table'][u'ProvisionedThroughput'][u'ReadCapacityUnits'])
 
@@ -152,7 +168,11 @@ def get_provisioned_table_write_units(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: int -- Number of write units
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     write_units = int(
         desc[u'Table'][u'ProvisionedThroughput'][u'WriteCapacityUnits'])
 
@@ -168,7 +188,11 @@ def get_table_status(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: str
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     return desc[u'Table'][u'TableStatus']
 
 
@@ -369,7 +393,10 @@ def table_gsis(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: list -- List of GSI names
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)[u'Table']
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)[u'Table']
+    except JSONResponseError:
+        raise
 
     if u'GlobalSecondaryIndexes' in desc:
         return desc[u'GlobalSecondaryIndexes']
