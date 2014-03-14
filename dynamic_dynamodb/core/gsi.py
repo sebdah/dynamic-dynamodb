@@ -65,13 +65,8 @@ def ensure_provisioning(table_name, table_key, gsi_name, gsi_key):
                 '{0} - GSI: {1} - No need to change provisioning'.format(
                     table_name,
                     gsi_name))
-    except JSONResponseError as error:
-        exception = error.body['__type'].split('#')[1]
-        if exception == 'ResourceNotFoundException':
-            logger.error(
-                '{0} - GSI: {1} - Table {2} does not exist anymore'.format(
-                    table_name, gsi_name, table_name))
-        return
+    except JSONResponseError:
+        raise
 
 
 def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):

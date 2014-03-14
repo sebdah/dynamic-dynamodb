@@ -43,13 +43,8 @@ def ensure_provisioning(table_name, key_name):
         else:
             logger.info('{0} - No need to change provisioning'.format(
                 table_name))
-    except JSONResponseError as error:
-        exception = error.body['__type'].split('#')[1]
-        if exception == 'ResourceNotFoundException':
-            logger.error(
-                '{0} - Table {1} does not exist anymore'.format(
-                    table_name, table_name))
-        return
+    except JSONResponseError:
+        raise
 
 
 def __ensure_provisioning_reads(table_name, key_name):
