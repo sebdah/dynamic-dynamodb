@@ -404,13 +404,8 @@ def __update_throughput(
     # Check table status
     try:
         gsi_status = dynamodb.get_gsi_status(table_name, gsi_name)
-    except JSONResponseError as error:
-        exception = error.body['__type'].split('#')[1]
-        if exception == 'ResourceNotFoundException':
-            logger.error(
-                '{0} - GSI: {1} - Table {2} does not exist anymore'.format(
-                    table_name, gsi_name, table_name))
-        return
+    except JSONResponseError:
+        raise
 
     logger.debug('{0} - GSI: {1} - GSI status is {2}'.format(
         table_name, gsi_name, gsi_status))
