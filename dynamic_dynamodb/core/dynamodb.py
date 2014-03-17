@@ -10,46 +10,6 @@ from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
 
 
-def __get_connection_dynamodb(retries=3):
-    """ Ensure connection to DynamoDB
-
-    :type retries: int
-    :param retries: Number of times to retry to connect to DynamoDB
-    """
-    connected = False
-    while not connected:
-        logger.debug('Connecting to DynamoDB in {0}'.format(
-            configuration['global']['region']))
-
-        if (configuration['global']['aws_access_key_id'] and
-                configuration['global']['aws_secret_access_key']):
-            connection = dynamodb2.connect_to_region(
-                configuration['global']['region'],
-                aws_access_key_id=
-                configuration['global']['aws_access_key_id'],
-                aws_secret_access_key=
-                configuration['global']['aws_secret_access_key'])
-        else:
-            connection = dynamodb2.connect_to_region(
-                configuration['global']['region'])
-
-        if not connection:
-            if retries == 0:
-                logger.error('Failed to connect to DynamoDB. Giving up.')
-                raise
-            else:
-                logger.error(
-                    'Failed to connect to DynamoDB. Retrying in 5 seconds')
-                retries -= 1
-                time.sleep(5)
-        else:
-            connected = True
-            logger.debug('Connected to DynamoDB in {0}'.format(
-                configuration['global']['region']))
-
-    return connection
-
-
 def get_table(table_name):
     """ Return the DynamoDB table
 
@@ -402,5 +362,45 @@ def table_gsis(table_name):
         return desc[u'GlobalSecondaryIndexes']
 
     return []
+
+
+def __get_connection_dynamodb(retries=3):
+    """ Ensure connection to DynamoDB
+
+    :type retries: int
+    :param retries: Number of times to retry to connect to DynamoDB
+    """
+    connected = False
+    while not connected:
+        logger.debug('Connecting to DynamoDB in {0}'.format(
+            configuration['global']['region']))
+
+        if (configuration['global']['aws_access_key_id'] and
+                configuration['global']['aws_secret_access_key']):
+            connection = dynamodb2.connect_to_region(
+                configuration['global']['region'],
+                aws_access_key_id=
+                configuration['global']['aws_access_key_id'],
+                aws_secret_access_key=
+                configuration['global']['aws_secret_access_key'])
+        else:
+            connection = dynamodb2.connect_to_region(
+                configuration['global']['region'])
+
+        if not connection:
+            if retries == 0:
+                logger.error('Failed to connect to DynamoDB. Giving up.')
+                raise
+            else:
+                logger.error(
+                    'Failed to connect to DynamoDB. Retrying in 5 seconds')
+                retries -= 1
+                time.sleep(5)
+        else:
+            connected = True
+            logger.debug('Connected to DynamoDB in {0}'.format(
+                configuration['global']['region']))
+
+    return connection
 
 DYNAMODB_CONNECTION = __get_connection_dynamodb()
