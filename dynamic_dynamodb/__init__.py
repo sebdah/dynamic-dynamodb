@@ -24,6 +24,8 @@ import re
 import sys
 import time
 
+from boto.exception import JSONResponseError
+
 from dynamic_dynamodb.core import dynamodb, gsi, table
 from dynamic_dynamodb.daemon import Daemon
 from dynamic_dynamodb.config_handler import CONFIGURATION as config
@@ -41,33 +43,48 @@ class DynamicDynamoDBDaemon(Daemon):
         """
         while True:
             # Ensure provisioning
-            for table_name, table_key in sorted(self.tables):
-                table.ensure_provisioning(table_name, table_key)
+            for table_name, table_key in sorted(dynamodb.get_tables_and_gsis()):
+                try:
+                    table.ensure_provisioning(table_name, table_key)
 
-                gsi_names = set()
-                # Add regexp table names
-                for gst_instance in dynamodb.table_gsis(table_name):
-                    gsi_name = gst_instance[u'IndexName']
-                    for gsi_key in config['tables'][table_key]['gsis'].keys():
-                        if re.match(gsi_key, gsi_name):
-                            logger.debug(
-                                'Table {0} GSI {1} match with '
-                                'GSI config key {2}'.format(
-                                    table_name, gsi_name, gsi_key))
-                            gsi_names.add(
-                                (
-                                    gsi_name,
-                                    gsi_key
-                                ))
+                    gsi_names = set()
+                    # Add regexp table names
+                    for gst_instance in dynamodb.table_gsis(table_name):
+                        gsi_name = gst_instance[u'IndexName']
+                        gsi_keys = config['tables'][table_key]['gsis'].keys()
+                        for gsi_key in gsi_keys:
+                            try:
+                                if re.match(gsi_key, gsi_name):
+                                    logger.debug(
+                                        'Table {0} GSI {1} match with '
+                                        'GSI config key {2}'.format(
+                                            table_name, gsi_name, gsi_key))
+                                    gsi_names.add(
+                                        (
+                                            gsi_name,
+                                            gsi_key
+                                        ))
+                            except re.error:
+                                logger.error(
+                                    'Invalid regular expression: "{0}"'.format(
+                                        gsi_key))
+                                sys.exit(1)
 
-                gsi_names = sorted(gsi_names)
+                    gsi_names = sorted(gsi_names)
 
-                for gsi_name, gsi_key in gsi_names:
-                    gsi.ensure_provisioning(
-                        table_name,
-                        table_key,
-                        gsi_name,
-                        gsi_key)
+                    for gsi_name, gsi_key in gsi_names:
+                        gsi.ensure_provisioning(
+                            table_name,
+                            table_key,
+                            gsi_name,
+                            gsi_key)
+                except JSONResponseError as error:
+                    exception = error.body['__type'].split('#')[1]
+                    if exception == 'ResourceNotFoundException':
+                        logger.error(
+                            '{0} - Table {1} does not exist anymore'.format(
+                                table_name, table_name))
+                        continue
 
             # Sleep between the checks
             logger.debug('Sleeping {0} seconds until next check'.format(
@@ -78,39 +95,10 @@ class DynamicDynamoDBDaemon(Daemon):
 def main():
     """ Main function called from dynamic-dynamodb """
     while True:
-        table_names = set()
-        configured_tables = config['tables'].keys()
-        not_used_tables = set(configured_tables)
-
-        # Add regexp table names
-        for table_instance in dynamodb.list_tables():
-            for key_name in configured_tables:
-                if re.match(key_name, table_instance.table_name):
-                    logger.debug("Table {0} match with config key {1}".format(
-                        table_instance.table_name, key_name))
-                    table_names.add(
-                        (
-                            table_instance.table_name,
-                            key_name
-                        ))
-                    not_used_tables.discard(key_name)
-                else:
-                    logger.debug(
-                        "Table {0} did not match with config key {1}".format(
-                            table_instance.table_name, key_name))
-
-        if not_used_tables:
-            logger.warning(
-                'No tables matching the following configured '
-                'tables found: {0}'.format(
-                    ', '.join(not_used_tables)))
-
-        table_names = sorted(table_names)
-
         if config['global']['daemon']:
             pid_file = '/tmp/dynamic-dynamodb.{0}.pid'.format(
                 config['global']['instance'])
-            daemon = DynamicDynamoDBDaemon(pid_file, tables=table_names)
+            daemon = DynamicDynamoDBDaemon(pid_file)
 
             if config['global']['daemon'] == 'start':
                 daemon.start(
@@ -132,35 +120,50 @@ def main():
                 sys.exit(1)
         else:
             # Ensure provisioning
-            for table_name, table_key in table_names:
-                table.ensure_provisioning(table_name, table_key)
+            for table_name, table_key in dynamodb.get_tables_and_gsis():
+                try:
+                    table.ensure_provisioning(table_name, table_key)
 
-                gsi_names = set()
-                # Add regexp table names
-                if 'gsis' in config['tables'][table_key]:
-                    for gst_instance in dynamodb.table_gsis(table_name):
-                        gsi_name = gst_instance[u'IndexName']
-                        gsi_keys = config['tables'][table_key]['gsis'].keys()
-                        for gsi_key in gsi_keys:
-                            if re.match(gsi_key, gsi_name):
-                                logger.debug(
-                                    'Table {0} GSI {1} match with '
-                                    'GSI config key {2}'.format(
-                                        table_name, gsi_name, gsi_key))
-                                gsi_names.add(
-                                    (
-                                        gsi_name,
-                                        gsi_key
-                                    ))
+                    gsi_names = set()
+                    # Add regexp table names
+                    if 'gsis' in config['tables'][table_key]:
+                        for gst_instance in dynamodb.table_gsis(table_name):
+                            gsi_name = gst_instance[u'IndexName']
+                            gsi_keys = \
+                                config['tables'][table_key]['gsis'].keys()
+                            for gsi_key in gsi_keys:
+                                try:
+                                    if re.match(gsi_key, gsi_name):
+                                        logger.debug(
+                                            'Table {0} GSI {1} match with '
+                                            'GSI config key {2}'.format(
+                                                table_name, gsi_name, gsi_key))
+                                        gsi_names.add(
+                                            (
+                                                gsi_name,
+                                                gsi_key
+                                            ))
+                                except re.error:
+                                    logger.error(
+                                        'Invalid regular expression: '
+                                        '"{0}"'.format(gsi_key))
+                                    sys.exit(1)
 
-                gsi_names = sorted(gsi_names)
+                    gsi_names = sorted(gsi_names)
 
-                for gsi_name, gsi_key in gsi_names:
-                    gsi.ensure_provisioning(
-                        table_name,
-                        table_key,
-                        gsi_name,
-                        gsi_key)
+                    for gsi_name, gsi_key in gsi_names:
+                        gsi.ensure_provisioning(
+                            table_name,
+                            table_key,
+                            gsi_name,
+                            gsi_key)
+                except JSONResponseError as error:
+                    exception = error.body['__type'].split('#')[1]
+                    if exception == 'ResourceNotFoundException':
+                        logger.error(
+                            '{0} - Table {1} does not exist anymore'.format(
+                                table_name, table_name))
+                        continue
 
         # Sleep between the checks
         logger.debug('Sleeping {0} seconds until next check'.format(

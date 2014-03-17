@@ -1,6 +1,7 @@
 """ Handle most tasks related to DynamoDB interaction """
-import time
+import re
 import sys
+import time
 
 from boto import dynamodb2
 from boto.dynamodb2.table import Table
@@ -10,54 +11,43 @@ from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
 
 
-def __get_connection_dynamodb(retries=3):
-    """ Ensure connection to DynamoDB
+def get_tables_and_gsis():
+    """ Get a set of tables and gsis and their configuration keys
 
-    :type retries: int
-    :param retries: Number of times to retry to connect to DynamoDB
+    :returns: set -- A set of tuples (table_name, table_conf_key)
     """
-    connected = False
-    while not connected:
-        logger.debug('Connecting to DynamoDB in {0}'.format(
-            configuration['global']['region']))
+    table_names = set()
+    configured_tables = configuration['tables'].keys()
+    not_used_tables = set(configured_tables)
 
-        if (configuration['global']['aws_access_key_id'] and
-                configuration['global']['aws_secret_access_key']):
-            connection = dynamodb2.connect_to_region(
-                configuration['global']['region'],
-                aws_access_key_id=
-                configuration['global']['aws_access_key_id'],
-                aws_secret_access_key=
-                configuration['global']['aws_secret_access_key'])
-        else:
-            connection = dynamodb2.connect_to_region(
-                configuration['global']['region'])
+    # Add regexp table names
+    for table_instance in list_tables():
+        for key_name in configured_tables:
+            try:
+                if re.match(key_name, table_instance.table_name):
+                    logger.debug("Table {0} match with config key {1}".format(
+                        table_instance.table_name, key_name))
+                    table_names.add(
+                        (
+                            table_instance.table_name,
+                            key_name
+                        ))
+                    not_used_tables.discard(key_name)
+                else:
+                    logger.debug(
+                        "Table {0} did not match with config key {1}".format(
+                            table_instance.table_name, key_name))
+            except re.error:
+                logger.error('Invalid regular expression: "{0}"'.format(
+                    key_name))
+                sys.exit(1)
 
-        if not connection:
-            if retries == 0:
-                logger.error('Failed to connect to DynamoDB. Giving up.')
-                raise
-            else:
-                logger.error(
-                    'Failed to connect to DynamoDB. Retrying in 5 seconds')
-                retries -= 1
-                time.sleep(5)
-        else:
-            connected = True
-            logger.debug('Connected to DynamoDB in {0}'.format(
-                configuration['global']['region']))
+    if not_used_tables:
+        logger.warning(
+            'No tables matching the following configured '
+            'tables found: {0}'.format(', '.join(not_used_tables)))
 
-    return connection
-
-
-def describe_table(table_name):
-    """ Return table details
-
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
-    :returns: dict
-    """
-    return DYNAMODB_CONNECTION.describe_table(table_name)
+    return sorted(table_names)
 
 
 def get_table(table_name):
@@ -89,7 +79,11 @@ def get_gsi_status(table_name, gsi_name):
     :param gsi_name: Name of the GSI
     :returns: str
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
         if gsi[u'IndexName'] == gsi_name:
             return gsi[u'IndexStatus']
@@ -104,7 +98,11 @@ def get_provisioned_gsi_read_units(table_name, gsi_name):
     :param gsi_name: Name of the GSI
     :returns: int -- Number of read units
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
         if gsi[u'IndexName'] == gsi_name:
             read_units = int(
@@ -126,7 +124,11 @@ def get_provisioned_gsi_write_units(table_name, gsi_name):
     :param gsi_name: Name of the GSI
     :returns: int -- Number of write units
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
         if gsi[u'IndexName'] == gsi_name:
             write_units = int(
@@ -146,7 +148,11 @@ def get_provisioned_table_read_units(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: int -- Number of read units
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     read_units = int(
         desc[u'Table'][u'ProvisionedThroughput'][u'ReadCapacityUnits'])
 
@@ -162,7 +168,11 @@ def get_provisioned_table_write_units(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: int -- Number of write units
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     write_units = int(
         desc[u'Table'][u'ProvisionedThroughput'][u'WriteCapacityUnits'])
 
@@ -178,7 +188,11 @@ def get_table_status(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: str
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+    except JSONResponseError:
+        raise
+
     return desc[u'Table'][u'TableStatus']
 
 
@@ -379,11 +393,54 @@ def table_gsis(table_name):
     :param table_name: Name of the DynamoDB table
     :returns: list -- List of GSI names
     """
-    desc = DYNAMODB_CONNECTION.describe_table(table_name)[u'Table']
+    try:
+        desc = DYNAMODB_CONNECTION.describe_table(table_name)[u'Table']
+    except JSONResponseError:
+        raise
 
     if u'GlobalSecondaryIndexes' in desc:
         return desc[u'GlobalSecondaryIndexes']
 
     return []
+
+
+def __get_connection_dynamodb(retries=3):
+    """ Ensure connection to DynamoDB
+
+    :type retries: int
+    :param retries: Number of times to retry to connect to DynamoDB
+    """
+    connected = False
+    while not connected:
+        logger.debug('Connecting to DynamoDB in {0}'.format(
+            configuration['global']['region']))
+
+        if (configuration['global']['aws_access_key_id'] and
+                configuration['global']['aws_secret_access_key']):
+            connection = dynamodb2.connect_to_region(
+                configuration['global']['region'],
+                aws_access_key_id=
+                configuration['global']['aws_access_key_id'],
+                aws_secret_access_key=
+                configuration['global']['aws_secret_access_key'])
+        else:
+            connection = dynamodb2.connect_to_region(
+                configuration['global']['region'])
+
+        if not connection:
+            if retries == 0:
+                logger.error('Failed to connect to DynamoDB. Giving up.')
+                raise
+            else:
+                logger.error(
+                    'Failed to connect to DynamoDB. Retrying in 5 seconds')
+                retries -= 1
+                time.sleep(5)
+        else:
+            connected = True
+            logger.debug('Connected to DynamoDB in {0}'.format(
+                configuration['global']['region']))
+
+    return connection
 
 DYNAMODB_CONNECTION = __get_connection_dynamodb()
