@@ -43,7 +43,7 @@ class DynamicDynamoDBDaemon(Daemon):
         """
         while True:
             # Ensure provisioning
-            for table_name, table_key in sorted(self.tables):
+            for table_name, table_key in sorted(dynamodb.get_tables_and_gsis()):
                 try:
                     table.ensure_provisioning(table_name, table_key)
 
@@ -89,39 +89,10 @@ class DynamicDynamoDBDaemon(Daemon):
 def main():
     """ Main function called from dynamic-dynamodb """
     while True:
-        table_names = set()
-        configured_tables = config['tables'].keys()
-        not_used_tables = set(configured_tables)
-
-        # Add regexp table names
-        for table_instance in dynamodb.list_tables():
-            for key_name in configured_tables:
-                if re.match(key_name, table_instance.table_name):
-                    logger.debug("Table {0} match with config key {1}".format(
-                        table_instance.table_name, key_name))
-                    table_names.add(
-                        (
-                            table_instance.table_name,
-                            key_name
-                        ))
-                    not_used_tables.discard(key_name)
-                else:
-                    logger.debug(
-                        "Table {0} did not match with config key {1}".format(
-                            table_instance.table_name, key_name))
-
-        if not_used_tables:
-            logger.warning(
-                'No tables matching the following configured '
-                'tables found: {0}'.format(
-                    ', '.join(not_used_tables)))
-
-        table_names = sorted(table_names)
-
         if config['global']['daemon']:
             pid_file = '/tmp/dynamic-dynamodb.{0}.pid'.format(
                 config['global']['instance'])
-            daemon = DynamicDynamoDBDaemon(pid_file, tables=table_names)
+            daemon = DynamicDynamoDBDaemon(pid_file)
 
             if config['global']['daemon'] == 'start':
                 daemon.start(
@@ -143,7 +114,7 @@ def main():
                 sys.exit(1)
         else:
             # Ensure provisioning
-            for table_name, table_key in table_names:
+            for table_name, table_key in dynamodb.get_tables_and_gsis():
                 try:
                     table.ensure_provisioning(table_name, table_key)
 

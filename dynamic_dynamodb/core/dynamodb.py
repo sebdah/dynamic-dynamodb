@@ -1,6 +1,7 @@
 """ Handle most tasks related to DynamoDB interaction """
-import time
+import re
 import sys
+import time
 
 from boto import dynamodb2
 from boto.dynamodb2.table import Table
@@ -8,6 +9,40 @@ from boto.exception import DynamoDBResponseError, JSONResponseError
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
+
+
+def get_tables_and_gsis():
+    """ Get a set of tables and gsis and their configuration keys
+
+    :returns: set -- A set of tuples (table_name, table_conf_key)
+    """
+    table_names = set()
+    configured_tables = configuration['tables'].keys()
+    not_used_tables = set(configured_tables)
+
+    # Add regexp table names
+    for table_instance in list_tables():
+        for key_name in configured_tables:
+            if re.match(key_name, table_instance.table_name):
+                logger.debug("Table {0} match with config key {1}".format(
+                    table_instance.table_name, key_name))
+                table_names.add(
+                    (
+                        table_instance.table_name,
+                        key_name
+                    ))
+                not_used_tables.discard(key_name)
+            else:
+                logger.debug(
+                    "Table {0} did not match with config key {1}".format(
+                        table_instance.table_name, key_name))
+
+    if not_used_tables:
+        logger.warning(
+            'No tables matching the following configured '
+            'tables found: {0}'.format(', '.join(not_used_tables)))
+
+    return sorted(table_names)
 
 
 def get_table(table_name):
