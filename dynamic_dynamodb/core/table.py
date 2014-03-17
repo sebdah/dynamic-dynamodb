@@ -1,6 +1,8 @@
 """ Core components """
 import datetime
 
+from boto.exception import JSONResponseError
+
 from dynamic_dynamodb.calculators import table as calculators
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.core import dynamodb
@@ -22,23 +24,27 @@ def ensure_provisioning(table_name, key_name):
             logger.warning('Circuit breaker is OPEN!')
             return None
 
-    read_update_needed, updated_read_units = __ensure_provisioning_reads(
-        table_name, key_name)
-    write_update_needed, updated_write_units = __ensure_provisioning_writes(
-        table_name, key_name)
+    try:
+        read_update_needed, updated_read_units = __ensure_provisioning_reads(
+            table_name, key_name)
+        write_update_needed, updated_write_units = __ensure_provisioning_writes(
+            table_name, key_name)
 
-    # Handle throughput updates
-    if read_update_needed or write_update_needed:
-        logger.info(
-            '{0} - Changing provisioning to {1:d} '
-            'read units and {2:d} write units'.format(
-                table_name,
-                int(updated_read_units),
-                int(updated_write_units)))
-        __update_throughput(
-            table_name, updated_read_units, updated_write_units, key_name)
-    else:
-        logger.info('{0} - No need to change provisioning'.format(table_name))
+        # Handle throughput updates
+        if read_update_needed or write_update_needed:
+            logger.info(
+                '{0} - Changing provisioning to {1:d} '
+                'read units and {2:d} write units'.format(
+                    table_name,
+                    int(updated_read_units),
+                    int(updated_write_units)))
+            __update_throughput(
+                table_name, updated_read_units, updated_write_units, key_name)
+        else:
+            logger.info('{0} - No need to change provisioning'.format(
+                table_name))
+    except JSONResponseError:
+        raise
 
 
 def __ensure_provisioning_reads(table_name, key_name):
@@ -51,10 +57,13 @@ def __ensure_provisioning_reads(table_name, key_name):
     :returns: (bool, int) -- update_needed, updated_read_units
     """
     update_needed = False
-    updated_read_units = dynamodb.get_provisioned_table_read_units(table_name)
-
-    consumed_read_units_percent = table_stats.get_consumed_read_units_percent(
-        table_name)
+    try:
+        updated_read_units = dynamodb.get_provisioned_table_read_units(
+            table_name)
+        consumed_read_units_percent = table_stats.\
+            get_consumed_read_units_percent(table_name)
+    except JSONResponseError:
+        raise
 
     throttled_read_count = table_stats.get_throttled_read_event_count(
         table_name)
@@ -150,11 +159,13 @@ def __ensure_provisioning_writes(table_name, key_name):
     :returns: (bool, int) -- update_needed, updated_write_units
     """
     update_needed = False
-    updated_write_units = dynamodb.get_provisioned_table_write_units(
-        table_name)
-
-    consumed_write_units_percent = \
-        table_stats.get_consumed_write_units_percent(table_name)
+    try:
+        updated_write_units = dynamodb.get_provisioned_table_write_units(
+            table_name)
+        consumed_write_units_percent = \
+            table_stats.get_consumed_write_units_percent(table_name)
+    except JSONResponseError:
+        raise
 
     throttled_write_count = \
         table_stats.get_throttled_write_event_count(table_name)
@@ -284,8 +295,13 @@ def __update_throughput(table_name, read_units, write_units, key_name):
     :type key_name: str
     :param key_name: Configuration option key name
     """
-    provisioned_reads = dynamodb.get_provisioned_table_read_units(table_name)
-    provisioned_writes = dynamodb.get_provisioned_table_write_units(table_name)
+    try:
+        provisioned_reads = dynamodb.get_provisioned_table_read_units(
+            table_name)
+        provisioned_writes = dynamodb.get_provisioned_table_write_units(
+            table_name)
+    except JSONResponseError:
+        raise
 
     # Check that we are in the right time frame
     if get_table_option(key_name, 'maintenance_windows'):
@@ -302,7 +318,10 @@ def __update_throughput(table_name, read_units, write_units, key_name):
                     table_name))
 
     # Check table status
-    table_status = dynamodb.get_table_status(table_name)
+    try:
+        table_status = dynamodb.get_table_status(table_name)
+    except JSONResponseError:
+        raise
     logger.debug('{0} - Table status is {1}'.format(table_name, table_status))
     if table_status != 'ACTIVE':
         logger.warning(

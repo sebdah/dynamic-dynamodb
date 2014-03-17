@@ -2,6 +2,8 @@
 import math
 from datetime import datetime, timedelta
 
+from boto.exception import JSONResponseError
+
 from dynamic_dynamodb.core import dynamodb
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.core.cloudwatch import (
@@ -26,11 +28,14 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
     else:
         consumed_read_units = 0
 
-    consumed_read_units_percent = int(
-        math.ceil(
-            float(consumed_read_units) /
-            float(dynamodb.get_provisioned_table_read_units(table_name)) *
-            100))
+    try:
+        consumed_read_units_percent = int(
+            math.ceil(
+                float(consumed_read_units) /
+                float(dynamodb.get_provisioned_table_read_units(table_name)) *
+                100))
+    except JSONResponseError:
+        raise
 
     logger.info('{0} - Consumed read units: {1:d}%'.format(
         table_name, consumed_read_units_percent))
@@ -76,11 +81,14 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
     else:
         consumed_write_units = 0
 
-    consumed_write_units_percent = int(
-        math.ceil(
-            float(consumed_write_units) /
-            float(dynamodb.get_provisioned_table_write_units(table_name)) *
-            100))
+    try:
+        consumed_write_units_percent = int(
+            math.ceil(
+                float(consumed_write_units) /
+                float(dynamodb.get_provisioned_table_write_units(table_name)) *
+                100))
+    except JSONResponseError:
+        raise
 
     logger.info('{0} - Consumed write units: {1:d}%'.format(
         table_name, consumed_write_units_percent))

@@ -1,6 +1,8 @@
 """ Core components """
 import datetime
 
+from boto.exception import JSONResponseError
+
 from dynamic_dynamodb.calculators import gsi as calculators
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.core import dynamodb
@@ -30,38 +32,41 @@ def ensure_provisioning(table_name, table_key, gsi_name, gsi_key):
         '{0} - Will ensure provisioning for global secondary index {1}'.format(
             table_name, gsi_name))
 
-    read_update_needed, updated_read_units = __ensure_provisioning_reads(
-        table_name,
-        table_key,
-        gsi_name,
-        gsi_key)
-    write_update_needed, updated_write_units = __ensure_provisioning_writes(
-        table_name,
-        table_key,
-        gsi_name,
-        gsi_key)
-
-    # Handle throughput updates
-    if read_update_needed or write_update_needed:
-        logger.info(
-            '{0} - GSI: {1} - Changing provisioning to {2:d} '
-            'read units and {3:d} write units'.format(
-                table_name,
-                gsi_name,
-                int(updated_read_units),
-                int(updated_write_units)))
-        __update_throughput(
+    try:
+        read_update_needed, updated_read_units = __ensure_provisioning_reads(
             table_name,
             table_key,
             gsi_name,
-            gsi_key,
-            updated_read_units,
-            updated_write_units)
-    else:
-        logger.info(
-            '{0} - GSI: {1} - No need to change provisioning'.format(
+            gsi_key)
+        write_update_needed, updated_write_units = __ensure_provisioning_writes(
+            table_name,
+            table_key,
+            gsi_name,
+            gsi_key)
+
+        # Handle throughput updates
+        if read_update_needed or write_update_needed:
+            logger.info(
+                '{0} - GSI: {1} - Changing provisioning to {2:d} '
+                'read units and {3:d} write units'.format(
+                    table_name,
+                    gsi_name,
+                    int(updated_read_units),
+                    int(updated_write_units)))
+            __update_throughput(
                 table_name,
-                gsi_name))
+                table_key,
+                gsi_name,
+                gsi_key,
+                updated_read_units,
+                updated_write_units)
+        else:
+            logger.info(
+                '{0} - GSI: {1} - No need to change provisioning'.format(
+                    table_name,
+                    gsi_name))
+    except JSONResponseError:
+        raise
 
 
 def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
@@ -78,11 +83,13 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
     :returns: (bool, int) -- update_needed, updated_read_units
     """
     update_needed = False
-    updated_read_units = dynamodb.get_provisioned_gsi_read_units(
-        table_name, gsi_name)
-
-    consumed_read_units_percent = gsi_stats.get_consumed_read_units_percent(
-        table_name, gsi_name)
+    try:
+        updated_read_units = dynamodb.get_provisioned_gsi_read_units(
+            table_name, gsi_name)
+        consumed_read_units_percent = gsi_stats.get_consumed_read_units_percent(
+            table_name, gsi_name)
+    except JSONResponseError:
+        raise
 
     throttled_read_count = gsi_stats.get_throttled_read_event_count(
         table_name, gsi_name)
@@ -200,11 +207,13 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
     :returns: (bool, int) -- update_needed, updated_write_units
     """
     update_needed = False
-    updated_write_units = dynamodb.get_provisioned_gsi_write_units(
-        table_name, gsi_name)
-
-    consumed_write_units_percent = \
-        gsi_stats.get_consumed_write_units_percent(table_name, gsi_name)
+    try:
+        updated_write_units = dynamodb.get_provisioned_gsi_write_units(
+            table_name, gsi_name)
+        consumed_write_units_percent = \
+            gsi_stats.get_consumed_write_units_percent(table_name, gsi_name)
+    except JSONResponseError:
+        raise
 
     throttled_write_count = gsi_stats.get_throttled_write_event_count(
         table_name, gsi_name)
@@ -361,10 +370,13 @@ def __update_throughput(
     :type write_units: int
     :param write_units: New write unit provisioning
     """
-    current_ru = dynamodb.get_provisioned_gsi_read_units(
-        table_name, gsi_name)
-    current_wu = dynamodb.get_provisioned_gsi_write_units(
-        table_name, gsi_name)
+    try:
+        current_ru = dynamodb.get_provisioned_gsi_read_units(
+            table_name, gsi_name)
+        current_wu = dynamodb.get_provisioned_gsi_write_units(
+            table_name, gsi_name)
+    except JSONResponseError:
+        raise
 
     # Check that we are in the right time frame
     if get_gsi_option(table_key, gsi_key, 'maintenance_windows'):
@@ -385,7 +397,11 @@ def __update_throughput(
                     gsi_name))
 
     # Check table status
-    gsi_status = dynamodb.get_gsi_status(table_name, gsi_name)
+    try:
+        gsi_status = dynamodb.get_gsi_status(table_name, gsi_name)
+    except JSONResponseError:
+        raise
+
     logger.debug('{0} - GSI: {1} - GSI status is {2}'.format(
         table_name, gsi_name, gsi_status))
     if gsi_status != 'ACTIVE':
