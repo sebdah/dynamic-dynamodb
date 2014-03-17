@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.9.1
+-----
+
+**Release date:** NOTSET
+
+- `dynamic-dynamodb crashes when a DynamoDB table is deleted during execution #126 <https://github.com/sebdah/dynamic-dynamodb/issues/126>`__
+
 1.9.0
 -----
 
