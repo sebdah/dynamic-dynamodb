@@ -8,6 +8,7 @@ Release notes
 
 - `Daemon mode does not reload the table / GSI lists #127 <https://github.com/sebdah/dynamic-dynamodb/issues/127>`__
 - `dynamic-dynamodb crashes when a DynamoDB table is deleted during execution #126 <https://github.com/sebdah/dynamic-dynamodb/issues/126>`__
+- `Catch invalid regular expressions in the configuration #125 <https://github.com/sebdah/dynamic-dynamodb/issues/125>`__
 
 1.9.0
 -----
