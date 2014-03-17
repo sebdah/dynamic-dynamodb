@@ -4,7 +4,7 @@ Release notes
 1.9.1
 -----
 
-**Release date:** NOTSET
+**Release date:** 2014-03-17
 
 - `Daemon mode does not reload the table / GSI lists #127 <https://github.com/sebdah/dynamic-dynamodb/issues/127>`__
 - `dynamic-dynamodb crashes when a DynamoDB table is deleted during execution #126 <https://github.com/sebdah/dynamic-dynamodb/issues/126>`__
