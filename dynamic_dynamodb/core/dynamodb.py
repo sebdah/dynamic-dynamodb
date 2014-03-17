@@ -23,19 +23,24 @@ def get_tables_and_gsis():
     # Add regexp table names
     for table_instance in list_tables():
         for key_name in configured_tables:
-            if re.match(key_name, table_instance.table_name):
-                logger.debug("Table {0} match with config key {1}".format(
-                    table_instance.table_name, key_name))
-                table_names.add(
-                    (
-                        table_instance.table_name,
-                        key_name
-                    ))
-                not_used_tables.discard(key_name)
-            else:
-                logger.debug(
-                    "Table {0} did not match with config key {1}".format(
+            try:
+                if re.match(key_name, table_instance.table_name):
+                    logger.debug("Table {0} match with config key {1}".format(
                         table_instance.table_name, key_name))
+                    table_names.add(
+                        (
+                            table_instance.table_name,
+                            key_name
+                        ))
+                    not_used_tables.discard(key_name)
+                else:
+                    logger.debug(
+                        "Table {0} did not match with config key {1}".format(
+                            table_instance.table_name, key_name))
+            except re.error:
+                logger.error('Invalid regular expression: "{0}"'.format(
+                    key_name))
+                sys.exit(1)
 
     if not_used_tables:
         logger.warning(

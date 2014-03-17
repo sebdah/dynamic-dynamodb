@@ -53,16 +53,22 @@ class DynamicDynamoDBDaemon(Daemon):
                         gsi_name = gst_instance[u'IndexName']
                         gsi_keys = config['tables'][table_key]['gsis'].keys()
                         for gsi_key in gsi_keys:
-                            if re.match(gsi_key, gsi_name):
-                                logger.debug(
-                                    'Table {0} GSI {1} match with '
-                                    'GSI config key {2}'.format(
-                                        table_name, gsi_name, gsi_key))
-                                gsi_names.add(
-                                    (
-                                        gsi_name,
-                                        gsi_key
-                                    ))
+                            try:
+                                if re.match(gsi_key, gsi_name):
+                                    logger.debug(
+                                        'Table {0} GSI {1} match with '
+                                        'GSI config key {2}'.format(
+                                            table_name, gsi_name, gsi_key))
+                                    gsi_names.add(
+                                        (
+                                            gsi_name,
+                                            gsi_key
+                                        ))
+                            except re.error:
+                                logger.error(
+                                    'Invalid regular expression: "{0}"'.format(
+                                        gsi_key))
+                                sys.exit(1)
 
                     gsi_names = sorted(gsi_names)
 
@@ -126,16 +132,22 @@ def main():
                             gsi_keys = \
                                 config['tables'][table_key]['gsis'].keys()
                             for gsi_key in gsi_keys:
-                                if re.match(gsi_key, gsi_name):
-                                    logger.debug(
-                                        'Table {0} GSI {1} match with '
-                                        'GSI config key {2}'.format(
-                                            table_name, gsi_name, gsi_key))
-                                    gsi_names.add(
-                                        (
-                                            gsi_name,
-                                            gsi_key
-                                        ))
+                                try:
+                                    if re.match(gsi_key, gsi_name):
+                                        logger.debug(
+                                            'Table {0} GSI {1} match with '
+                                            'GSI config key {2}'.format(
+                                                table_name, gsi_name, gsi_key))
+                                        gsi_names.add(
+                                            (
+                                                gsi_name,
+                                                gsi_key
+                                            ))
+                                except re.error:
+                                    logger.error(
+                                        'Invalid regular expression: '
+                                        '"{0}"'.format(gsi_key))
+                                    sys.exit(1)
 
                     gsi_names = sorted(gsi_names)
 
