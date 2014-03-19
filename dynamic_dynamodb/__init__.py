@@ -28,7 +28,7 @@ from boto.exception import JSONResponseError
 
 from dynamic_dynamodb.core import dynamodb, gsi, table
 from dynamic_dynamodb.daemon import Daemon
-from dynamic_dynamodb.config_handler import CONFIGURATION as config
+from dynamic_dynamodb.config_handler import get_global_option, get_table_option
 from dynamic_dynamodb.log_handler import LOGGER as logger
 
 
@@ -51,7 +51,7 @@ class DynamicDynamoDBDaemon(Daemon):
                     # Add regexp table names
                     for gst_instance in dynamodb.table_gsis(table_name):
                         gsi_name = gst_instance[u'IndexName']
-                        gsi_keys = config['tables'][table_key]['gsis'].keys()
+                        gsi_keys = get_table_option(table_key, 'gsis').keys()
                         for gsi_key in gsi_keys:
                             try:
                                 if re.match(gsi_key, gsi_name):
@@ -95,25 +95,26 @@ class DynamicDynamoDBDaemon(Daemon):
 def main():
     """ Main function called from dynamic-dynamodb """
     while True:
-        if config['global']['daemon']:
+        if get_global_option('daemon'):
             pid_file = '/tmp/dynamic-dynamodb.{0}.pid'.format(
-                config['global']['instance'])
+                get_global_option('instance'))
             daemon = DynamicDynamoDBDaemon(pid_file)
 
-            if config['global']['daemon'] == 'start':
+            if get_global_option('daemon') == 'start':
                 daemon.start(
-                    check_interval=config['global']['check_interval'])
+                    check_interval=get_global_option('check_interval'))
 
-            elif config['global']['daemon'] == 'stop':
+            elif get_global_option('daemon') == 'stop':
                 daemon.stop()
                 sys.exit(0)
 
-            elif config['global']['daemon'] == 'restart':
-                daemon.restart()
+            elif get_global_option('daemon') == 'restart':
+                daemon.restart(
+                    check_interval=get_global_option('check_interval'))
 
-            elif config['global']['daemon'] in ['foreground', 'fg']:
+            elif get_global_option('daemon') in ['foreground', 'fg']:
                 daemon.run(
-                    check_interval=config['global']['check_interval'])
+                    check_interval=get_global_option('check_interval'))
 
             else:
                 print 'Valid options for --daemon are start, stop and restart'
@@ -126,11 +127,11 @@ def main():
 
                     gsi_names = set()
                     # Add regexp table names
-                    if 'gsis' in config['tables'][table_key]:
+                    if get_table_option(table_name, 'gsis'):
                         for gst_instance in dynamodb.table_gsis(table_name):
                             gsi_name = gst_instance[u'IndexName']
-                            gsi_keys = \
-                                config['tables'][table_key]['gsis'].keys()
+                            gsi_keys = get_table_option(
+                                table_name, 'gsis').keys()
                             for gsi_key in gsi_keys:
                                 try:
                                     if re.match(gsi_key, gsi_name):
@@ -167,5 +168,5 @@ def main():
 
         # Sleep between the checks
         logger.debug('Sleeping {0} seconds until next check'.format(
-            config['global']['check_interval']))
-        time.sleep(config['global']['check_interval'])
+            get_global_option('check_interval')))
+        time.sleep(get_global_option('check_interval'))
