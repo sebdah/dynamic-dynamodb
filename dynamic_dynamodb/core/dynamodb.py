@@ -11,6 +11,7 @@ from boto.utils import get_instance_metadata
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
+from dynamic_dynamodb.core import sns
 
 
 def get_tables_and_gsis():
@@ -248,11 +249,13 @@ def list_tables():
 
 
 def update_table_provisioning(
-        table_name, reads, writes, retry_with_only_increase=False):
+        table_name, key_name, reads, writes, retry_with_only_increase=False):
     """ Update provisioning for a given table
 
     :type table_name: str
     :param table_name: Name of the table
+    :type key_name: str
+    :param key_name: Configuration option key name
     :type reads: int
     :param reads: New number of provisioned read units
     :type writes: int
@@ -261,11 +264,10 @@ def update_table_provisioning(
     :param retry_with_only_increase: Set to True to ensure only increases
     """
     table = get_table(table_name)
+    current_reads = int(get_provisioned_table_read_units(table_name))
+    current_writes = int(get_provisioned_table_write_units(table_name))
 
     if retry_with_only_increase:
-        current_reads = int(get_provisioned_table_read_units(table_name))
-        current_writes = int(get_provisioned_table_write_units(table_name))
-
         # Ensure that we are only doing increases
         if current_reads > reads:
             reads = current_reads
@@ -283,9 +285,24 @@ def update_table_provisioning(
                 'read': reads,
                 'write': writes
             })
-        logger.info(
-            '{0} - Provisioning updated to {1} reads and {2} writes'.format(
-                table_name, reads, writes))
+
+        message = (
+            '{0} - Provisioning updated to {1} reads and {2} writes').format(
+                table_name, reads, writes)
+        logger.info(message)
+
+        # See if we should send notifications for scale-down, scale-up or both
+        sns_message_types = []
+        if current_reads > reads or current_writes > current_writes:
+            sns_message_types.append('scale-down')
+        if current_reads < reads or current_writes < current_writes:
+            sns_message_types.append('scale-up')
+
+        sns.publish_table_notification(
+            key_name,
+            message,
+            sns_message_types,
+            subject='Updated provisioing for table {0}'.format(table_name))
     except JSONResponseError as error:
         exception = error.body['__type'].split('#')[1]
         know_exceptions = [
@@ -311,6 +328,7 @@ def update_table_provisioning(
                 'with only increases'.format(table_name))
             update_table_provisioning(
                 table_name,
+                key_name,
                 reads,
                 writes,
                 retry_with_only_increase=True)
@@ -420,7 +438,8 @@ def __get_connection_dynamodb(retries=3):
         if (configuration['global']['aws_access_key_id'] and
                 configuration['global']['aws_secret_access_key']):
             logger.debug(
-                'Authenticating using credentials in configuration file')
+                'Authenticating to DynamoDB using '
+                'credentials in configuration file')
             connection = dynamodb2.connect_to_region(
                 configuration['global']['region'],
                 aws_access_key_id=
@@ -429,14 +448,16 @@ def __get_connection_dynamodb(retries=3):
                 configuration['global']['aws_secret_access_key'])
         else:
             try:
-                logger.debug('Authenticating using EC2 instance profile')
+                logger.debug(
+                    'Authenticating to DynamoDB using EC2 instance profile')
                 metadata = get_instance_metadata(timeout=1, num_retries=1)
                 connection = dynamodb2.connect_to_region(
                     metadata['placement']['availability-zone'][:-1],
                     profile_name=metadata['iam']['info'][u'InstanceProfileArn'])
             except KeyError:
                 logger.debug(
-                    'Authenticating using env vars / boto configuration')
+                    'Authenticating to DynamoDB using '
+                    'env vars / boto configuration')
                 connection = dynamodb2.connect_to_region(
                     configuration['global']['region'])
 

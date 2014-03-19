@@ -8,12 +8,13 @@ from boto.utils import get_instance_metadata
 
 
 def __get_connection_cloudwatch():
-    """ Ensure connection to CloudWatch """
+    """ Ensure connection to SNS """
     try:
         if (configuration['global']['aws_access_key_id'] and
                 configuration['global']['aws_secret_access_key']):
             logger.debug(
-                'Authenticating using credentials in configuration file')
+                'Authenticating to CloudWatch using '
+                'credentials in configuration file')
             connection = cloudwatch.connect_to_region(
                 configuration['global']['region'],
                 aws_access_key_id=configuration['global']['aws_access_key_id'],
@@ -21,14 +22,16 @@ def __get_connection_cloudwatch():
                 configuration['global']['aws_secret_access_key'])
         else:
             try:
-                logger.debug('Authenticating using EC2 instance profile')
+                logger.debug(
+                    'Authenticating to CloudWatch using EC2 instance profile')
                 metadata = get_instance_metadata(timeout=1, num_retries=1)
                 connection = cloudwatch.connect_to_region(
                     metadata['placement']['availability-zone'][:-1],
                     profile_name=metadata['iam']['info'][u'InstanceProfileArn'])
             except KeyError:
                 logger.debug(
-                    'Authenticating using env vars / boto configuration')
+                    'Authenticating to CloudWatch using '
+                    'env vars / boto configuration')
                 connection = cloudwatch.connect_to_region(
                     configuration['global']['region'])
 

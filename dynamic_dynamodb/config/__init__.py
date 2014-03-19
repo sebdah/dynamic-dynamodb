@@ -49,8 +49,8 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
         'maintenance_windows': None,
-        'sns-topic': None,
-        'sns-message-types': None
+        'sns_topic_arn': None,
+        'sns_message_types': []
     },
     'gsi': {
         'reads_lower_threshold': 30,
@@ -92,11 +92,10 @@ def get_configuration():
     cmd_line_options = command_line_parser.parse()
 
     # If a configuration file is specified, read that as well
+    conf_file_options = None
     if 'config' in cmd_line_options:
         conf_file_options = config_file_parser.parse(
             cmd_line_options['config'])
-    else:
-        conf_file_options = None
 
     # Extract global config
     configuration['global'] = __get_global_options(
@@ -162,7 +161,20 @@ def __get_config_table_options(conf_file_options):
         for option in DEFAULT_OPTIONS['table'].keys():
             options[table_name][option] = DEFAULT_OPTIONS['table'][option]
 
-            if option in conf_file_options['tables'][table_name]:
+            if option not in conf_file_options['tables'][table_name]:
+                continue
+
+            if option == 'sns_message_types':
+                try:
+                    raw_list = conf_file_options['tables'][table_name][option]
+                    options[table_name][option] = \
+                        [i.strip() for i in raw_list.split(',')]
+                except:
+                    print(
+                        'Error parsing the "sns-message-types" '
+                        'option: {0}'.format(
+                            conf_file_options['tables'][table_name][option]))
+            else:
                 options[table_name][option] = \
                     conf_file_options['tables'][table_name][option]
 
@@ -359,6 +371,15 @@ def __check_table_rules(configuration):
             print(
                 'decrease-writes-with must be set to either percent or units')
             sys.exit(1)
+
+        # Check sns-message-types
+        valid_sns_message_types = ['scale-up', 'scale-down']
+        if table['sns_message_types']:
+            for sns_type in table['sns_message_types']:
+                if sns_type not in valid_sns_message_types:
+                    print('Warning: Invalid sns-message-type: {0}'.format(
+                        sns_type))
+                    table['sns_message_types'].remove(sns_type)
 
         # Check that increase_writes_with is not > 100
         if (table['increase_writes_unit'] == 'percent' and
