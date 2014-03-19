@@ -101,6 +101,8 @@ decrease-writes-unit                       str  Set if we should scale down in `
 min-provisioned-writes                     int  Minimum number of write units for the table
 max-provisioned-writes                     int  Maximum number of write units for the table
 maintenance-windows                        str  Force Dynamic DynamoDB to operate within maintenance windows. E.g. ``22:00-23:59,00:00-06:00``
+sns-topic-arn                              str  Full Topic ARN to use for sending SNS notifications
+sns-message-types                          str  Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` and ``scale-down``
 allow-scaling-down-reads-on-0-percent      bool Allow down scaling of read units when 0% is used.
 allow-scaling-down-writes-on-0-percent     bool Allow down scaling of write units when 0% is used.
 always-decrease-rw-together                bool Restric scale down to only happen when both reads AND writes are in need of scaling down. Set this to ``true`` to minimize down scaling.
