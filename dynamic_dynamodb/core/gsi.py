@@ -437,7 +437,9 @@ def __update_throughput(
     if not get_global_option('dry_run'):
         dynamodb.update_gsi_provisioning(
             table_name,
+            table_key,
             gsi_name,
+            gsi_key,
             int(read_units),
             int(write_units))
         logger.info(

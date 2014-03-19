@@ -75,6 +75,8 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
         'maintenance_windows': None,
+        'sns_topic_arn': None,
+        'sns_message_types': []
     }
 }
 
@@ -182,12 +184,27 @@ def __get_config_table_options(conf_file_options):
         if 'gsis' in conf_file_options['tables'][table_name]:
             for gsi_name in conf_file_options['tables'][table_name]['gsis']:
                 for option in DEFAULT_OPTIONS['gsi'].keys():
-                    if (option in conf_file_options[
+                    opt = DEFAULT_OPTIONS['gsi'][option]
+
+                    if (option not in conf_file_options[
                             'tables'][table_name]['gsis'][gsi_name]):
+                        continue
+
+                    if option == 'sns_message_types':
+                        try:
+                            raw_list = conf_file_options[
+                                'tables'][table_name]['gsis'][gsi_name][option]
+                            opt = [i.strip() for i in raw_list.split(',')]
+                        except:
+                            print(
+                                'Error parsing the "sns-message-types" '
+                                'option: {0}'.format(
+                                    conf_file_options[
+                                        'tables'][table_name][
+                                            'gsis'][gsi_name][option]))
+                    else:
                         opt = conf_file_options[
                             'tables'][table_name]['gsis'][gsi_name][option]
-                    else:
-                        opt = DEFAULT_OPTIONS['gsi'][option]
 
                     if 'gsis' not in options[table_name]:
                         options[table_name]['gsis'] = {}
@@ -295,6 +312,15 @@ def __check_gsi_rules(configuration):
                     'than 100% at a time. '
                     'Setting --increase-reads-with to 100.')
                 gsi['increase_reads_with'] = 100
+
+            # Check sns-message-types
+            valid_sns_message_types = ['scale-up', 'scale-down']
+            if gsi['sns_message_types']:
+                for sns_type in gsi['sns_message_types']:
+                    if sns_type not in valid_sns_message_types:
+                        print('Warning: Invalid sns-message-type: {0}'.format(
+                            sns_type))
+                        gsi['sns_message_types'].remove(sns_type)
 
             # Ensure values > 1 for some important configuration options
             options = [

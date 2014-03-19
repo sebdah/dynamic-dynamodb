@@ -335,13 +335,18 @@ def update_table_provisioning(
 
 
 def update_gsi_provisioning(
-        table_name, gsi_name, reads, writes, retry_with_only_increase=False):
+        table_name, table_key, gsi_name, gsi_key,
+        reads, writes, retry_with_only_increase=False):
     """ Update provisioning on a global secondary index
 
     :type table_name: str
-    :param table_name: Name of the table
+    :param table_name: Name of the DynamoDB table
+    :type table_key: str
+    :param table_key: Table configuration option key name
     :type gsi_name: str
     :param gsi_name: Name of the GSI
+    :type gsi_key: str
+    :param gsi_key: GSI configuration option key name
     :type reads: int
     :param reads: Number of reads to provision
     :type writes: int
@@ -349,10 +354,10 @@ def update_gsi_provisioning(
     :type retry_with_only_increase: bool
     :param retry_with_only_increase: Set to True to ensure only increases
     """
-    if retry_with_only_increase:
-        current_reads = int(get_provisioned_table_read_units(table_name))
-        current_writes = int(get_provisioned_table_write_units(table_name))
+    current_reads = int(get_provisioned_table_read_units(table_name))
+    current_writes = int(get_provisioned_table_write_units(table_name))
 
+    if retry_with_only_increase:
         # Ensure that we are only doing increases
         if current_reads > reads:
             reads = current_reads
@@ -378,6 +383,27 @@ def update_gsi_provisioning(
                     }
                 }
             ])
+
+        message = (
+            '{0} - GSI: {1} - Provisioning updated to '
+            '{2} reads and {3} writes').format(
+                table_name, gsi_name, reads, writes)
+        logger.info(message)
+
+        # See if we should send notifications for scale-down, scale-up or both
+        sns_message_types = []
+        if current_reads > reads or current_writes > current_writes:
+            sns_message_types.append('scale-down')
+        if current_reads < reads or current_writes < current_writes:
+            sns_message_types.append('scale-up')
+
+        sns.publish_gsi_notification(
+            table_key,
+            gsi_key,
+            message,
+            sns_message_types,
+            subject='Updated provisioing for GSI {0}'.format(gsi_name))
+
     except JSONResponseError as error:
         exception = error.body['__type'].split('#')[1]
         know_exceptions = ['LimitExceededException']
@@ -400,7 +426,9 @@ def update_gsi_provisioning(
                 'with only increases'.format(table_name, gsi_name))
             update_gsi_provisioning(
                 table_name,
+                table_key,
                 gsi_name,
+                gsi_key,
                 reads,
                 writes,
                 retry_with_only_increase=True)
