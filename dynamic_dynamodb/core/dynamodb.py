@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Handle most tasks related to DynamoDB interaction """
 import re
 import sys
@@ -6,6 +7,7 @@ import time
 from boto import dynamodb2
 from boto.dynamodb2.table import Table
 from boto.exception import DynamoDBResponseError, JSONResponseError
+from boto.utils import get_instance_metadata
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
@@ -417,6 +419,8 @@ def __get_connection_dynamodb(retries=3):
 
         if (configuration['global']['aws_access_key_id'] and
                 configuration['global']['aws_secret_access_key']):
+            logger.debug(
+                'Authenticating using credentials in configuration file')
             connection = dynamodb2.connect_to_region(
                 configuration['global']['region'],
                 aws_access_key_id=
@@ -424,8 +428,17 @@ def __get_connection_dynamodb(retries=3):
                 aws_secret_access_key=
                 configuration['global']['aws_secret_access_key'])
         else:
-            connection = dynamodb2.connect_to_region(
-                configuration['global']['region'])
+            try:
+                logger.debug('Authenticating using EC2 instance profile')
+                metadata = get_instance_metadata(timeout=1, num_retries=1)
+                connection = dynamodb2.connect_to_region(
+                    metadata['placement']['availability-zone'][:-1],
+                    profile_name=metadata['iam']['info'][u'InstanceProfileArn'])
+            except KeyError:
+                logger.debug(
+                    'Authenticating using env vars / boto configuration')
+                connection = dynamodb2.connect_to_region(
+                    configuration['global']['region'])
 
         if not connection:
             if retries == 0:
