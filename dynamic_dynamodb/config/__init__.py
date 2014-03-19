@@ -49,6 +49,8 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
         'maintenance_windows': None,
+        'sns-topic': None,
+        'sns-message-types': None
     },
     'gsi': {
         'reads_lower_threshold': 30,
