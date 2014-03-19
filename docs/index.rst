@@ -24,6 +24,7 @@ Features in short
 - Monitor multiple DynamoDB tables at the same time
 - Gives you control over how much reads and writes you want to scale up and down with
 - Dynamic DynamoDB has support for max and min limits so that you always knows how much money you spend at most and how much capacity you can be guaranteed
+- Get notifications when your table provisioning changes via e-mail, HTTP, SQS etc (via AWS SNS)
 - Support for circuit breaker API call. If your service is experiencing disturbances, Dynamic DynamoDB will not scale down your DynamoDB tables
 
 Basic usage
