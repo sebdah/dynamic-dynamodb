@@ -93,18 +93,15 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Example:
     # sns-topic-arn: arn:aws:sns:us-east-1:123456789012:dynamic-dynamodb-my_table
-    sns-topic-arn: arn:aws:sns:us-east-1:123456789012:dynamic-dynamodb-my_table
 
     # Message types to send as SNS notifications
     #
     # Comma separated list. Currently supported values:
     # - scale-up                Get notifications when the table is scaled up
     # - scale-down              Get notifications when the table is scaled down
-    # - error-messages          Send all error messages to SNS
     #
     # Example:
-    # sns-message-types: scale-up, scale-down, error-messages
-    sns-message-types: scale-up, scale-down, error-messages
+    # sns-message-types: scale-up, scale-down
 
     #
     # Other settings
