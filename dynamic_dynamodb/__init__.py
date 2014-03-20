@@ -127,11 +127,11 @@ def main():
 
                     gsi_names = set()
                     # Add regexp table names
-                    if get_table_option(table_name, 'gsis'):
+                    if get_table_option(table_key, 'gsis'):
                         for gst_instance in dynamodb.table_gsis(table_name):
                             gsi_name = gst_instance[u'IndexName']
                             gsi_keys = get_table_option(
-                                table_name, 'gsis').keys()
+                                table_key, 'gsis').keys()
                             for gsi_key in gsi_keys:
                                 try:
                                     if re.match(gsi_key, gsi_name):
