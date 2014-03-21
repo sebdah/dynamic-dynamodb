@@ -210,7 +210,7 @@ def decrease_writes_in_percent(
 
     if updated_provisioning < min_provisioned_writes:
         logger.info(
-            '{0} - GSI {1} - '
+            '{0} - GSI: {1} - '
             'Reached provisioned writes min limit {2:d}'.format(
                 table_name,
                 gsi_name,
