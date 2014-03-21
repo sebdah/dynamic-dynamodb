@@ -350,5 +350,6 @@ def __update_throughput(table_name, read_units, write_units, key_name):
     if not get_global_option('dry_run'):
         dynamodb.update_table_provisioning(
             table_name,
+            key_name,
             int(read_units),
             int(write_units))

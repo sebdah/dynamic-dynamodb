@@ -300,6 +300,18 @@ def parse(config_path):
                     'required': False,
                     'type': 'bool'
                 },
+                {
+                    'key': 'sns_topic_arn',
+                    'option': 'sns-topic-arn',
+                    'required': False,
+                    'type': 'str'
+                },
+                {
+                    'key': 'sns_message_types',
+                    'option': 'sns-message-types',
+                    'required': False,
+                    'type': 'str'
+                }
             ])
 
     if not found_table:
@@ -462,6 +474,18 @@ def parse(config_path):
                         'required': False,
                         'type': 'bool'
                     },
+                    {
+                        'key': 'sns_topic_arn',
+                        'option': 'sns-topic-arn',
+                        'required': False,
+                        'type': 'str'
+                    },
+                    {
+                        'key': 'sns_message_types',
+                        'option': 'sns-message-types',
+                        'required': False,
+                        'type': 'str'
+                    }
                 ])
 
     return dict(

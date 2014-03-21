@@ -56,8 +56,8 @@ This is a full example of a Dynamic DynamoDB configuration file.
 
     # Maximum and minimum read provisioning
     # Dynamic DynamoDB will not provision any more or less reads than this
-    #min-provisioned-reads: 100
-    #max-provisioned-reads: 500
+    min-provisioned-reads: 1
+    max-provisioned-reads: 500
 
     #
     # Write provisioning configuration
@@ -77,13 +77,31 @@ This is a full example of a Dynamic DynamoDB configuration file.
 
     # Maximum and minimum write provisioning
     # Dynamic DynamoDB will not provision any more or less writes than this
-    #min-provisioned-writes: 100
-    #max-provisioned-writes: 500
+    min-provisioned-writes: 1
+    max-provisioned-writes: 500
 
     #
     # Maintenance windows (in UTC)
     #
     #maintenance-windows: 22:00-23:59,00:00-06:00
+
+    #
+    # Simple Notification Service configuration
+    #
+
+    # Topic ARN to publish notifications to
+    #
+    # Example:
+    # sns-topic-arn: arn:aws:sns:us-east-1:123456789012:dynamic-dynamodb-my_table
+
+    # Message types to send as SNS notifications
+    #
+    # Comma separated list. Currently supported values:
+    # - scale-up                Get notifications when the table is scaled up
+    # - scale-down              Get notifications when the table is scaled down
+    #
+    # Example:
+    # sns-message-types: scale-up, scale-down
 
     #
     # Other settings
@@ -116,8 +134,8 @@ This is a full example of a Dynamic DynamoDB configuration file.
 
     # Maximum and minimum read provisioning
     # Dynamic DynamoDB will not provision any more or less reads than this
-    #min-provisioned-reads: 100
-    #max-provisioned-reads: 500
+    min-provisioned-reads: 1
+    max-provisioned-reads: 500
 
     #
     # Write provisioning configuration
@@ -137,13 +155,31 @@ This is a full example of a Dynamic DynamoDB configuration file.
 
     # Maximum and minimum write provisioning
     # Dynamic DynamoDB will not provision any more or less writes than this
-    #min-provisioned-writes: 100
-    #max-provisioned-writes: 500
+    min-provisioned-writes: 100
+    max-provisioned-writes: 500
 
     #
     # Maintenance windows (in UTC)
     #
     #maintenance-windows: 22:00-23:59,00:00-06:00
+
+    #
+    # Simple Notification Service configuration
+    #
+
+    # Topic ARN to publish notifications to
+    #
+    # Example:
+    # sns-topic-arn: arn:aws:sns:us-east-1:123456789012:dynamic-dynamodb-my_table
+
+    # Message types to send as SNS notifications
+    #
+    # Comma separated list. Currently supported values:
+    # - scale-up                Get notifications when the table is scaled up
+    # - scale-down              Get notifications when the table is scaled down
+    #
+    # Example:
+    # sns-message-types: scale-up, scale-down
 
     #
     # Other settings
