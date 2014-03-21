@@ -1,6 +1,16 @@
 Release notes
 =============
 
+1.10.0
+------
+
+**Release date:** 2014-03-21
+
+- Added support for SNS notifications when Dynamic DynamoDB updates table provisioning (`#104 <https://github.com/sebdah/dynamic-dynamodb/issues/104>`__)
+- Dynamic DynamoDB can now authenticate using EC2 instance profiles (`#128 <https://github.com/sebdah/dynamic-dynamodb/issues/128>`__)
+- Enhanced error handling of unknown exceptions
+- Bug fix: ``check-interval`` was not properly set when restarting the daemon (`#130 <https://github.com/sebdah/dynamic-dynamodb/issues/130>`__)
+
 1.9.1
 -----
 

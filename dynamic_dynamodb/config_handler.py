@@ -37,6 +37,9 @@ def get_table_option(table_name, option):
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
-    :returns: str
+    :returns: str or None
     """
-    return CONFIGURATION['tables'][table_name][option]
+    try:
+        return CONFIGURATION['tables'][table_name][option]
+    except KeyError:
+        return None
