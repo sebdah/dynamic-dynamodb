@@ -338,7 +338,7 @@ def __is_maintenance_window(table_name, gsi_name, maintenance_windows):
         except ValueError:
             logger.error(
                 '{0} - GSI: {1} - '
-                'Malformatted maintenance window'.format(table_name))
+                'Malformatted maintenance window'.format(table_name, gsi_name))
             return False
 
         maintenance_window_list.append((start, end))

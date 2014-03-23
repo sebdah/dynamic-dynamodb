@@ -456,7 +456,7 @@ def increase_writes_in_units(
                     table_name,
                     gsi_name,
                     int(get_gsi_option(
-                        gsi_key, 'max_provisioned_writes'))))
+                        table_name, gsi_key, 'max_provisioned_writes'))))
 
             return get_gsi_option(
                 table_key, gsi_key, 'max_provisioned_writes')
