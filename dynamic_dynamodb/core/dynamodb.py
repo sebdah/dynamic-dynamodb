@@ -303,7 +303,7 @@ def update_table_provisioning(
             key_name,
             message,
             sns_message_types,
-            subject='Updated provisioing for table {0}'.format(table_name))
+            subject='Updated provisioning for table {0}'.format(table_name))
     except JSONResponseError as error:
         exception = error.body['__type'].split('#')[1]
         know_exceptions = [
@@ -403,7 +403,7 @@ def update_gsi_provisioning(
             gsi_key,
             message,
             sns_message_types,
-            subject='Updated provisioing for GSI {0}'.format(gsi_name))
+            subject='Updated provisioning for GSI {0}'.format(gsi_name))
 
     except JSONResponseError as error:
         exception = error.body['__type'].split('#')[1]
