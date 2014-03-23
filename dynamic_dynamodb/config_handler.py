@@ -21,8 +21,10 @@ def get_gsi_option(table_key, gsi_key, option):
     :param gsi_key: GSI key name
     :returns: str
     """
-    return CONFIGURATION['tables'][table_key]['gsis'][gsi_key][option]
-
+    try:
+        return CONFIGURATION['tables'][table_key]['gsis'][gsi_key][option]
+    except KeyError:
+        return None
 
 def get_logging_option(option):
     """ Returns the value of the option
