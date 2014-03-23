@@ -67,7 +67,7 @@ sns-topic-arn                              str  Full Topic ARN to use for sendin
 sns-message-types                          str  Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` and ``scale-down``
 allow-scaling-down-reads-on-0-percent      bool Allow down scaling of read units when 0% is used.
 allow-scaling-down-writes-on-0-percent     bool Allow down scaling of write units when 0% is used.
-always-decrease-rw-together                bool Restric scale down to only happen when both reads AND writes are in need of scaling down. Set this to ``true`` to minimize down scaling.
+always-decrease-rw-together                bool Restrict scale down to only happen when both reads AND writes are in need of scaling down. Set this to ``true`` to minimize down scaling.
 ========================================== ==== ==========================================
 
 Global secondary index configuration
@@ -105,5 +105,5 @@ sns-topic-arn                              str  Full Topic ARN to use for sendin
 sns-message-types                          str  Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` and ``scale-down``
 allow-scaling-down-reads-on-0-percent      bool Allow down scaling of read units when 0% is used.
 allow-scaling-down-writes-on-0-percent     bool Allow down scaling of write units when 0% is used.
-always-decrease-rw-together                bool Restric scale down to only happen when both reads AND writes are in need of scaling down. Set this to ``true`` to minimize down scaling.
+always-decrease-rw-together                bool Restrict scale down to only happen when both reads AND writes are in need of scaling down. Set this to ``true`` to minimize down scaling.
 ========================================== ==== ==========================================
