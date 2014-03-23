@@ -264,7 +264,7 @@ def __get_logging_options(cmd_line_options, conf_file_options=None):
 
 
 def __check_gsi_rules(configuration):
-    """ Do some basic checks on the configuraion """
+    """ Do some basic checks on the configuration """
     for table_name in configuration['tables']:
         if not 'gsis' in configuration['tables'][table_name]:
             continue
@@ -378,7 +378,7 @@ def __check_logging_rules(configuration):
 
 
 def __check_table_rules(configuration):
-    """ Do some basic checks on the configuraion """
+    """ Do some basic checks on the configuration """
     for table_name in configuration['tables']:
         table = configuration['tables'][table_name]
         # Check that increase/decrease units is OK

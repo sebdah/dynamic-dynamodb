@@ -139,7 +139,7 @@ def get_provisioned_gsi_write_units(table_name, gsi_name):
             break
 
     logger.debug(
-        '{0} - GSI: {1} - Currently povisioned write units: {2:d}'.format(
+        '{0} - GSI: {1} - Currently provisioned write units: {2:d}'.format(
             table_name, gsi_name, write_units))
     return write_units
 
@@ -302,7 +302,7 @@ def update_table_provisioning(
             key_name,
             message,
             sns_message_types,
-            subject='Updated provisioing for table {0}'.format(table_name))
+            subject='Updated provisioning for table {0}'.format(table_name))
     except JSONResponseError as error:
         exception = error.body['__type'].split('#')[1]
         know_exceptions = [

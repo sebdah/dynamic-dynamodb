@@ -9,7 +9,7 @@ from dynamic_dynamodb.config_handler import get_global_option
 
 
 def is_open():
-    """ Checks wether the circuit breaker is open
+    """ Checks whether the circuit breaker is open
 
     :returns: bool -- True if the circuit is open
     """

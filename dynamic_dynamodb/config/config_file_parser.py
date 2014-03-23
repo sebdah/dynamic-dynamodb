@@ -330,7 +330,7 @@ def parse(config_path):
             continue
 
         if table_key not in table_config['tables']:
-            print('No table configuration matchin {0} found.'.format(
+            print('No table configuration matching {0} found.'.format(
                 table_key))
             sys.exit(1)
 
