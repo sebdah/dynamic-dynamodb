@@ -69,12 +69,12 @@ The easiest way to install Dynamic DynamoDB is through PyPI:
 Required privileges
 -------------------
 
-If you want to set up a separate AIM user for Dynamic DynamoDB, then you need to grant the user the following privileges:
+If you want to set up a separate IAM user for Dynamic DynamoDB, then you need to grant the user the following privileges:
 
-* cloudwatch:GetMetricStatistics
-* dynamodb:DescribeTable
-* dynamodb:ListTables
-* dynamodb:UpdateTable
+* `cloudwatch:GetMetricStatistics`
+* `dynamodb:DescribeTable`
+* `dynamodb:ListTables`
+* `dynamodb:UpdateTable`
 
 Reporting bugs
 --------------
