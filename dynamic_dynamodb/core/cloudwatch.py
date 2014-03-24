@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Ensure connections to DynamoDB and CloudWatch """
 from dynamic_dynamodb.log_handler import LOGGER as logger
-from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
+from dynamic_dynamodb.config_handler import get_global_option
 
 from boto.ec2 import cloudwatch
 from boto.utils import get_instance_metadata
@@ -10,16 +10,16 @@ from boto.utils import get_instance_metadata
 def __get_connection_cloudwatch():
     """ Ensure connection to SNS """
     try:
-        if (configuration['global']['aws_access_key_id'] and
-                configuration['global']['aws_secret_access_key']):
+        if (get_global_option('aws_access_key_id') and
+                get_global_option('aws_secret_access_key')):
             logger.debug(
                 'Authenticating to CloudWatch using '
                 'credentials in configuration file')
             connection = cloudwatch.connect_to_region(
-                configuration['global']['region'],
-                aws_access_key_id=configuration['global']['aws_access_key_id'],
-                aws_secret_access_key=
-                configuration['global']['aws_secret_access_key'])
+                get_global_option('region'),
+                aws_access_key_id=get_global_option('aws_access_key_id'),
+                aws_secret_access_key=get_global_option(
+                    'aws_secret_access_key'))
         else:
             try:
                 logger.debug(
@@ -33,7 +33,7 @@ def __get_connection_cloudwatch():
                     'Authenticating to CloudWatch using '
                     'env vars / boto configuration')
                 connection = cloudwatch.connect_to_region(
-                    configuration['global']['region'])
+                    get_global_option('region'))
 
     except Exception as err:
         logger.error('Failed connecting to CloudWatch: {0}'.format(err))
@@ -43,7 +43,7 @@ def __get_connection_cloudwatch():
         raise
 
     logger.debug('Connected to CloudWatch in {0}'.format(
-        configuration['global']['region']))
+        get_global_option('region')))
     return connection
 
 

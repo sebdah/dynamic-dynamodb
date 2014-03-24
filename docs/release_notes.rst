@@ -1,6 +1,15 @@
 Release notes
 =============
 
+1.10.1
+------
+
+**Release date:** 2014-03-24
+
+- Fixed typo in SNS notification subjects
+- Merged GSI fixes (`#131 <https://github.com/sebdah/dynamic-dynamodb/issues/131>`__)
+- Updated readme with IAM information (`#132 <https://github.com/sebdah/dynamic-dynamodb/issues/132>`__)
+
 1.10.0
 ------
 

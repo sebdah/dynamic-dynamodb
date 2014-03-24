@@ -10,7 +10,8 @@ from boto.exception import DynamoDBResponseError, JSONResponseError
 from boto.utils import get_instance_metadata
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
-from dynamic_dynamodb.config_handler import CONFIGURATION as configuration
+from dynamic_dynamodb.config_handler import (
+    get_configured_tables, get_global_option)
 from dynamic_dynamodb.core import sns
 
 
@@ -20,7 +21,7 @@ def get_tables_and_gsis():
     :returns: set -- A set of tuples (table_name, table_conf_key)
     """
     table_names = set()
-    configured_tables = configuration['tables'].keys()
+    configured_tables = get_configured_tables()
     not_used_tables = set(configured_tables)
 
     # Add regexp table names
@@ -139,7 +140,7 @@ def get_provisioned_gsi_write_units(table_name, gsi_name):
             break
 
     logger.debug(
-        '{0} - GSI: {1} - Currently povisioned write units: {2:d}'.format(
+        '{0} - GSI: {1} - Currently provisioned write units: {2:d}'.format(
             table_name, gsi_name, write_units))
     return write_units
 
@@ -302,7 +303,7 @@ def update_table_provisioning(
             key_name,
             message,
             sns_message_types,
-            subject='Updated provisioing for table {0}'.format(table_name))
+            subject='Updated provisioning for table {0}'.format(table_name))
     except JSONResponseError as error:
         exception = error.body['__type'].split('#')[1]
         know_exceptions = [
@@ -402,7 +403,7 @@ def update_gsi_provisioning(
             gsi_key,
             message,
             sns_message_types,
-            subject='Updated provisioing for GSI {0}'.format(gsi_name))
+            subject='Updated provisioning for GSI {0}'.format(gsi_name))
 
     except JSONResponseError as error:
         exception = error.body['__type'].split('#')[1]
@@ -461,19 +462,18 @@ def __get_connection_dynamodb(retries=3):
     connected = False
     while not connected:
         logger.debug('Connecting to DynamoDB in {0}'.format(
-            configuration['global']['region']))
+            get_global_option('region')))
 
-        if (configuration['global']['aws_access_key_id'] and
-                configuration['global']['aws_secret_access_key']):
+        if (get_global_option('aws_access_key_id') and
+                get_global_option('aws_secret_access_key')):
             logger.debug(
                 'Authenticating to DynamoDB using '
                 'credentials in configuration file')
             connection = dynamodb2.connect_to_region(
-                configuration['global']['region'],
-                aws_access_key_id=
-                configuration['global']['aws_access_key_id'],
-                aws_secret_access_key=
-                configuration['global']['aws_secret_access_key'])
+                get_global_option('region'),
+                aws_access_key_id=get_global_option('aws_access_key_id'),
+                aws_secret_access_key=get_global_option(
+                    'aws_secret_access_key'))
         else:
             try:
                 logger.debug(
@@ -487,7 +487,7 @@ def __get_connection_dynamodb(retries=3):
                     'Authenticating to DynamoDB using '
                     'env vars / boto configuration')
                 connection = dynamodb2.connect_to_region(
-                    configuration['global']['region'])
+                    get_global_option('region'))
 
         if not connection:
             if retries == 0:
@@ -501,7 +501,7 @@ def __get_connection_dynamodb(retries=3):
         else:
             connected = True
             logger.debug('Connected to DynamoDB in {0}'.format(
-                configuration['global']['region']))
+                get_global_option('region')))
 
     return connection
 
