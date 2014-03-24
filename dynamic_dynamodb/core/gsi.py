@@ -69,6 +69,47 @@ def ensure_provisioning(table_name, table_key, gsi_name, gsi_key):
         raise
 
 
+def __calculate_always_decrease_rw_values(
+        table_name, gsi_name, read_units, provisioned_reads,
+        write_units, provisioned_writes):
+    """ Calculate values for always-decrease-rw-together
+
+    This will only return reads and writes decreases if both reads and writes
+    are lower than the current provisioning
+
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
+    :type read_units: int
+    :param read_units: New read unit provisioning
+    :type provisioned_reads: int
+    :param provisioned_reads: Currently provisioned reads
+    :type write_units: int
+    :param write_units: New write unit provisioning
+    :type provisioned_writes: int
+    :param provisioned_writes: Currently provisioned writes
+    :returns: (int, int) -- (reads, writes)
+    """
+    if read_units < provisioned_reads and write_units < provisioned_writes:
+        return (read_units, write_units)
+
+    if read_units < provisioned_reads:
+        '{0} - GSI: {1} - Reads could be decreased, but we are waiting for '
+        'writes to get low too first'.format(table_name, gsi_name)
+
+        read_units = provisioned_reads
+
+    elif write_units < provisioned_writes:
+        '{0} - GSI: {1} - Writes could be decreased, but we are waiting for '
+        'reads to get low too first'.format(table_name, gsi_name)
+
+        write_units = provisioned_writes
+
+    return (read_units, write_units)
+
+
 def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
     """ Ensure that provisioning is correct
 
@@ -413,25 +454,17 @@ def __update_throughput(
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
     if get_gsi_option(table_key, gsi_key, 'always_decrease_rw_together'):
-        if read_units < current_ru and write_units < current_wu:
-            logger.debug(
-                '{0} - GSI: {1} - '
-                'Both reads and writes will be decreased'.format(
-                    table_name,
-                    gsi_name))
-        elif read_units < current_ru:
-            logger.info(
-                '{0} - GSI: {1} - '
-                'Will not decrease reads nor writes, waiting for '
-                'both to become low before decrease'.format(
-                    table_name, gsi_name))
-            return
-        elif write_units < current_wu:
-            logger.info(
-                '{0} - GSI: {1} - '
-                'Will not decrease reads nor writes, waiting for '
-                'both to become low before decrease'.format(
-                    table_name, gsi_name))
+        read_units, write_units = __calculate_always_decrease_rw_values(
+            table_name,
+            gsi_name,
+            read_units,
+            current_ru,
+            write_units,
+            current_wu)
+
+        if read_units == current_ru and write_units == current_wu:
+            logger.info('{0} - GSI: {1} - No changes to perform'.format(
+                table_name, gsi_name))
             return
 
     if not get_global_option('dry_run'):

@@ -47,6 +47,45 @@ def ensure_provisioning(table_name, key_name):
         raise
 
 
+def __calculate_always_decrease_rw_values(
+        table_name, read_units, provisioned_reads,
+        write_units, provisioned_writes):
+    """ Calculate values for always-decrease-rw-together
+
+    This will only return reads and writes decreases if both reads and writes
+    are lower than the current provisioning
+
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type read_units: int
+    :param read_units: New read unit provisioning
+    :type provisioned_reads: int
+    :param provisioned_reads: Currently provisioned reads
+    :type write_units: int
+    :param write_units: New write unit provisioning
+    :type provisioned_writes: int
+    :param provisioned_writes: Currently provisioned writes
+    :returns: (int, int) -- (reads, writes)
+    """
+    if read_units < provisioned_reads and write_units < provisioned_writes:
+        return (read_units, write_units)
+
+    if read_units < provisioned_reads:
+        '{0} - Reads could be decreased, but we are waiting for '
+        'writes to get low too first'.format(table_name)
+
+        read_units = provisioned_reads
+
+    elif write_units < provisioned_writes:
+        '{0} - Writes could be decreased, but we are waiting for '
+        'reads to get low too first'.format(table_name)
+
+        write_units = provisioned_writes
+
+    return (read_units, write_units)
+
+
 def __ensure_provisioning_reads(table_name, key_name):
     """ Ensure that provisioning is correct
 
@@ -296,10 +335,8 @@ def __update_throughput(table_name, read_units, write_units, key_name):
     :param key_name: Configuration option key name
     """
     try:
-        provisioned_reads = dynamodb.get_provisioned_table_read_units(
-            table_name)
-        provisioned_writes = dynamodb.get_provisioned_table_write_units(
-            table_name)
+        current_ru = dynamodb.get_provisioned_table_read_units(table_name)
+        current_wu = dynamodb.get_provisioned_table_write_units(table_name)
     except JSONResponseError:
         raise
 
@@ -332,19 +369,15 @@ def __update_throughput(table_name, read_units, write_units, key_name):
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
     if get_table_option(key_name, 'always_decrease_rw_together'):
-        if read_units < provisioned_reads and write_units < provisioned_writes:
-            logger.debug(
-                '{0} - Both reads and writes will be decreased'.format(
-                    table_name))
-        elif read_units < provisioned_reads:
-            logger.info(
-                '{0} - Will not decrease reads nor writes, waiting for '
-                'both to become low before decrease'.format(table_name))
-            return
-        elif write_units < provisioned_writes:
-            logger.info(
-                '{0} - Will not decrease reads nor writes, waiting for '
-                'both to become low before decrease'.format(table_name))
+        read_units, write_units = __calculate_always_decrease_rw_values(
+            table_name,
+            read_units,
+            current_ru,
+            write_units,
+            current_wu)
+
+        if read_units == current_ru and write_units == current_wu:
+            logger.info('{0} - No changes to perform'.format(table_name))
             return
 
     if not get_global_option('dry_run'):
