@@ -7,7 +7,7 @@ Dynamic DynamoDB
 
 AWS NoSQL database DynamoDB is a great service, but it lacks automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
 
-All you need to do is to tell Dynamic DynamoDB at which point and how much you want to scale up or down your DynamoDB tables. An example is in place. Let’s say you have way more traffic on your database during sales hours 4pm - 10pm. DynamicDB can monitor the increased throughput on your DynamoDB instance (via CloudWatch) and provision more throughput as needed. When the load is reducing Dynamic DynamoDB will sence that and automatically reduce your provisioning.
+All you need to do is to tell Dynamic DynamoDB is at which point and how much you want to scale up or down your DynamoDB tables. An example is in place. Let’s say you have way more traffic on your database during sales hours 4pm - 10pm. DynamicDB can monitor the increased throughput on your DynamoDB instance (via CloudWatch) and provision more throughput as needed. When the load is reducing Dynamic DynamoDB will sence that and automatically reduce your provisioning.
 
 See an example of how to configure Dynamic DynamoDB under **Basic usage** or checkout `dynamic-dynamodb --help`.
 
@@ -82,16 +82,6 @@ Reporting bugs
 Please help me by providing feedback and bug reports. You can file bugs in the project's [GitHub Issues page](https://github.com/sebdah/dynamic-dynamodb/issues).
 
 Provide as much details as possible to make bug fixing as swift as possible.
-
-Git strategy
-------------
-
-This project uses [git-flow](https://github.com/nvie/gitflow) for handling branching and releasing in Git. See the following [blog post](http://nvie.com/posts/a-successful-git-branching-model/) for more details on how it works.
-
-Releasing to PyPI
------------------
-
-    make release
 
 Author
 ------
