@@ -210,7 +210,7 @@ def decrease_writes_in_percent(
 
     if updated_provisioning < min_provisioned_writes:
         logger.info(
-            '{0} - GSI {1} - '
+            '{0} - GSI: {1} - '
             'Reached provisioned writes min limit {2:d}'.format(
                 table_name,
                 gsi_name,
@@ -456,7 +456,7 @@ def increase_writes_in_units(
                     table_name,
                     gsi_name,
                     int(get_gsi_option(
-                        gsi_key, 'max_provisioned_writes'))))
+                        table_name, gsi_key, 'max_provisioned_writes'))))
 
             return get_gsi_option(
                 table_key, gsi_key, 'max_provisioned_writes')

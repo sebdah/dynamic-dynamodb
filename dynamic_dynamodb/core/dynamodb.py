@@ -140,7 +140,7 @@ def get_provisioned_gsi_write_units(table_name, gsi_name):
             break
 
     logger.debug(
-        '{0} - GSI: {1} - Currently povisioned write units: {2:d}'.format(
+        '{0} - GSI: {1} - Currently provisioned write units: {2:d}'.format(
             table_name, gsi_name, write_units))
     return write_units
 
