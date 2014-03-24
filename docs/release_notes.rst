@@ -7,6 +7,7 @@ Release notes
 **Release date:** TBD
 
 - Fixed typo in SNS notification subjects
+- Merged GSI fixes (`#131 <https://github.com/sebdah/dynamic-dynamodb/issues/131>`__)
 
 1.10.0
 ------
