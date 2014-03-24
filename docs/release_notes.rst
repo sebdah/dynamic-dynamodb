@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.11.0
+------
+
+**Release date:** TBD
+
+- Fixed typo in SNS notification subjects
+
 1.10.0
 ------
 
