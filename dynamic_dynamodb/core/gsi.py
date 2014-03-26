@@ -96,14 +96,18 @@ def __calculate_always_decrease_rw_values(
         return (read_units, write_units)
 
     if read_units < provisioned_reads:
-        '{0} - GSI: {1} - Reads could be decreased, but we are waiting for '
-        'writes to get low too first'.format(table_name, gsi_name)
+        logger.info(
+            '{0} - GSI: {1} - Reads could be decreased, '
+            'but we are waiting for writes to get lower than the threshold '
+            'before scaling down'.format(table_name, gsi_name))
 
         read_units = provisioned_reads
 
     elif write_units < provisioned_writes:
-        '{0} - GSI: {1} - Writes could be decreased, but we are waiting for '
-        'reads to get low too first'.format(table_name, gsi_name)
+        logger.info(
+            '{0} - GSI: {1} - Writes could be decreased, '
+            'but we are waiting for reads to get lower than the threshold '
+            'before scaling down'.format(table_name, gsi_name))
 
         write_units = provisioned_writes
 
