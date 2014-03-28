@@ -109,6 +109,22 @@ def __ensure_provisioning_reads(table_name, key_name):
             table_stats.get_consumed_read_units_percent(table_name)
         throttled_read_count = \
             table_stats.get_throttled_read_event_count(table_name)
+        reads_upper_threshold = \
+            get_table_option(key_name, 'reads_upper_threshold')
+        reads_lower_threshold = \
+            get_table_option(key_name, 'reads_lower_threshold')
+        throttled_reads_upper_threshold = \
+            get_table_option(key_name, 'throttled_reads_upper_threshold')
+        increase_reads_with = \
+            get_table_option(key_name, 'increase_reads_with')
+        increase_reads_unit = \
+            get_table_option(key_name, 'increase_reads_unit')
+        decrease_reads_with = \
+            get_table_option(key_name, 'decrease_reads_with')
+        decrease_reads_unit = \
+            get_table_option(key_name, 'decrease_reads_unit')
+        max_provisioned_reads = \
+            get_table_option(key_name, 'max_provisioned_reads')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -122,19 +138,18 @@ def __ensure_provisioning_reads(table_name, key_name):
             '{0} - Scaling down reads is not done when usage is at 0%'.format(
                 table_name))
 
-    elif (consumed_read_units_percent >=
-            get_table_option(key_name, 'reads_upper_threshold')):
+    elif consumed_read_units_percent >= reads_upper_threshold:
 
-        if get_table_option(key_name, 'increase_reads_unit') == 'percent':
+        if increase_reads_unit == 'percent':
             updated_provisioning = calculators.increase_reads_in_percent(
                 updated_read_units,
-                get_table_option(key_name, 'increase_reads_with'),
+                increase_reads_with,
                 key_name,
                 table_name)
         else:
             updated_provisioning = calculators.increase_reads_in_units(
                 updated_read_units,
-                get_table_option(key_name, 'increase_reads_with'),
+                increase_reads_with,
                 key_name,
                 table_name)
 
@@ -142,39 +157,38 @@ def __ensure_provisioning_reads(table_name, key_name):
             update_needed = True
             updated_read_units = updated_provisioning
 
-    elif (throttled_read_count >=
-            get_table_option(key_name, 'throttled_reads_upper_threshold')):
+    elif throttled_read_count >= throttled_reads_upper_threshold:
 
-        if get_table_option(key_name, 'increase_reads_unit') == 'percent':
-            updated_provisioning = calculators.increase_reads_in_percent(
-                updated_read_units,
-                get_table_option(key_name, 'increase_reads_with'),
-                key_name,
-                table_name)
-        else:
-            updated_provisioning = calculators.increase_reads_in_units(
-                updated_read_units,
-                get_table_option(key_name, 'increase_reads_with'),
-                key_name,
-                table_name)
+        if throttled_reads_upper_threshold > 0:
+            if increase_reads_unit == 'percent':
+                updated_provisioning = calculators.increase_reads_in_percent(
+                    updated_read_units,
+                    increase_reads_with,
+                    key_name,
+                    table_name)
+            else:
+                updated_provisioning = calculators.increase_reads_in_units(
+                    updated_read_units,
+                    increase_reads_with,
+                    key_name,
+                    table_name)
 
-        if updated_read_units != updated_provisioning:
-            update_needed = True
-            updated_read_units = updated_provisioning
+            if updated_read_units != updated_provisioning:
+                update_needed = True
+                updated_read_units = updated_provisioning
 
-    elif (consumed_read_units_percent <=
-            get_table_option(key_name, 'reads_lower_threshold')):
+    elif consumed_read_units_percent <= reads_lower_threshold:
 
-        if get_table_option(key_name, 'decrease_reads_unit') == 'percent':
+        if decrease_reads_unit == 'percent':
             updated_provisioning = calculators.decrease_reads_in_percent(
                 updated_read_units,
-                get_table_option(key_name, 'decrease_reads_with'),
+                decrease_reads_with,
                 key_name,
                 table_name)
         else:
             updated_provisioning = calculators.decrease_reads_in_units(
                 updated_read_units,
-                get_table_option(key_name, 'decrease_reads_with'),
+                decrease_reads_with,
                 key_name,
                 table_name)
 
@@ -182,12 +196,10 @@ def __ensure_provisioning_reads(table_name, key_name):
             update_needed = True
             updated_read_units = updated_provisioning
 
-    if get_table_option(key_name, 'max_provisioned_reads'):
-        if (int(updated_read_units) >
-                int(get_table_option(key_name, 'max_provisioned_reads'))):
+    if max_provisioned_reads:
+        if (int(updated_read_units) > int(max_provisioned_reads)):
             update_needed = True
-            updated_read_units = int(
-                get_table_option(key_name, 'max_provisioned_reads'))
+            updated_read_units = int(max_provisioned_reads)
             logger.info(
                 'Will not increase writes over max-provisioned-reads '
                 'limit ({0} writes)'.format(updated_read_units))
@@ -212,6 +224,22 @@ def __ensure_provisioning_writes(table_name, key_name):
             table_stats.get_consumed_write_units_percent(table_name)
         throttled_write_count = \
             table_stats.get_throttled_write_event_count(table_name)
+        writes_upper_threshold = \
+            get_table_option(key_name, 'writes_upper_threshold')
+        writes_lower_threshold = \
+            get_table_option(key_name, 'writes_lower_threshold')
+        throttled_writes_upper_threshold = \
+            get_table_option(key_name, 'throttled_writes_upper_threshold')
+        increase_writes_unit = \
+            get_table_option(key_name, 'increase_writes_unit')
+        increase_writes_with = \
+            get_table_option(key_name, 'increase_writes_with')
+        decrease_writes_unit = \
+            get_table_option(key_name, 'decrease_writes_unit')
+        decrease_writes_with = \
+            get_table_option(key_name, 'decrease_writes_with')
+        max_provisioned_writes = \
+            get_table_option(key_name, 'max_provisioned_writes')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -226,19 +254,18 @@ def __ensure_provisioning_writes(table_name, key_name):
             '{0} - Scaling down writes is not done when usage is at 0%'.format(
                 table_name))
 
-    elif (consumed_write_units_percent >=
-            get_table_option(key_name, 'writes_upper_threshold')):
+    elif consumed_write_units_percent >= writes_upper_threshold:
 
-        if get_table_option(key_name, 'increase_writes_unit') == 'percent':
+        if increase_writes_unit == 'percent':
             updated_provisioning = calculators.increase_writes_in_percent(
                 updated_write_units,
-                get_table_option(key_name, 'increase_writes_with'),
+                increase_writes_with,
                 key_name,
                 table_name)
         else:
             updated_provisioning = calculators.increase_writes_in_units(
                 updated_write_units,
-                get_table_option(key_name, 'increase_writes_with'),
+                increase_writes_with,
                 key_name,
                 table_name)
 
@@ -246,39 +273,38 @@ def __ensure_provisioning_writes(table_name, key_name):
             update_needed = True
             updated_write_units = updated_provisioning
 
-    elif (throttled_write_count >=
-            get_table_option(key_name, 'throttled_writes_upper_threshold')):
+    elif throttled_write_count >= throttled_writes_upper_threshold:
 
-        if get_table_option(key_name, 'increase_writes_unit') == 'percent':
-            updated_provisioning = calculators.increase_writes_in_percent(
-                updated_write_units,
-                get_table_option(key_name, 'increase_writes_with'),
-                key_name,
-                table_name)
-        else:
-            updated_provisioning = calculators.increase_writes_in_units(
-                updated_write_units,
-                get_table_option(key_name, 'increase_writes_with'),
-                key_name,
-                table_name)
+        if throttled_writes_upper_threshold > 0:
+            if increase_writes_unit == 'percent':
+                updated_provisioning = calculators.increase_writes_in_percent(
+                    updated_write_units,
+                    increase_writes_with,
+                    key_name,
+                    table_name)
+            else:
+                updated_provisioning = calculators.increase_writes_in_units(
+                    updated_write_units,
+                    increase_writes_with,
+                    key_name,
+                    table_name)
 
-        if updated_write_units != updated_provisioning:
-            update_needed = True
-            updated_write_units = updated_provisioning
+            if updated_write_units != updated_provisioning:
+                update_needed = True
+                updated_write_units = updated_provisioning
 
-    elif (consumed_write_units_percent <=
-            get_table_option(key_name, 'writes_lower_threshold')):
+    elif consumed_write_units_percent <= writes_lower_threshold:
 
-        if get_table_option(key_name, 'decrease_writes_unit') == 'percent':
+        if decrease_writes_unit == 'percent':
             updated_provisioning = calculators.decrease_writes_in_percent(
                 updated_write_units,
-                get_table_option(key_name, 'decrease_writes_with'),
+                decrease_writes_with,
                 key_name,
                 table_name)
         else:
             updated_provisioning = calculators.decrease_writes_in_units(
                 updated_write_units,
-                get_table_option(key_name, 'decrease_writes_with'),
+                decrease_writes_with,
                 key_name,
                 table_name)
 
@@ -286,12 +312,10 @@ def __ensure_provisioning_writes(table_name, key_name):
             update_needed = True
             updated_write_units = updated_provisioning
 
-    if get_table_option(key_name, 'max_provisioned_writes'):
-        if (int(updated_write_units) >
-                int(get_table_option(key_name, 'max_provisioned_writes'))):
+    if max_provisioned_writes:
+        if int(updated_write_units) > int(max_provisioned_writes):
             update_needed = True
-            updated_write_units = int(
-                get_table_option(key_name, 'max_provisioned_writes'))
+            updated_write_units = int(max_provisioned_writes)
             logger.info(
                 'Will not increase writes over max-provisioned-writes '
                 'limit ({0} writes)'.format(updated_write_units))
