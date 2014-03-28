@@ -6,6 +6,8 @@ Release notes
 
 **Release date:** 2014-03-24
 
+- Throttling should only be checked for if explicitly configured (`#135 <https://github.com/sebdah/dynamic-dynamodb/issues/135>`__)
+- Catching exception in metrics fetching (`#134 <https://github.com/sebdah/dynamic-dynamodb/issues/134>`__)
 - `always-decrease-rw-together` blocked scaling up (`#133 <https://github.com/sebdah/dynamic-dynamodb/issues/133>`__)
 
 1.10.1
