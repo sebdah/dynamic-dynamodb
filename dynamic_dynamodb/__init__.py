@@ -24,7 +24,7 @@ import re
 import sys
 import time
 
-from boto.exception import JSONResponseError
+from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb.core import dynamodb, gsi, table
 from dynamic_dynamodb.daemon import Daemon
@@ -42,6 +42,8 @@ class DynamicDynamoDBDaemon(Daemon):
         :param check_interval: Delay in seconds between checks
         """
         try:
+            boto_server_error_retries = 3
+
             while True:
                 # Ensure provisioning
                 for table_name, table_key in \
@@ -87,6 +89,7 @@ class DynamicDynamoDBDaemon(Daemon):
                                 table_key,
                                 gsi_name,
                                 gsi_key)
+
                     except JSONResponseError as error:
                         exception = error.body['__type'].split('#')[1]
                         if exception == 'ResourceNotFoundException':
@@ -94,6 +97,20 @@ class DynamicDynamoDBDaemon(Daemon):
                                 '{0} - Table {1} does not exist anymore'.format(
                                     table_name, table_name))
                             continue
+
+                    except BotoServerError as error:
+                        if boto_server_error_retries > 0:
+                            logger.error(
+                                'Unknown boto error. Status: "{0}". '
+                                'Reason: "{1}"'.format(
+                                    error.status,
+                                    error.reason))
+                            logger.error(
+                                'Please bug report if this error persists')
+                            boto_server_error_retries -= 1
+                            continue
+                        else:
+                            raise
 
                 # Sleep between the checks
                 logger.debug('Sleeping {0} seconds until next check'.format(
@@ -106,6 +123,8 @@ class DynamicDynamoDBDaemon(Daemon):
 def main():
     """ Main function called from dynamic-dynamodb """
     try:
+        boto_server_error_retries = 3
+
         while True:
             if get_global_option('daemon'):
                 pid_file = '/tmp/dynamic-dynamodb.{0}.pid'.format(
@@ -179,6 +198,7 @@ def main():
                                 table_key,
                                 gsi_name,
                                 gsi_key)
+
                     except JSONResponseError as error:
                         exception = error.body['__type'].split('#')[1]
                         if exception == 'ResourceNotFoundException':
@@ -186,6 +206,20 @@ def main():
                                 '{0} - Table {1} does not exist anymore'.format(
                                     table_name, table_name))
                             continue
+
+                    except BotoServerError as error:
+                        if boto_server_error_retries > 0:
+                            logger.error(
+                                'Unknown boto error. Status: "{0}". '
+                                'Reason: "{1}"'.format(
+                                    error.status,
+                                    error.reason))
+                            logger.error(
+                                'Please bug report if this error persists')
+                            boto_server_error_retries -= 1
+                            continue
+                        else:
+                            raise
 
             # Sleep between the checks
             logger.debug('Sleeping {0} seconds until next check'.format(

@@ -1,7 +1,7 @@
 """ Core components """
 import datetime
 
-from boto.exception import JSONResponseError
+from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb.calculators import gsi as calculators
 from dynamic_dynamodb.core import circuit_breaker
@@ -131,13 +131,14 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
     try:
         updated_read_units = dynamodb.get_provisioned_gsi_read_units(
             table_name, gsi_name)
-        consumed_read_units_percent = gsi_stats.get_consumed_read_units_percent(
-            table_name, gsi_name)
+        consumed_read_units_percent = \
+            gsi_stats.get_consumed_read_units_percent(table_name, gsi_name)
+        throttled_read_count = \
+            gsi_stats.get_throttled_read_event_count(table_name, gsi_name)
     except JSONResponseError:
         raise
-
-    throttled_read_count = gsi_stats.get_throttled_read_event_count(
-        table_name, gsi_name)
+    except BotoServerError:
+        raise
 
     if (consumed_read_units_percent == 0 and not
             get_gsi_option(
@@ -257,11 +258,12 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
             table_name, gsi_name)
         consumed_write_units_percent = \
             gsi_stats.get_consumed_write_units_percent(table_name, gsi_name)
+        throttled_write_count = \
+            gsi_stats.get_throttled_write_event_count(table_name, gsi_name)
     except JSONResponseError:
         raise
-
-    throttled_write_count = gsi_stats.get_throttled_write_event_count(
-        table_name, gsi_name)
+    except BotoServerError:
+        raise
 
     # Check if we should update write provisioning
     if (consumed_write_units_percent == 0 and not get_gsi_option(
