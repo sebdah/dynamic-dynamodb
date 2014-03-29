@@ -1,7 +1,7 @@
 """ Core components """
 import datetime
 
-from boto.exception import JSONResponseError
+from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb.calculators import gsi as calculators
 from dynamic_dynamodb.core import circuit_breaker
@@ -69,6 +69,51 @@ def ensure_provisioning(table_name, table_key, gsi_name, gsi_key):
         raise
 
 
+def __calculate_always_decrease_rw_values(
+        table_name, gsi_name, read_units, provisioned_reads,
+        write_units, provisioned_writes):
+    """ Calculate values for always-decrease-rw-together
+
+    This will only return reads and writes decreases if both reads and writes
+    are lower than the current provisioning
+
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
+    :type read_units: int
+    :param read_units: New read unit provisioning
+    :type provisioned_reads: int
+    :param provisioned_reads: Currently provisioned reads
+    :type write_units: int
+    :param write_units: New write unit provisioning
+    :type provisioned_writes: int
+    :param provisioned_writes: Currently provisioned writes
+    :returns: (int, int) -- (reads, writes)
+    """
+    if read_units < provisioned_reads and write_units < provisioned_writes:
+        return (read_units, write_units)
+
+    if read_units < provisioned_reads:
+        logger.info(
+            '{0} - GSI: {1} - Reads could be decreased, '
+            'but we are waiting for writes to get lower than the threshold '
+            'before scaling down'.format(table_name, gsi_name))
+
+        read_units = provisioned_reads
+
+    elif write_units < provisioned_writes:
+        logger.info(
+            '{0} - GSI: {1} - Writes could be decreased, '
+            'but we are waiting for reads to get lower than the threshold '
+            'before scaling down'.format(table_name, gsi_name))
+
+        write_units = provisioned_writes
+
+    return (read_units, write_units)
+
+
 def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
     """ Ensure that provisioning is correct
 
@@ -86,13 +131,31 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
     try:
         updated_read_units = dynamodb.get_provisioned_gsi_read_units(
             table_name, gsi_name)
-        consumed_read_units_percent = gsi_stats.get_consumed_read_units_percent(
-            table_name, gsi_name)
+        consumed_read_units_percent = \
+            gsi_stats.get_consumed_read_units_percent(table_name, gsi_name)
+        throttled_read_count = \
+            gsi_stats.get_throttled_read_event_count(table_name, gsi_name)
+        reads_upper_threshold = \
+            get_gsi_option(table_key, gsi_key, 'reads_upper_threshold')
+        reads_lower_threshold = \
+            get_gsi_option(table_key, gsi_key, 'reads_lower_threshold')
+        increase_reads_unit = \
+            get_gsi_option(table_key, gsi_key, 'increase_reads_unit')
+        decrease_reads_unit = \
+            get_gsi_option(table_key, gsi_key, 'decrease_reads_unit')
+        increase_reads_with = \
+            get_gsi_option(table_key, gsi_key, 'increase_reads_with')
+        decrease_reads_with = \
+            get_gsi_option(table_key, gsi_key, 'decrease_reads_with')
+        throttled_reads_upper_threshold = \
+            get_gsi_option(
+                table_key, gsi_key, 'throttled_reads_upper_threshold')
+        max_provisioned_reads = \
+            get_gsi_option(table_key, gsi_key, 'max_provisioned_reads')
     except JSONResponseError:
         raise
-
-    throttled_read_count = gsi_stats.get_throttled_read_event_count(
-        table_name, gsi_name)
+    except BotoServerError:
+        raise
 
     if (consumed_read_units_percent == 0 and not
             get_gsi_option(
@@ -105,14 +168,11 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
             'Scaling down reads is not done when usage is at 0%'.format(
                 table_name, gsi_name))
 
-    elif (consumed_read_units_percent >=
-            get_gsi_option(table_key, gsi_key, 'reads_upper_threshold')):
-
-        if (get_gsi_option(table_key, gsi_key, 'increase_reads_unit') ==
-                'percent'):
+    elif consumed_read_units_percent >= reads_upper_threshold:
+        if increase_reads_unit == 'percent':
             updated_provisioning = calculators.increase_reads_in_percent(
                 updated_read_units,
-                get_gsi_option(table_key, gsi_key, 'increase_reads_with'),
+                increase_reads_with,
                 table_name,
                 table_key,
                 gsi_name,
@@ -120,7 +180,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
         else:
             updated_provisioning = calculators.increase_reads_in_units(
                 updated_read_units,
-                get_gsi_option(table_key, gsi_key, 'increase_reads_with'),
+                increase_reads_with,
                 table_name,
                 table_key,
                 gsi_name,
@@ -130,39 +190,37 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
             update_needed = True
             updated_read_units = updated_provisioning
 
-    elif (throttled_read_count >= get_gsi_option(
-            table_key, gsi_key, 'throttled_reads_upper_threshold')):
+    elif throttled_read_count >= throttled_reads_upper_threshold:
 
-        if (get_gsi_option(table_key, gsi_key, 'increase_reads_unit') ==
-                'percent'):
-            updated_provisioning = calculators.increase_reads_in_percent(
-                updated_read_units,
-                get_gsi_option(table_key, gsi_key, 'increase_reads_with'),
-                table_name,
-                table_key,
-                gsi_name,
-                gsi_key,)
-        else:
-            updated_provisioning = calculators.increase_reads_in_units(
-                updated_read_units,
-                get_gsi_option(table_key, gsi_key, 'increase_reads_with'),
-                table_name,
-                table_key,
-                gsi_name,
-                gsi_key)
+        if throttled_reads_upper_threshold > 0:
 
-        if updated_read_units != updated_provisioning:
-            update_needed = True
-            updated_read_units = updated_provisioning
+            if increase_reads_unit == 'percent':
+                updated_provisioning = calculators.increase_reads_in_percent(
+                    updated_read_units,
+                    increase_reads_with,
+                    table_name,
+                    table_key,
+                    gsi_name,
+                    gsi_key,)
+            else:
+                updated_provisioning = calculators.increase_reads_in_units(
+                    updated_read_units,
+                    increase_reads_with,
+                    table_name,
+                    table_key,
+                    gsi_name,
+                    gsi_key)
 
-    elif (consumed_read_units_percent <=
-            get_gsi_option(table_key, gsi_key, 'reads_lower_threshold')):
+            if updated_read_units != updated_provisioning:
+                update_needed = True
+                updated_read_units = updated_provisioning
 
-        if (get_gsi_option(table_key, gsi_key, 'decrease_reads_unit') ==
-                'percent'):
+    elif consumed_read_units_percent <= reads_lower_threshold:
+
+        if decrease_reads_unit == 'percent':
             updated_provisioning = calculators.decrease_reads_in_percent(
                 updated_read_units,
-                get_gsi_option(table_key, gsi_key, 'decrease_reads_with'),
+                decrease_reads_with,
                 table_name,
                 table_key,
                 gsi_name,
@@ -170,7 +228,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
         else:
             updated_provisioning = calculators.decrease_reads_in_units(
                 updated_read_units,
-                get_gsi_option(table_key, gsi_key, 'decrease_reads_with'),
+                decrease_reads_with,
                 table_name,
                 table_key,
                 gsi_name,
@@ -180,12 +238,10 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
             update_needed = True
             updated_read_units = updated_provisioning
 
-    if get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'):
-        if (int(updated_read_units) > int(
-                get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'))):
+    if max_provisioned_reads:
+        if int(updated_read_units) > int(max_provisioned_reads):
             update_needed = True
-            updated_read_units = int(
-                get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'))
+            updated_read_units = int(max_provisioned_reads)
             logger.info(
                 'Will not increase writes over gsi-max-provisioned-reads '
                 'limit ({0} writes)'.format(updated_read_units))
@@ -212,11 +268,29 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
             table_name, gsi_name)
         consumed_write_units_percent = \
             gsi_stats.get_consumed_write_units_percent(table_name, gsi_name)
+        throttled_write_count = \
+            gsi_stats.get_throttled_write_event_count(table_name, gsi_name)
+        writes_upper_threshold = \
+            get_gsi_option(table_key, gsi_key, 'writes_upper_threshold')
+        writes_lower_threshold = \
+            get_gsi_option(table_key, gsi_key, 'writes_lower_threshold')
+        throttled_writes_upper_threshold = \
+            get_gsi_option(
+                table_key, gsi_key, 'throttled_writes_upper_threshold')
+        increase_writes_unit = \
+            get_gsi_option(table_key, gsi_key, 'increase_writes_unit')
+        increase_writes_with = \
+            get_gsi_option(table_key, gsi_key, 'increase_writes_with')
+        decrease_writes_unit = \
+            get_gsi_option(table_key, gsi_key, 'decrease_writes_unit')
+        decrease_writes_with = \
+            get_gsi_option(table_key, gsi_key, 'decrease_writes_with')
+        max_provisioned_writes = \
+            get_gsi_option(table_key, gsi_key, 'max_provisioned_writes')
     except JSONResponseError:
         raise
-
-    throttled_write_count = gsi_stats.get_throttled_write_event_count(
-        table_name, gsi_name)
+    except BotoServerError:
+        raise
 
     # Check if we should update write provisioning
     if (consumed_write_units_percent == 0 and not get_gsi_option(
@@ -227,14 +301,12 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
             'Scaling down writes is not done when usage is at 0%'.format(
                 table_name, gsi_name))
 
-    elif (consumed_write_units_percent >=
-            get_gsi_option(table_key, gsi_key, 'writes_upper_threshold')):
+    elif consumed_write_units_percent >= writes_upper_threshold:
 
-        if (get_gsi_option(table_key, gsi_key, 'increase_writes_unit') ==
-                'percent'):
+        if increase_writes_unit == 'percent':
             updated_provisioning = calculators.increase_writes_in_percent(
                 updated_write_units,
-                get_gsi_option(table_key, gsi_key, 'increase_writes_with'),
+                increase_writes_with,
                 table_name,
                 table_key,
                 gsi_name,
@@ -242,7 +314,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
         else:
             updated_provisioning = calculators.increase_writes_in_units(
                 updated_write_units,
-                get_gsi_option(table_key, gsi_key, 'increase_writes_with'),
+                increase_writes_with,
                 table_name,
                 table_key,
                 gsi_name,
@@ -252,39 +324,36 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
             update_needed = True
             updated_write_units = updated_provisioning
 
-    elif (throttled_write_count >= get_gsi_option(
-            table_key, gsi_key, 'throttled_writes_upper_threshold')):
+    elif throttled_write_count >= throttled_writes_upper_threshold:
 
-        if (get_gsi_option(table_key, gsi_key, 'increase_writes_unit') ==
-                'percent'):
-            updated_provisioning = calculators.increase_writes_in_percent(
-                updated_write_units,
-                get_gsi_option(table_key, gsi_key, 'increase_writes_with'),
-                table_name,
-                table_key,
-                gsi_name,
-                gsi_key)
-        else:
-            updated_provisioning = calculators.increase_writes_in_units(
-                updated_write_units,
-                get_gsi_option(table_key, gsi_key, 'increase_writes_with'),
-                table_name,
-                table_key,
-                gsi_name,
-                gsi_key)
+        if throttled_writes_upper_threshold > 0:
+            if increase_writes_unit == 'percent':
+                updated_provisioning = calculators.increase_writes_in_percent(
+                    updated_write_units,
+                    increase_writes_with,
+                    table_name,
+                    table_key,
+                    gsi_name,
+                    gsi_key)
+            else:
+                updated_provisioning = calculators.increase_writes_in_units(
+                    updated_write_units,
+                    increase_writes_with,
+                    table_name,
+                    table_key,
+                    gsi_name,
+                    gsi_key)
 
-        if updated_write_units != updated_provisioning:
-            update_needed = True
-            updated_write_units = updated_provisioning
+            if updated_write_units != updated_provisioning:
+                update_needed = True
+                updated_write_units = updated_provisioning
 
-    elif (consumed_write_units_percent <=
-            get_gsi_option(table_key, gsi_key, 'writes_lower_threshold')):
+    elif consumed_write_units_percent <= writes_lower_threshold:
 
-        if (get_gsi_option(table_key, gsi_key, 'decrease_writes_unit') ==
-                'percent'):
+        if decrease_writes_unit == 'percent':
             updated_provisioning = calculators.decrease_writes_in_percent(
                 updated_write_units,
-                get_gsi_option(table_key, gsi_key, 'decrease_writes_with'),
+                decrease_writes_with,
                 table_name,
                 table_key,
                 gsi_name,
@@ -292,7 +361,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
         else:
             updated_provisioning = calculators.decrease_writes_in_units(
                 updated_write_units,
-                get_gsi_option(table_key, gsi_key, 'decrease_writes_with'),
+                decrease_writes_with,
                 table_name,
                 table_key,
                 gsi_name,
@@ -302,12 +371,10 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
             update_needed = True
             updated_write_units = updated_provisioning
 
-    if get_gsi_option(table_key, gsi_key, 'max_provisioned_writes'):
-        if (int(updated_write_units) > int(get_gsi_option(
-                table_key, gsi_key, 'max_provisioned_writes'))):
+    if max_provisioned_writes:
+        if int(updated_write_units) > int(max_provisioned_writes):
             update_needed = True
-            updated_write_units = int(get_gsi_option(
-                table_key, gsi_key, 'max_provisioned_writes'))
+            updated_write_units = int(max_provisioned_writes)
             logger.info(
                 '{0} - GSI: {1} - '
                 'Will not increase writes over gsi-max-provisioned-writes '
@@ -413,25 +480,17 @@ def __update_throughput(
     # If this setting is True, we will only scale down when
     # BOTH reads AND writes are low
     if get_gsi_option(table_key, gsi_key, 'always_decrease_rw_together'):
-        if read_units < current_ru and write_units < current_wu:
-            logger.debug(
-                '{0} - GSI: {1} - '
-                'Both reads and writes will be decreased'.format(
-                    table_name,
-                    gsi_name))
-        elif read_units < current_ru:
-            logger.info(
-                '{0} - GSI: {1} - '
-                'Will not decrease reads nor writes, waiting for '
-                'both to become low before decrease'.format(
-                    table_name, gsi_name))
-            return
-        elif write_units < current_wu:
-            logger.info(
-                '{0} - GSI: {1} - '
-                'Will not decrease reads nor writes, waiting for '
-                'both to become low before decrease'.format(
-                    table_name, gsi_name))
+        read_units, write_units = __calculate_always_decrease_rw_values(
+            table_name,
+            gsi_name,
+            read_units,
+            current_ru,
+            write_units,
+            current_wu)
+
+        if read_units == current_ru and write_units == current_wu:
+            logger.info('{0} - GSI: {1} - No changes to perform'.format(
+                table_name, gsi_name))
             return
 
     if not get_global_option('dry_run'):

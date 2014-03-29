@@ -2,7 +2,7 @@
 import math
 from datetime import datetime, timedelta
 
-from boto.exception import JSONResponseError
+from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb.core import dynamodb
 from dynamic_dynamodb.log_handler import LOGGER as logger
@@ -19,8 +19,11 @@ def get_consumed_read_units_percent(table_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of consumed reads
     """
-    metrics = __get_aws_metric(
-        table_name, time_frame, 'ConsumedReadCapacityUnits')
+    try:
+        metrics = __get_aws_metric(
+            table_name, time_frame, 'ConsumedReadCapacityUnits')
+    except BotoServerError:
+        raise
 
     if metrics:
         consumed_read_units = int(
@@ -51,7 +54,10 @@ def get_throttled_read_event_count(table_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of throttled read events during the time period
     """
-    metrics = __get_aws_metric(table_name, time_frame, 'ReadThrottleEvents')
+    try:
+        metrics = __get_aws_metric(table_name, time_frame, 'ReadThrottleEvents')
+    except BotoServerError:
+        raise
 
     if metrics:
         throttled_read_count = int(metrics[0]['Sum'])
@@ -72,8 +78,11 @@ def get_consumed_write_units_percent(table_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of consumed writes
     """
-    metrics = __get_aws_metric(
-        table_name, time_frame, 'ConsumedWriteCapacityUnits')
+    try:
+        metrics = __get_aws_metric(
+            table_name, time_frame, 'ConsumedWriteCapacityUnits')
+    except BotoServerError:
+        raise
 
     if metrics:
         consumed_write_units = int(
@@ -104,7 +113,11 @@ def get_throttled_write_event_count(table_name, time_frame=300):
     :param time_frame: How many seconds to look at
     :returns: int -- Number of throttled write events during the time period
     """
-    metrics = __get_aws_metric(table_name, time_frame, 'WriteThrottleEvents')
+    try:
+        metrics = __get_aws_metric(
+            table_name, time_frame, 'WriteThrottleEvents')
+    except BotoServerError:
+        raise
 
     if metrics:
         throttled_write_count = int(metrics[0]['Sum'])
@@ -129,12 +142,18 @@ def __get_aws_metric(table_name, time_frame, metric_name):
     :returns: list -- A list of time series data for the given metric, may
     be None if there was no data
     """
-    return cloudwatch_connection.get_metric_statistics(
-        period=time_frame,
-        start_time=datetime.utcnow()-timedelta(minutes=10, seconds=time_frame),
-        end_time=datetime.utcnow()-timedelta(minutes=10),
-        metric_name=metric_name,
-        namespace='AWS/DynamoDB',
-        statistics=['Sum'],
-        dimensions={'TableName': table_name},
-        unit='Count')
+    try:
+        start_time = datetime.utcnow()-timedelta(minutes=10, seconds=time_frame)
+        end_time = datetime.utcnow()-timedelta(minutes=10)
+
+        return cloudwatch_connection.get_metric_statistics(
+            period=time_frame,
+            start_time=start_time,
+            end_time=end_time,
+            metric_name=metric_name,
+            namespace='AWS/DynamoDB',
+            statistics=['Sum'],
+            dimensions={'TableName': table_name},
+            unit='Count')
+    except BotoServerError:
+        raise
