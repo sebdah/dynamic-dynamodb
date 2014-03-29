@@ -4,7 +4,7 @@ Release notes
 1.10.2
 ------
 
-**Release date:** 2014-03-24
+**Release date:** 2014-03-29
 
 - Throttling should only be checked for if explicitly configured (`#135 <https://github.com/sebdah/dynamic-dynamodb/issues/135>`__)
 - Catching exception in metrics fetching (`#134 <https://github.com/sebdah/dynamic-dynamodb/issues/134>`__)
