@@ -133,7 +133,7 @@ def __ensure_provisioning_reads(table_name, key_name):
     if (consumed_read_units_percent == 0 and not
             get_table_option(
                 key_name, 'allow_scaling_down_reads_on_0_percent')):
-
+        print('1')
         logger.info(
             '{0} - Scaling down reads is not done when usage is at 0%'.format(
                 table_name))
@@ -157,7 +157,7 @@ def __ensure_provisioning_reads(table_name, key_name):
             update_needed = True
             updated_read_units = updated_provisioning
 
-    elif throttled_read_count >= throttled_reads_upper_threshold:
+    elif throttled_read_count > throttled_reads_upper_threshold:
 
         if throttled_reads_upper_threshold > 0:
             if increase_reads_unit == 'percent':
