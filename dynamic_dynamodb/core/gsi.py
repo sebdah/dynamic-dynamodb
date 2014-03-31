@@ -190,7 +190,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
             update_needed = True
             updated_read_units = updated_provisioning
 
-    elif throttled_read_count >= throttled_reads_upper_threshold:
+    elif throttled_read_count > throttled_reads_upper_threshold:
 
         if throttled_reads_upper_threshold > 0:
 
@@ -324,7 +324,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
             update_needed = True
             updated_write_units = updated_provisioning
 
-    elif throttled_write_count >= throttled_writes_upper_threshold:
+    elif throttled_write_count > throttled_writes_upper_threshold:
 
         if throttled_writes_upper_threshold > 0:
             if increase_writes_unit == 'percent':

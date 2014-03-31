@@ -273,7 +273,7 @@ def __ensure_provisioning_writes(table_name, key_name):
             update_needed = True
             updated_write_units = updated_provisioning
 
-    elif throttled_write_count >= throttled_writes_upper_threshold:
+    elif throttled_write_count > throttled_writes_upper_threshold:
 
         if throttled_writes_upper_threshold > 0:
             if increase_writes_unit == 'percent':
