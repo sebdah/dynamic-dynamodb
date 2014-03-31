@@ -188,6 +188,7 @@ def __get_config_table_options(conf_file_options):
 
                     if (option not in conf_file_options[
                             'tables'][table_name]['gsis'][gsi_name]):
+                        options[table_name]['gsis'][gsi_name][option] = opt
                         continue
 
                     if option == 'sns_message_types':
