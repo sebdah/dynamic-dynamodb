@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.10.4
+------
+
+**Release date:** 2014-03-31
+
+- Fixed issue with throtting that overrides regular scaling rules (`#142 <https://github.com/sebdah/dynamic-dynamodb/issues/142>`__)
+
 1.10.3
 ------
 
