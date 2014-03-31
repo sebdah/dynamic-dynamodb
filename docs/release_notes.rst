@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.10.3
+------
+
+**Release date:** 2014-03-31
+
+- Fixed bug in default option parsing for GSIs (`#141 <https://github.com/sebdah/dynamic-dynamodb/issues/141>`__)
+
 1.10.2
 ------
 
