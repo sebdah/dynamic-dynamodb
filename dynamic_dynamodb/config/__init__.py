@@ -186,6 +186,12 @@ def __get_config_table_options(conf_file_options):
                 for option in DEFAULT_OPTIONS['gsi'].keys():
                     opt = DEFAULT_OPTIONS['gsi'][option]
 
+                    if 'gsis' not in options[table_name]:
+                        options[table_name]['gsis'] = {}
+
+                    if gsi_name not in options[table_name]['gsis']:
+                        options[table_name]['gsis'][gsi_name] = {}
+
                     if (option not in conf_file_options[
                             'tables'][table_name]['gsis'][gsi_name]):
                         options[table_name]['gsis'][gsi_name][option] = opt
@@ -206,12 +212,6 @@ def __get_config_table_options(conf_file_options):
                     else:
                         opt = conf_file_options[
                             'tables'][table_name]['gsis'][gsi_name][option]
-
-                    if 'gsis' not in options[table_name]:
-                        options[table_name]['gsis'] = {}
-
-                    if gsi_name not in options[table_name]['gsis']:
-                        options[table_name]['gsis'][gsi_name] = {}
 
                     options[table_name]['gsis'][gsi_name][option] = opt
 
