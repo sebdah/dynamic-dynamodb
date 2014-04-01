@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.10.6
+------
+
+**Release date:** 2014-04-01
+
+- Fixed config parsing (`#143 <https://github.com/sebdah/dynamic-dynamodb/issues/143>`__)
+
 1.10.4 + 1.10.5
 ---------------
 
