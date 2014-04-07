@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.10.7
+------
+
+**Release date:** 2014-04-01
+
+- Implemented back off strategy when retrieving CloudWatch metrics (`#134 <https://github.com/sebdah/dynamic-dynamodb/issues/134>`__)
+
 1.10.6
 ------
 
