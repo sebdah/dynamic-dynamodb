@@ -3,6 +3,7 @@ import math
 from datetime import datetime, timedelta
 
 from boto.exception import JSONResponseError, BotoServerError
+from retrying import retry
 
 from dynamic_dynamodb.core import dynamodb
 from dynamic_dynamodb.log_handler import LOGGER as logger
@@ -129,6 +130,10 @@ def get_throttled_write_event_count(table_name, time_frame=300):
     return throttled_write_count
 
 
+@retry(
+    wait='exponential_sleep',
+    wait_exponential_multiplier=1000,
+    wait_exponential_max=5000)
 def __get_aws_metric(table_name, time_frame, metric_name):
     """ Returns a  metric list from the AWS CloudWatch service, may return
     None if no metric exists

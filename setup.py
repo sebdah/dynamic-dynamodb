@@ -24,7 +24,8 @@ setup(
     install_requires=[
         'boto >= 2.21.0',
         'requests >= 0.14.1',
-        'logutils >= 0.3.3'
+        'logutils >= 0.3.3',
+        'retrying >= 1.1.0'
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
