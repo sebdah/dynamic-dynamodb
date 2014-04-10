@@ -61,7 +61,9 @@ def main():
                 daemon.start()
 
             elif get_global_option('daemon') == 'stop':
+                logger.debug('Stopping daemon')
                 daemon.stop()
+                logger.info('Daemon stopped')
                 sys.exit(0)
 
             elif get_global_option('daemon') == 'restart':
