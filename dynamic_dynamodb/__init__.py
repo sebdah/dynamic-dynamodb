@@ -131,8 +131,8 @@ def main():
                 if get_global_option('pid-file-dir'):
                     pid_file_dir = get_global_option('pid-file-dir')
 
-                pid_file = pid_file_dir . '/dynamic-dynamodb.{0}.pid'.format(
-                    get_global_option('instance'))
+                pid_file = '{0}/dynamic-dynamodb.{1}.pid'.format(
+                        pid_file_dir, get_global_option('instance'))
                 daemon = DynamicDynamoDBDaemon(pid_file)
 
                 if get_global_option('daemon') == 'start':
