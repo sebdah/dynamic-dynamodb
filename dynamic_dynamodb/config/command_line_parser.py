@@ -58,6 +58,11 @@ def parse():
             'Used to run multiple instances of Dynamic DynamoDB. '
             'Give each instance a unique name and control them separately '
             'with the --daemon flag. (default: default)'))
+    daemon_ag.add_argument(
+        '--pid-file-dir',
+        default='/tmp',
+        help=(
+            'Directory where pid file is located in.'))
     dynamodb_ag = parser.add_argument_group('DynamoDB options')
     dynamodb_ag.add_argument(
         '-r', '--region',
