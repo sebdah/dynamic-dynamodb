@@ -11,7 +11,8 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             [--log-config-file LOG_CONFIG_FILE] [--version]
                             [--aws-access-key-id AWS_ACCESS_KEY_ID]
                             [--aws-secret-access-key AWS_SECRET_ACCESS_KEY]
-                            [--daemon DAEMON] [--instance INSTANCE] [-r REGION]
+                            [--daemon DAEMON] [--instance INSTANCE]
+                            [--pid-file-dir PID_FILE_DIR] [-r REGION]
                             [-t TABLE_NAME]
                             [--reads-upper-threshold READS_UPPER_THRESHOLD]
                             [--throttled-reads-upper-threshold THROTTLED_READS_UPPER_THRESHOLD]
@@ -63,6 +64,8 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             multiple instances of Dynamic DynamoDB. Give each
                             instance a unique name and control them separately
                             with the --daemon flag. (default: default)
+      --pid-file-dir PID_FILE_DIR
+                            Directory where pid file is located in. Defaults to /tmp
 
     DynamoDB options:
       -r REGION, --region REGION
