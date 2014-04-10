@@ -43,7 +43,7 @@ class DynamicDynamoDBDaemon(Daemon):
         """
         try:
             while True:
-                __execute()
+                execute()
         except Exception as error:
             logger.exception(error)
 
@@ -75,13 +75,13 @@ def main():
                 sys.exit(1)
         else:
             while True:
-                __execute()
+                execute()
 
     except Exception as error:
         logger.exception(error)
 
 
-def __execute():
+def execute():
     """ Ensure provisioning """
     boto_server_error_retries = 3
 
