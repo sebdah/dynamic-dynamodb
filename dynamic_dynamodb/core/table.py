@@ -101,6 +101,11 @@ def __ensure_provisioning_reads(table_name, key_name):
     :param key_name: Configuration option key name
     :returns: (bool, int) -- update_needed, updated_read_units
     """
+    if not get_table_option(key_name, 'enable_reads_autoscaling'):
+        logger.info(
+            '{0} - Autoscaling of reads has been disabled'.format(table_name))
+        return False, dynamodb.get_provisioned_table_read_units(table_name)
+
     update_needed = False
     try:
         updated_read_units = dynamodb.get_provisioned_table_read_units(
@@ -216,6 +221,11 @@ def __ensure_provisioning_writes(table_name, key_name):
     :param key_name: Configuration option key name
     :returns: (bool, int) -- update_needed, updated_write_units
     """
+    if not get_table_option(key_name, 'enable_writes_autoscaling'):
+        logger.info(
+            '{0} - Autoscaling of reads has been disabled'.format(table_name))
+        return False, dynamodb.get_provisioned_table_write_units(table_name)
+
     update_needed = False
     try:
         updated_write_units = dynamodb.get_provisioned_table_write_units(

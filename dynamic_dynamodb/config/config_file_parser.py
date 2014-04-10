@@ -169,6 +169,18 @@ def parse(config_path):
             current_section,
             [
                 {
+                    'key': 'enable_reads_autoscaling',
+                    'option': 'enable-reads-autoscaling',
+                    'required': False,
+                    'type': 'bool'
+                },
+                {
+                    'key': 'enable_writes_autoscaling',
+                    'option': 'enable-writes-autoscaling',
+                    'required': False,
+                    'type': 'bool'
+                },
+                {
                     'key': 'reads_lower_threshold',
                     'option': 'reads-lower-threshold',
                     'required': False,
@@ -342,6 +354,18 @@ def parse(config_path):
                 config_file,
                 current_section,
                 [
+                    {
+                        'key': 'enable_reads_autoscaling',
+                        'option': 'enable-reads-autoscaling',
+                        'required': False,
+                        'type': 'bool'
+                    },
+                    {
+                        'key': 'enable_writes_autoscaling',
+                        'option': 'enable-writes-autoscaling',
+                        'required': False,
+                        'type': 'bool'
+                    },
                     {
                         'key': 'reads_lower_threshold',
                         'option': 'reads-lower-threshold',

@@ -44,6 +44,8 @@ Important note: The table name is treated as a regular expression. That means th
 ========================================== ==== ==========================================
 Option                                     Type Comment
 ========================================== ==== ==========================================
+enable-reads-autoscaling                   bool Turn on or off autoscaling of read capacity. Default is ``true``
+enable-writes-autoscaling                  bool Turn on or off autoscaling of write capacity. Default is ``true``
 reads-upper-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales up the read provisioning?
 reads-lower-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales down the read provisioning?
 throttled-reads-upper-threshold            int  How many percent of the table capacity should be throttled before Dynamic DynamoDB scales up the read provisioning?
@@ -82,6 +84,8 @@ The ``table:`` section after ``gsi:`` **must** match with an existing ``table:``
 ========================================== ==== ==========================================
 Option                                     Type Comment
 ========================================== ==== ==========================================
+enable-reads-autoscaling                   bool Turn on or off autoscaling of read capacity. Default is ``true``
+enable-writes-autoscaling                  bool Turn on or off autoscaling of write capacity. Default is ``true``
 reads-upper-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales up the read provisioning?
 reads-lower-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales down the read provisioning?
 throttled-reads-upper-threshold            int  How many percent of the table capacity should be throttled before Dynamic DynamoDB scales up the read provisioning?

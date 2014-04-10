@@ -72,7 +72,7 @@ def __publish(topic, message, subject=None):
     """
     try:
         SNS_CONNECTION.publish(topic=topic, message=message, subject=subject)
-        logger.debug('Sent SNS notification to {0}'.format(topic))
+        logger.info('Sent SNS notification to {0}'.format(topic))
     except BotoServerError as error:
         logger.error('Problem sending SNS notification: {0}'.format(
             error.message))
