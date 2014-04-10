@@ -11,6 +11,7 @@ DEFAULT_OPTIONS = {
         'daemon': False,
         'instance': 'default',
         'dry_run': False,
+        'pid_file_dir': '/tmp',
 
         # [global]
         'region': 'us-east-1',

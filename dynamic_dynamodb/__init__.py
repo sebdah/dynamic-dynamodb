@@ -52,13 +52,10 @@ def main():
     """ Main function called from dynamic-dynamodb """
     try:
         if get_global_option('daemon'):
-            pid_file_dir = '/tmp'
-            if get_global_option('pid-file-dir'):
-                pid_file_dir = get_global_option('pid-file-dir')
-
-            pid_file = '{0}/dynamic-dynamodb.{1}.pid'.format(
-                pid_file_dir, get_global_option('instance'))
-            daemon = DynamicDynamoDBDaemon(pid_file)
+            daemon = DynamicDynamoDBDaemon(
+                '{0}/dynamic-dynamodb.{1}.pid'.format(
+                    get_global_option('pid_file_dir'),
+                    get_global_option('instance')))
 
             if get_global_option('daemon') == 'start':
                 daemon.start()
