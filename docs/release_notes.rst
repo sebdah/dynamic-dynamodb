@@ -1,6 +1,14 @@
 Release notes
 =============
 
+1.11.0
+------
+
+**Release date:** 2014-04-14
+
+- You can now turn on and off scaling for reads and writes separately (`#137 <https://github.com/sebdah/dynamic-dynamodb/issues/137>`__)
+- Make it possible to set pid file location (`#146 <https://github.com/sebdah/dynamic-dynamodb/issues/146>`__)
+
 1.10.7
 ------
 

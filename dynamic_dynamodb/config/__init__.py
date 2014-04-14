@@ -11,6 +11,7 @@ DEFAULT_OPTIONS = {
         'daemon': False,
         'instance': 'default',
         'dry_run': False,
+        'pid_file_dir': '/tmp',
 
         # [global]
         'region': 'us-east-1',
@@ -27,6 +28,8 @@ DEFAULT_OPTIONS = {
         'log_config_file': None
     },
     'table': {
+        'enable_reads_autoscaling': True,
+        'enable_writes_autoscaling': True,
         'reads_lower_threshold': 30,
         'reads_upper_threshold': 90,
         'throttled_reads_upper_threshold': 0,
@@ -53,6 +56,8 @@ DEFAULT_OPTIONS = {
         'sns_message_types': []
     },
     'gsi': {
+        'enable_reads_autoscaling': True,
+        'enable_writes_autoscaling': True,
         'reads_lower_threshold': 30,
         'reads_upper_threshold': 90,
         'throttled_reads_upper_threshold': 0,

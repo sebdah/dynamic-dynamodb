@@ -42,6 +42,9 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # Read provisioning configuration
     #
 
+    # Enable or disable reads autoscaling
+    enable-reads-autoscaling = true
+
     # Thresholds for scaling up or down the provisioning (%)
     reads-upper-threshold: 90
     reads-lower-threshold: 30
@@ -62,6 +65,9 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Write provisioning configuration
     #
+
+    # Enable or disable writes autoscaling
+    enable-writes-autoscaling = true
 
     # Thresholds for scaling up or down the provisioning (%)
     writes-upper-threshold: 90
@@ -120,6 +126,9 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # Read provisioning configuration
     #
 
+    # Enable or disable reads autoscaling
+    enable-reads-autoscaling = true
+
     # Thresholds for scaling up or down the provisioning (%)
     reads-upper-threshold: 90
     reads-lower-threshold: 30
@@ -140,6 +149,9 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Write provisioning configuration
     #
+
+    # Enable or disable writes autoscaling
+    enable-writes-autoscaling = true
 
     # Thresholds for scaling up or down the provisioning (%)
     writes-upper-threshold: 90

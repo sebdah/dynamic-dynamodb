@@ -129,7 +129,7 @@ class Daemon:
         self.stop()
         self.start(*args, **kwargs)
 
-    def run(self, check_interval=1):
+    def run(self):
         """
         You should override this method when you subclass Daemon.
         It will be called after the process has been

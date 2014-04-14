@@ -35,87 +35,15 @@ from dynamic_dynamodb.log_handler import LOGGER as logger
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
 
-    def run(self, check_interval=1):
+    def run(self):
         """ Run the daemon
 
         :type check_interval: int
         :param check_interval: Delay in seconds between checks
         """
         try:
-            boto_server_error_retries = 3
-
             while True:
-                # Ensure provisioning
-                for table_name, table_key in \
-                        sorted(dynamodb.get_tables_and_gsis()):
-                    try:
-                        table.ensure_provisioning(table_name, table_key)
-
-                        gsi_names = set()
-                        # Add regexp table names
-                        for gst_instance in dynamodb.table_gsis(table_name):
-                            gsi_name = gst_instance[u'IndexName']
-
-                            try:
-                                gsi_keys = get_table_option(
-                                    table_key, 'gsis').keys()
-                            except AttributeError:
-                                # Continue if there are not GSIs configured
-                                continue
-
-                            for gsi_key in gsi_keys:
-                                try:
-                                    if re.match(gsi_key, gsi_name):
-                                        logger.debug(
-                                            'Table {0} GSI {1} match with '
-                                            'GSI config key {2}'.format(
-                                                table_name, gsi_name, gsi_key))
-                                        gsi_names.add(
-                                            (
-                                                gsi_name,
-                                                gsi_key
-                                            ))
-                                except re.error:
-                                    logger.error(
-                                        'Invalid regular expression: '
-                                        '"{0}"'.format(gsi_key))
-                                    sys.exit(1)
-
-                        gsi_names = sorted(gsi_names)
-
-                        for gsi_name, gsi_key in gsi_names:
-                            gsi.ensure_provisioning(
-                                table_name,
-                                table_key,
-                                gsi_name,
-                                gsi_key)
-
-                    except JSONResponseError as error:
-                        exception = error.body['__type'].split('#')[1]
-                        if exception == 'ResourceNotFoundException':
-                            logger.error(
-                                '{0} - Table {1} does not exist anymore'.format(
-                                    table_name, table_name))
-                            continue
-
-                    except BotoServerError as error:
-                        if boto_server_error_retries > 0:
-                            logger.error(
-                                'Unknown boto error. Status: "{0}". '
-                                'Reason: "{1}"'.format(
-                                    error.status,
-                                    error.reason))
-                            logger.error(
-                                'Please bug report if this error persists')
-                            boto_server_error_retries -= 1
-                            continue
-                        else:
-                            raise
-
-                # Sleep between the checks
-                logger.debug('Sleeping {0} seconds until next check'.format(
-                    check_interval))
-                time.sleep(check_interval)
+                execute()
         except Exception as error:
             logger.exception(error)
 
@@ -123,107 +51,104 @@ class DynamicDynamoDBDaemon(Daemon):
 def main():
     """ Main function called from dynamic-dynamodb """
     try:
-        boto_server_error_retries = 3
+        if get_global_option('daemon'):
+            daemon = DynamicDynamoDBDaemon(
+                '{0}/dynamic-dynamodb.{1}.pid'.format(
+                    get_global_option('pid_file_dir'),
+                    get_global_option('instance')))
 
-        while True:
-            if get_global_option('daemon'):
-                pid_file = '/tmp/dynamic-dynamodb.{0}.pid'.format(
-                    get_global_option('instance'))
-                daemon = DynamicDynamoDBDaemon(pid_file)
+            if get_global_option('daemon') == 'start':
+                daemon.start()
 
-                if get_global_option('daemon') == 'start':
-                    daemon.start(
-                        check_interval=get_global_option('check_interval'))
+            elif get_global_option('daemon') == 'stop':
+                logger.debug('Stopping daemon')
+                daemon.stop()
+                logger.info('Daemon stopped')
+                sys.exit(0)
 
-                elif get_global_option('daemon') == 'stop':
-                    daemon.stop()
-                    sys.exit(0)
+            elif get_global_option('daemon') == 'restart':
+                daemon.restart()
 
-                elif get_global_option('daemon') == 'restart':
-                    daemon.restart(
-                        check_interval=get_global_option('check_interval'))
+            elif get_global_option('daemon') in ['foreground', 'fg']:
+                daemon.run()
 
-                elif get_global_option('daemon') in ['foreground', 'fg']:
-                    daemon.run(
-                        check_interval=get_global_option('check_interval'))
-
-                else:
-                    print(
-                        'Valid options for --daemon are '
-                        'start, stop and restart')
-                    sys.exit(1)
             else:
-                # Ensure provisioning
-                for table_name, table_key in dynamodb.get_tables_and_gsis():
-                    try:
-                        table.ensure_provisioning(table_name, table_key)
+                print('Valid options for --daemon are start, stop and restart')
+                sys.exit(1)
+        else:
+            while True:
+                execute()
 
-                        gsi_names = set()
-                        # Add regexp table names
-                        if get_table_option(table_key, 'gsis'):
-                            for gst_instance in dynamodb.table_gsis(table_name):
-                                gsi_name = gst_instance[u'IndexName']
-
-                                try:
-                                    gsi_keys = get_table_option(
-                                        table_key, 'gsis').keys()
-                                except AttributeError:
-                                    continue
-
-                                for gsi_key in gsi_keys:
-                                    try:
-                                        if re.match(gsi_key, gsi_name):
-                                            logger.debug(
-                                                'Table {0} GSI {1} match with '
-                                                'GSI config key {2}'.format(
-                                                    table_name,
-                                                    gsi_name,
-                                                    gsi_key))
-                                            gsi_names.add(
-                                                (
-                                                    gsi_name,
-                                                    gsi_key
-                                                ))
-                                    except re.error:
-                                        logger.error(
-                                            'Invalid regular expression: '
-                                            '"{0}"'.format(gsi_key))
-                                        sys.exit(1)
-
-                        gsi_names = sorted(gsi_names)
-
-                        for gsi_name, gsi_key in gsi_names:
-                            gsi.ensure_provisioning(
-                                table_name,
-                                table_key,
-                                gsi_name,
-                                gsi_key)
-
-                    except JSONResponseError as error:
-                        exception = error.body['__type'].split('#')[1]
-                        if exception == 'ResourceNotFoundException':
-                            logger.error(
-                                '{0} - Table {1} does not exist anymore'.format(
-                                    table_name, table_name))
-                            continue
-
-                    except BotoServerError as error:
-                        if boto_server_error_retries > 0:
-                            logger.error(
-                                'Unknown boto error. Status: "{0}". '
-                                'Reason: "{1}"'.format(
-                                    error.status,
-                                    error.reason))
-                            logger.error(
-                                'Please bug report if this error persists')
-                            boto_server_error_retries -= 1
-                            continue
-                        else:
-                            raise
-
-            # Sleep between the checks
-            logger.debug('Sleeping {0} seconds until next check'.format(
-                get_global_option('check_interval')))
-            time.sleep(get_global_option('check_interval'))
     except Exception as error:
         logger.exception(error)
+
+
+def execute():
+    """ Ensure provisioning """
+    boto_server_error_retries = 3
+
+    # Ensure provisioning
+    for table_name, table_key in sorted(dynamodb.get_tables_and_gsis()):
+        try:
+            table.ensure_provisioning(table_name, table_key)
+
+            gsi_names = set()
+            # Add regexp table names
+            for gst_instance in dynamodb.table_gsis(table_name):
+                gsi_name = gst_instance[u'IndexName']
+
+                try:
+                    gsi_keys = get_table_option(table_key, 'gsis').keys()
+
+                except AttributeError:
+                    # Continue if there are not GSIs configured
+                    continue
+
+                for gsi_key in gsi_keys:
+                    try:
+                        if re.match(gsi_key, gsi_name):
+                            logger.debug(
+                                'Table {0} GSI {1} matches '
+                                'GSI config key {2}'.format(
+                                    table_name, gsi_name, gsi_key))
+                            gsi_names.add((gsi_name, gsi_key))
+
+                    except re.error:
+                        logger.error('Invalid regular expression: "{0}"'.format(
+                            gsi_key))
+                        sys.exit(1)
+
+            for gsi_name, gsi_key in sorted(gsi_names):
+                gsi.ensure_provisioning(
+                    table_name,
+                    table_key,
+                    gsi_name,
+                    gsi_key)
+
+        except JSONResponseError as error:
+            exception = error.body['__type'].split('#')[1]
+
+            if exception == 'ResourceNotFoundException':
+                logger.error('{0} - Table {1} does not exist anymore'.format(
+                    table_name,
+                    table_name))
+                continue
+
+        except BotoServerError as error:
+            if boto_server_error_retries > 0:
+                logger.error(
+                    'Unknown boto error. Status: "{0}". Reason: "{1}"'.format(
+                        error.status,
+                        error.reason))
+                logger.error(
+                    'Please bug report if this error persists')
+                boto_server_error_retries -= 1
+                continue
+
+            else:
+                raise
+
+    # Sleep between the checks
+    logger.debug('Sleeping {0} seconds until next check'.format(
+        get_global_option('check_interval')))
+    time.sleep(get_global_option('check_interval'))
