@@ -3,6 +3,7 @@
 import re
 import sys
 import time
+import datetime
 
 from boto import dynamodb2
 from boto.dynamodb2.table import Table
@@ -11,7 +12,10 @@ from boto.utils import get_instance_metadata
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import (
-    get_configured_tables, get_global_option)
+    get_configured_tables,
+    get_global_option,
+    get_gsi_option,
+    get_table_option)
 from dynamic_dynamodb.core import sns
 
 
@@ -280,6 +284,40 @@ def update_table_provisioning(
             'Setting new reads to {1} and new writes to {2}'.format(
                 table_name, reads, writes))
 
+    # Check that we are in the right time frame
+    maintenance_windows = get_table_option(key_name, 'maintenance_windows')
+    if maintenance_windows:
+        if not __is_table_maintenance_window(table_name, maintenance_windows):
+            logger.warning(
+                '{0} - We are outside a maintenace window. '
+                'Will only perform up scaling activites'.format(table_name))
+
+            # Ensure that we are only doing increases
+            if current_reads > reads:
+                reads = current_reads
+            if current_writes > writes:
+                writes = current_writes
+
+            # Return if we do not need to scale up
+            if reads == current_reads and writes == current_writes:
+                logger.info(
+                    '{0} - No need to scale up reads nor writes'.format(
+                        table_name))
+                return
+
+        else:
+            logger.info(
+                '{0} - Current time is within maintenance window'.format(
+                    table_name))
+
+    logger.info(
+        '{0} - Updating provisioning to {1} reads and {2} writes'.format(
+            table_name, reads, writes))
+
+    # Return if dry-run
+    if get_global_option('dry_run'):
+        return
+
     try:
         table.update(
             throughput={
@@ -287,17 +325,16 @@ def update_table_provisioning(
                 'write': writes
             })
 
-        message = (
-            '{0} - Provisioning updated to {1} reads and {2} writes').format(
-                table_name, reads, writes)
-        logger.info(message)
-
         # See if we should send notifications for scale-down, scale-up or both
         sns_message_types = []
         if current_reads > reads or current_writes > current_writes:
             sns_message_types.append('scale-down')
         if current_reads < reads or current_writes < current_writes:
             sns_message_types.append('scale-up')
+
+        message = (
+            '{0} - Provisioning updated to {1} reads and {2} writes').format(
+                table_name, reads, writes)
 
         sns.publish_table_notification(
             key_name,
@@ -370,6 +407,47 @@ def update_gsi_provisioning(
             'Setting new reads to {1} and new writes to {2}'.format(
                 table_name, reads, writes))
 
+    # Check that we are in the right time frame
+    m_windows = get_gsi_option(table_key, gsi_key, 'maintenance_windows')
+    if m_windows:
+        if not __is_gsi_maintenance_window(table_name, gsi_name, m_windows):
+            logger.warning(
+                '{0} - GSI: {1} - We are outside a maintenace window. '
+                'Will only perform up scaling activites'.format(
+                    table_name,
+                    gsi_name))
+
+            # Ensure that we are only doing increases
+            if current_reads > reads:
+                reads = current_reads
+            if current_writes > writes:
+                writes = current_writes
+
+            # Return if we do not need to scale up
+            if reads == current_reads and writes == current_writes:
+                logger.info(
+                    '{0} - GSI: {1} - '
+                    'No need to scale up reads nor writes'.format(
+                        table_name,
+                        gsi_name))
+                return
+
+        else:
+            logger.info(
+                '{0} - GSI: {1} - '
+                'Current time is within maintenance window'.format(
+                    table_name,
+                    gsi_name))
+
+    logger.info(
+        '{0} - GSI: {1} - '
+        'Updating provisioning to {2} reads and {3} writes'.format(
+            table_name, gsi_name, reads, writes))
+
+    # Return if dry-run
+    if get_global_option('dry_run'):
+        return
+
     try:
         DYNAMODB_CONNECTION.update_table(
             table_name=table_name,
@@ -389,7 +467,6 @@ def update_gsi_provisioning(
             '{0} - GSI: {1} - Provisioning updated to '
             '{2} reads and {3} writes').format(
                 table_name, gsi_name, reads, writes)
-        logger.info(message)
 
         # See if we should send notifications for scale-down, scale-up or both
         sns_message_types = []
@@ -504,5 +581,70 @@ def __get_connection_dynamodb(retries=3):
                 get_global_option('region')))
 
     return connection
+
+
+def __is_gsi_maintenance_window(table_name, gsi_name, maintenance_windows):
+    """ Checks that the current time is within the maintenance window
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
+    :type maintenance_windows: str
+    :param maintenance_windows: Example: '00:00-01:00,10:00-11:00'
+    :returns: bool -- True if within maintenance window
+    """
+    # Example string '00:00-01:00,10:00-11:00'
+    maintenance_window_list = []
+    for window in maintenance_windows.split(','):
+        try:
+            start, end = window.split('-', 1)
+        except ValueError:
+            logger.error(
+                '{0} - GSI: {1} - '
+                'Malformatted maintenance window'.format(table_name, gsi_name))
+            return False
+
+        maintenance_window_list.append((start, end))
+
+    now = datetime.datetime.utcnow().strftime('%H%M')
+    for maintenance_window in maintenance_window_list:
+        start = ''.join(maintenance_window[0].split(':'))
+        end = ''.join(maintenance_window[1].split(':'))
+        if now >= start and now <= end:
+            return True
+
+    return False
+
+
+def __is_table_maintenance_window(table_name, maintenance_windows):
+    """ Checks that the current time is within the maintenance window
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type maintenance_windows: str
+    :param maintenance_windows: Example: '00:00-01:00,10:00-11:00'
+    :returns: bool -- True if within maintenance window
+    """
+    # Example string '00:00-01:00,10:00-11:00'
+    maintenance_window_list = []
+    for window in maintenance_windows.split(','):
+        try:
+            start, end = window.split('-', 1)
+        except ValueError:
+            logger.error(
+                '{0} - Malformatted maintenance window'.format(table_name))
+            return False
+
+        maintenance_window_list.append((start, end))
+
+    now = datetime.datetime.utcnow().strftime('%H%M')
+    for maintenance_window in maintenance_window_list:
+        start = ''.join(maintenance_window[0].split(':'))
+        end = ''.join(maintenance_window[1].split(':'))
+        if now >= start and now <= end:
+            return True
+
+    return False
 
 DYNAMODB_CONNECTION = __get_connection_dynamodb()

@@ -1,6 +1,4 @@
 """ Core components """
-import datetime
-
 from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb.calculators import table as calculators
@@ -39,7 +37,10 @@ def ensure_provisioning(table_name, key_name):
                     int(updated_read_units),
                     int(updated_write_units)))
             __update_throughput(
-                table_name, updated_read_units, updated_write_units, key_name)
+                table_name,
+                updated_read_units,
+                updated_write_units,
+                key_name)
         else:
             logger.info('{0} - No need to change provisioning'.format(
                 table_name))
@@ -333,37 +334,6 @@ def __ensure_provisioning_writes(table_name, key_name):
     return update_needed, int(updated_write_units)
 
 
-def __is_maintenance_window(table_name, maintenance_windows):
-    """ Checks that the current time is within the maintenance window
-
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
-    :type maintenance_windows: str
-    :param maintenance_windows: Example: '00:00-01:00,10:00-11:00'
-    :returns: bool -- True if within maintenance window
-    """
-    # Example string '00:00-01:00,10:00-11:00'
-    maintenance_window_list = []
-    for window in maintenance_windows.split(','):
-        try:
-            start, end = window.split('-', 1)
-        except ValueError:
-            logger.error(
-                '{0} - Malformatted maintenance window'.format(table_name))
-            return False
-
-        maintenance_window_list.append((start, end))
-
-    now = datetime.datetime.utcnow().strftime('%H%M')
-    for maintenance_window in maintenance_window_list:
-        start = ''.join(maintenance_window[0].split(':'))
-        end = ''.join(maintenance_window[1].split(':'))
-        if now >= start and now <= end:
-            return True
-
-    return False
-
-
 def __update_throughput(table_name, read_units, write_units, key_name):
     """ Update throughput on the DynamoDB table
 
@@ -381,20 +351,6 @@ def __update_throughput(table_name, read_units, write_units, key_name):
         current_wu = dynamodb.get_provisioned_table_write_units(table_name)
     except JSONResponseError:
         raise
-
-    # Check that we are in the right time frame
-    if get_table_option(key_name, 'maintenance_windows'):
-        if (not __is_maintenance_window(table_name, get_table_option(
-                key_name, 'maintenance_windows'))):
-
-            logger.warning(
-                '{0} - Current time is outside maintenance window'.format(
-                    table_name))
-            return
-        else:
-            logger.info(
-                '{0} - Current time is within maintenance window'.format(
-                    table_name))
 
     # Check table status
     try:
@@ -422,9 +378,8 @@ def __update_throughput(table_name, read_units, write_units, key_name):
             logger.info('{0} - No changes to perform'.format(table_name))
             return
 
-    if not get_global_option('dry_run'):
-        dynamodb.update_table_provisioning(
-            table_name,
-            key_name,
-            int(read_units),
-            int(write_units))
+    dynamodb.update_table_provisioning(
+        table_name,
+        key_name,
+        int(read_units),
+        int(write_units))
