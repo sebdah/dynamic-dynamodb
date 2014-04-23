@@ -25,7 +25,7 @@ def get_consumed_read_units_percent(table_name, gsi_name, time_frame=300):
     """
     try:
         metrics = __get_aws_metric(
-            table_name, gsi_name, time_frame,  'ConsumedReadCapacityUnits')
+            table_name, gsi_name, time_frame, 'ConsumedReadCapacityUnits')
     except BotoServerError:
         raise
 
