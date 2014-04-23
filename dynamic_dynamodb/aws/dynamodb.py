@@ -16,7 +16,7 @@ from dynamic_dynamodb.config_handler import (
     get_global_option,
     get_gsi_option,
     get_table_option)
-from dynamic_dynamodb.core import sns
+from dynamic_dynamodb.aws import sns
 
 
 def get_tables_and_gsis():
