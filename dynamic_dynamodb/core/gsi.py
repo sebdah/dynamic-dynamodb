@@ -1,6 +1,4 @@
 """ Core components """
-import datetime
-
 from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb.calculators import gsi as calculators
@@ -402,40 +400,6 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
     return update_needed, int(updated_write_units)
 
 
-def __is_maintenance_window(table_name, gsi_name, maintenance_windows):
-    """ Checks that the current time is within the maintenance window
-
-    :type table_name: str
-    :param table_name: Name of the DynamoDB table
-    :type gsi_name: str
-    :param gsi_name: Name of the GSI
-    :type maintenance_windows: str
-    :param maintenance_windows: Example: '00:00-01:00,10:00-11:00'
-    :returns: bool -- True if within maintenance window
-    """
-    # Example string '00:00-01:00,10:00-11:00'
-    maintenance_window_list = []
-    for window in maintenance_windows.split(','):
-        try:
-            start, end = window.split('-', 1)
-        except ValueError:
-            logger.error(
-                '{0} - GSI: {1} - '
-                'Malformatted maintenance window'.format(table_name, gsi_name))
-            return False
-
-        maintenance_window_list.append((start, end))
-
-    now = datetime.datetime.utcnow().strftime('%H%M')
-    for maintenance_window in maintenance_window_list:
-        start = ''.join(maintenance_window[0].split(':'))
-        end = ''.join(maintenance_window[1].split(':'))
-        if now >= start and now <= end:
-            return True
-
-    return False
-
-
 def __update_throughput(
         table_name, table_key, gsi_name, gsi_key, read_units, write_units):
     """ Update throughput on the GSI
@@ -460,24 +424,6 @@ def __update_throughput(
             table_name, gsi_name)
     except JSONResponseError:
         raise
-
-    # Check that we are in the right time frame
-    if get_gsi_option(table_key, gsi_key, 'maintenance_windows'):
-        if (not __is_maintenance_window(table_name, gsi_name, get_gsi_option(
-                table_key, gsi_key, 'maintenance_windows'))):
-
-            logger.warning(
-                '{0} - GSI: {1} - '
-                'Current time is outside maintenance window'.format(
-                    table_name,
-                    gsi_name))
-            return
-        else:
-            logger.info(
-                '{0} - GSI: {1} - '
-                'Current time is within maintenance window'.format(
-                    table_name,
-                    gsi_name))
 
     # Check table status
     try:
@@ -509,18 +455,17 @@ def __update_throughput(
                 table_name, gsi_name))
             return
 
-    if not get_global_option('dry_run'):
-        dynamodb.update_gsi_provisioning(
+    dynamodb.update_gsi_provisioning(
+        table_name,
+        table_key,
+        gsi_name,
+        gsi_key,
+        int(read_units),
+        int(write_units))
+    logger.info(
+        '{0} - GSI: {1} - '
+        'Provisioning updated to {2} reads and {3} writes'.format(
             table_name,
-            table_key,
             gsi_name,
-            gsi_key,
-            int(read_units),
-            int(write_units))
-        logger.info(
-            '{0} - GSI: {1} - '
-            'Provisioning updated to {2} reads and {3} writes'.format(
-                table_name,
-                gsi_name,
-                read_units,
-                write_units))
+            read_units,
+            write_units))
