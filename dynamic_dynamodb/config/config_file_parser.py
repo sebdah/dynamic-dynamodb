@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Command line configuration parser """
 import sys
 import os.path

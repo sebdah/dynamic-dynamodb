@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Module with various calculators """
 import math
 

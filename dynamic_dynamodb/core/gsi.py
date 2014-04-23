@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Core components """
 from boto.exception import JSONResponseError, BotoServerError
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ This module returns stats about the DynamoDB table """
 import math
 from datetime import datetime, timedelta
