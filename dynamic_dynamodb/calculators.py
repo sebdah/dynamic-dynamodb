@@ -40,6 +40,42 @@ def decrease_reads_in_percent(
     return updated_provisioning
 
 
+def decrease_reads_in_units(
+        current_provisioning, units, min_provisioned_reads, log_tag):
+    """ Decrease the current_provisioning with units units
+
+    :type current_provisioning: int
+    :param current_provisioning: The current provisioning
+    :type units: int
+    :param units: How many units should we decrease with
+    :returns: int -- New provisioning value
+    :type min_provisioned_reads: int
+    :param min_provisioned_reads: Configured min provisioned reads
+    :type log_tag: str
+    :param log_tag: Prefix for the log
+    """
+    updated_provisioning = int(current_provisioning) - int(units)
+    min_provisioned_reads = __get_min_reads(
+        current_provisioning,
+        min_provisioned_reads,
+        log_tag)
+
+    if updated_provisioning < min_provisioned_reads:
+        logger.info(
+            '{0} - Reached provisioned reads min limit: {1:d}'.format(
+                log_tag,
+                min_provisioned_reads))
+
+        return min_provisioned_reads
+
+    logger.debug(
+        '{0} - Read provisioning will be decreased to {1:d} units'.format(
+            log_tag,
+            updated_provisioning))
+
+    return updated_provisioning
+
+
 def decrease_writes_in_percent(
         current_provisioning, percent, min_provisioned_writes, log_tag):
     """ Decrease the current_provisioning with percent %
@@ -56,7 +92,10 @@ def decrease_writes_in_percent(
     """
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
-    min_provisioned_writes = __get_min_writes(min_provisioned_writes)
+    min_provisioned_writes = __get_min_writes(
+        current_provisioning,
+        min_provisioned_writes,
+        log_tag)
 
     if updated_provisioning < min_provisioned_writes:
         logger.info(
@@ -68,6 +107,115 @@ def decrease_writes_in_percent(
 
     logger.debug(
         '{0} - Write provisioning will be decreased to {1:d} units'.format(
+            log_tag,
+            updated_provisioning))
+
+    return updated_provisioning
+
+
+def decrease_writes_in_units(
+        current_provisioning, units, min_provisioned_writes, log_tag):
+    """ Decrease the current_provisioning with units units
+
+    :type current_provisioning: int
+    :param current_provisioning: The current provisioning
+    :type units: int
+    :param units: How many units should we decrease with
+    :returns: int -- New provisioning value
+    :type min_provisioned_writes: int
+    :param min_provisioned_writes: Configured min provisioned writes
+    :type log_tag: str
+    :param log_tag: Prefix for the log
+    """
+    updated_provisioning = int(current_provisioning) - int(units)
+    min_provisioned_writes = __get_min_writes(
+        current_provisioning,
+        min_provisioned_writes,
+        log_tag)
+
+    if updated_provisioning < min_provisioned_writes:
+        logger.info(
+            '{0} - Reached provisioned writes min limit: {1:d}'.format(
+                log_tag,
+                min_provisioned_writes))
+
+        return min_provisioned_writes
+
+    logger.debug(
+        '{0} - Write provisioning will be decreased to {1:d} units'.format(
+            log_tag,
+            updated_provisioning))
+
+    return updated_provisioning
+
+
+def increase_reads_in_percent(
+        current_provisioning, percent, max_provisioned_reads, log_tag):
+    """ Increase the current_provisioning with percent %
+
+    :type current_provisioning: int
+    :param current_provisioning: The current provisioning
+    :type percent: int
+    :param percent: How many percent should we increase with
+    :type max_provisioned_reads: int
+    :param max_provisioned_reads: Configured max provisioned reads
+    :returns: int -- New provisioning value
+    :type log_tag: str
+    :param log_tag: Prefix for the log
+    """
+    increase = int(math.ceil(float(current_provisioning)*(float(percent)/100)))
+    updated_provisioning = current_provisioning + increase
+
+    if max_provisioned_reads > 0:
+        if updated_provisioning > max_provisioned_reads:
+            logger.info(
+                '{0} - Reached provisioned reads max limit: {1}'.format(
+                    log_tag,
+                    max_provisioned_reads))
+
+            return max_provisioned_reads
+
+    logger.debug(
+        '{0} - Read provisioning will be increased to {1} units'.format(
+            log_tag,
+            updated_provisioning))
+
+    return updated_provisioning
+
+
+def increase_reads_in_units(
+        current_provisioning, units, max_provisioned_reads, log_tag):
+    """ Increase the current_provisioning with units units
+
+    :type current_provisioning: int
+    :param current_provisioning: The current provisioning
+    :type units: int
+    :param units: How many units should we increase with
+    :returns: int -- New provisioning value
+    :type max_provisioned_reads: int
+    :param max_provisioned_reads: Configured max provisioned reads
+    :returns: int -- New provisioning value
+    :type log_tag: str
+    :param log_tag: Prefix for the log
+    """
+    updated_provisioning = 0
+
+    if int(units) > int(current_provisioning):
+        updated_provisioning = 2 * int(current_provisioning)
+    else:
+        updated_provisioning = int(current_provisioning) + int(units)
+
+    if max_provisioned_reads > 0:
+        if updated_provisioning > max_provisioned_reads:
+            logger.info(
+                '{0} - Reached provisioned reads max limit: {1}'.format(
+                    log_tag,
+                    max_provisioned_reads))
+
+            return max_provisioned_reads
+
+    logger.debug(
+        '{0} - Read provisioning will be increased to {1:d} units'.format(
             log_tag,
             updated_provisioning))
 
@@ -109,34 +257,37 @@ def increase_writes_in_percent(
     return updated_provisioning
 
 
-def increase_reads_in_percent(
-        current_provisioning, percent, max_provisioned_reads, log_tag):
-    """ Increase the current_provisioning with percent %
+def increase_writes_in_units(
+        current_provisioning, units, max_provisioned_writes, log_tag):
+    """ Increase the current_provisioning with units units
 
     :type current_provisioning: int
     :param current_provisioning: The current provisioning
-    :type percent: int
-    :param percent: How many percent should we increase with
-    :type max_provisioned_reads: int
-    :param max_provisioned_reads: Configured max provisioned reads
+    :type units: int
+    :param units: How many units should we increase with
     :returns: int -- New provisioning value
+    :type max_provisioned_writes: int
+    :param max_provisioned_writes: Configured max provisioned writes
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
-    increase = int(math.ceil(float(current_provisioning)*(float(percent)/100)))
-    updated_provisioning = current_provisioning + increase
+    updated_provisioning = 0
+    if int(units) > int(current_provisioning):
+        updated_provisioning = 2 * int(current_provisioning)
+    else:
+        updated_provisioning = int(current_provisioning) + int(units)
 
-    if max_provisioned_reads > 0:
-        if updated_provisioning > max_provisioned_reads:
+    if max_provisioned_writes > 0:
+        if updated_provisioning > max_provisioned_writes:
             logger.info(
-                '{0} - Reached provisioned reads max limit: {1}'.format(
+                '{0} - Reached provisioned writes max limit: {1}'.format(
                     log_tag,
-                    max_provisioned_reads))
+                    max_provisioned_writes))
 
-            return max_provisioned_reads
+            return max_provisioned_writes
 
     logger.debug(
-        '{0} - Read provisioning will be increased to {1} units'.format(
+        '{0} - Write provisioning will be increased to {1:d} units'.format(
             log_tag,
             updated_provisioning))
 
