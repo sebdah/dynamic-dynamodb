@@ -462,10 +462,3 @@ def __update_throughput(
         gsi_key,
         int(read_units),
         int(write_units))
-    logger.info(
-        '{0} - GSI: {1} - '
-        'Provisioning updated to {2} reads and {3} writes'.format(
-            table_name,
-            gsi_name,
-            read_units,
-            write_units))
