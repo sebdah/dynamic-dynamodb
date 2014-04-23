@@ -3,7 +3,8 @@
 from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb.aws import dynamodb
-from dynamic_dynamodb.calculators import gsi as calculators
+from dynamic_dynamodb import calculators
+from dynamic_dynamodb.calculators import gsi as gsi_calc
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import gsi as gsi_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
@@ -177,7 +178,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
 
     elif consumed_read_units_percent >= reads_upper_threshold:
         if increase_reads_unit == 'percent':
-            updated_provisioning = calculators.increase_reads_in_percent(
+            updated_provisioning = gsi_calc.increase_reads_in_percent(
                 updated_read_units,
                 increase_reads_with,
                 table_name,
@@ -185,7 +186,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
                 gsi_name,
                 gsi_key,)
         else:
-            updated_provisioning = calculators.increase_reads_in_units(
+            updated_provisioning = gsi_calc.increase_reads_in_units(
                 updated_read_units,
                 increase_reads_with,
                 table_name,
@@ -202,7 +203,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
         if throttled_reads_upper_threshold > 0:
 
             if increase_reads_unit == 'percent':
-                updated_provisioning = calculators.increase_reads_in_percent(
+                updated_provisioning = gsi_calc.increase_reads_in_percent(
                     updated_read_units,
                     increase_reads_with,
                     table_name,
@@ -210,7 +211,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
                     gsi_name,
                     gsi_key,)
             else:
-                updated_provisioning = calculators.increase_reads_in_units(
+                updated_provisioning = gsi_calc.increase_reads_in_units(
                     updated_read_units,
                     increase_reads_with,
                     table_name,
@@ -228,12 +229,10 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
             updated_provisioning = calculators.decrease_reads_in_percent(
                 updated_read_units,
                 decrease_reads_with,
-                table_name,
-                table_key,
-                gsi_name,
-                gsi_key)
+                get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
+                '{0} - GSI: {1}'.format(table_name, gsi_name))
         else:
-            updated_provisioning = calculators.decrease_reads_in_units(
+            updated_provisioning = gsi_calc.decrease_reads_in_units(
                 updated_read_units,
                 decrease_reads_with,
                 table_name,
@@ -319,7 +318,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
     elif consumed_write_units_percent >= writes_upper_threshold:
 
         if increase_writes_unit == 'percent':
-            updated_provisioning = calculators.increase_writes_in_percent(
+            updated_provisioning = gsi_calc.increase_writes_in_percent(
                 updated_write_units,
                 increase_writes_with,
                 table_name,
@@ -327,7 +326,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
                 gsi_name,
                 gsi_key)
         else:
-            updated_provisioning = calculators.increase_writes_in_units(
+            updated_provisioning = gsi_calc.increase_writes_in_units(
                 updated_write_units,
                 increase_writes_with,
                 table_name,
@@ -343,7 +342,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
 
         if throttled_writes_upper_threshold > 0:
             if increase_writes_unit == 'percent':
-                updated_provisioning = calculators.increase_writes_in_percent(
+                updated_provisioning = gsi_calc.increase_writes_in_percent(
                     updated_write_units,
                     increase_writes_with,
                     table_name,
@@ -351,7 +350,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
                     gsi_name,
                     gsi_key)
             else:
-                updated_provisioning = calculators.increase_writes_in_units(
+                updated_provisioning = gsi_calc.increase_writes_in_units(
                     updated_write_units,
                     increase_writes_with,
                     table_name,
@@ -369,12 +368,10 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
             updated_provisioning = calculators.decrease_writes_in_percent(
                 updated_write_units,
                 decrease_writes_with,
-                table_name,
-                table_key,
-                gsi_name,
-                gsi_key)
+                get_gsi_option(table_key, gsi_key, 'min_provisioned_writes'),
+                '{0} - GSI: {1}'.format(table_name, gsi_name))
         else:
-            updated_provisioning = calculators.decrease_writes_in_units(
+            updated_provisioning = gsi_calc.decrease_writes_in_units(
                 updated_write_units,
                 decrease_writes_with,
                 table_name,
