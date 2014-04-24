@@ -2,8 +2,8 @@
 """ Core components """
 from boto.exception import JSONResponseError, BotoServerError
 
-from dynamic_dynamodb.aws import dynamodb
 from dynamic_dynamodb import calculators
+from dynamic_dynamodb.aws import dynamodb
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import table as table_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
