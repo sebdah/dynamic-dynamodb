@@ -114,6 +114,11 @@ def parse():
 		'--max-provisioned-reads',
 		type=int,
 		help="""Maximum number of provisioned reads""")
+	r_scaling_ag.add_argument(
+		'--num-intervals-scale-down-reads',
+		type=int,
+		help="""Number of Consecutive Checks that Meet Criteria before
+				Scale-Down for Reads Occurs""")
 	w_scaling_ag = parser.add_argument_group('Write units scaling properties')
 	w_scaling_ag.add_argument(
 		'--writes-upper-threshold',
@@ -160,10 +165,10 @@ def parse():
 		type=int,
 		help="""Maximum number of provisioned writes""")
 	w_scaling_ag.add_argument(
-		'--num-intervals-scale-down',
+		'--num-intervals-scale-down-writes',
 		type=int,
 		help="""Number of Consecutive Checks that Meet Criteria before
-				Scale-Down Occurs""")
+				Scale-Down for Writes Occurs""")
 	args = parser.parse_args()
 
 	# Print the version and quit
