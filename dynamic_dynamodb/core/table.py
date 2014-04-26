@@ -165,8 +165,8 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
         if updated_read_units != updated_provisioning:
 			consec_True_Read_Checks = 0
-            update_needed = True
-            updated_read_units = updated_provisioning
+			update_needed = True
+			updated_read_units = updated_provisioning
 
     elif throttled_read_count > throttled_reads_upper_threshold:
 
@@ -186,8 +186,8 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
             if updated_read_units != updated_provisioning:
 				consec_True_Read_Checks = 0
-                update_needed = True
-                updated_read_units = updated_provisioning
+				update_needed = True
+				updated_read_units = updated_provisioning
 
     elif consumed_read_units_percent <= reads_lower_threshold:
 
