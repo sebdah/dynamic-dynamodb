@@ -160,9 +160,9 @@ def parse():
         type=int,
         help="""Maximum number of provisioned writes""")
 	w_scaling_ag.add_argument(
-        '--num-intervals-scale-down',
-        type=int,
-        help="""Number of Consecutive Checks that Meet Criteria before
+		'--num-intervals-scale-down',
+		type=int,
+		help="""Number of Consecutive Checks that Meet Criteria before
 				Scale-Down Occurs""")
     args = parser.parse_args()
 
