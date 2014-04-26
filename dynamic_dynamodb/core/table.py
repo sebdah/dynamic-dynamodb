@@ -206,7 +206,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
 		if updated_read_units != updated_provisioning:
 			#We need to look at how many times the consec_True_Read_Checks integer has incremented and Compare to config file value
-			if consec_True_Read_Checks >= num_intervals_scale_down_reads
+			if (int(consec_True_Read_Checks) >= int(num_intervals_scale_down_reads)):
 				update_needed = True
 				updated_read_units = updated_provisioning
 				consec_True_Read_Checks += 1
@@ -338,7 +338,7 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
 
         if updated_write_units != updated_provisioning:
 			#We need to look at how many times the consecTrueChecks integer has incremented and Compare to config file value
-			if consec_True_Write_Checks >= num_intervals_scale_down_writes
+			if (int(consec_True_Write_Checks) >= int(num_intervals_scale_down_writes)):
 				update_needed = True
 				updated_write_units = updated_provisioning
 				consec_True_Write_Checks += 1
