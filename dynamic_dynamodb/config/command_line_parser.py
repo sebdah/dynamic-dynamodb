@@ -159,7 +159,7 @@ def parse():
         '--max-provisioned-writes',
         type=int,
         help="""Maximum number of provisioned writes""")
-	w_scaling_ag.add_argument(
+w_scaling_ag.add_argument(
 		'--num-intervals-scale-down',
 		type=int,
 		help="""Number of Consecutive Checks that Meet Criteria before
