@@ -166,24 +166,24 @@ w_scaling_ag.add_argument(
 				Scale-Down Occurs""")
 args = parser.parse_args()
 
-    # Print the version and quit
-    if args.version:
-        # Read the dynamic-dynamodb.conf configuration file
-        internal_config_file = ConfigParser.RawConfigParser()
-        internal_config_file.optionxform = lambda option: option
-        internal_config_file.read(
-            os.path.abspath(
-                os.path.join(
-                    os.path.dirname(__file__), '../dynamic-dynamodb.conf')))
+# Print the version and quit
+if args.version:
+	# Read the dynamic-dynamodb.conf configuration file
+	internal_config_file = ConfigParser.RawConfigParser()
+	internal_config_file.optionxform = lambda option: option
+	internal_config_file.read(
+		os.path.abspath(
+			os.path.join(
+				os.path.dirname(__file__), '../dynamic-dynamodb.conf')))
 
-        print 'Dynamic DynamoDB version: {0}'.format(
-            internal_config_file.get('general', 'version'))
-        sys.exit(0)
+	print 'Dynamic DynamoDB version: {0}'.format(
+		internal_config_file.get('general', 'version'))
+	sys.exit(0)
 
-    # Replace any new values in the configuration
-    configuration = {}
-    for arg in args.__dict__:
-        if args.__dict__.get(arg) is not None:
-            configuration[arg] = args.__dict__.get(arg)
+# Replace any new values in the configuration
+configuration = {}
+for arg in args.__dict__:
+	if args.__dict__.get(arg) is not None:
+		configuration[arg] = args.__dict__.get(arg)
 
-    return configuration
+return configuration
