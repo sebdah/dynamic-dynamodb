@@ -191,18 +191,18 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
     elif consumed_read_units_percent <= reads_lower_threshold:
 
-        if decrease_reads_unit == 'percent':
-            updated_provisioning = calculators.decrease_reads_in_percent(
-                updated_read_units,
-                decrease_reads_with,
-                key_name,
-                table_name)
-        else:
-            updated_provisioning = calculators.decrease_reads_in_units(
-                updated_read_units,
-                decrease_reads_with,
-                key_name,
-                table_name)
+		if decrease_reads_unit == 'percent':
+			updated_provisioning = calculators.decrease_reads_in_percent(
+				updated_read_units,
+				decrease_reads_with,
+				key_name,
+				table_name)
+		else:
+			updated_provisioning = calculators.decrease_reads_in_units(
+				updated_read_units,
+				decrease_reads_with,
+				key_name,
+				table_name)
 
 		if updated_read_units != updated_provisioning:
 			#We need to look at how many times the consec_True_Read_Checks integer has incremented and Compare to config file value
