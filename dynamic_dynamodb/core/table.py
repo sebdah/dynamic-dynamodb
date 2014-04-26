@@ -318,8 +318,8 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
             if updated_write_units != updated_provisioning:
 				#if we need to increase provisioning, then we need to reset the consecTrueChecks to 0 as it applies only to down-scaling
 				consec_True_Write_Checks = 0
-                update_needed = True
-                updated_write_units = updated_provisioning
+				update_needed = True
+				updated_write_units = updated_provisioning
 
     elif consumed_write_units_percent <= writes_lower_threshold:
 
