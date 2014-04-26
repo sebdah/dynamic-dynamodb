@@ -324,6 +324,12 @@ def parse(config_path):
                     'required': False,
                     'type': 'str'
                 }
+				{
+                    'key': 'num_intervals_scale_down',
+                    'option': 'num_intervals_scale_down',
+                    'required': False,
+                    'type': 'int'
+                }
             ])
 
     if not found_table:
@@ -510,6 +516,12 @@ def parse(config_path):
                         'required': False,
                         'type': 'str'
                     }
+					{
+						'key': 'num_intervals_scale_down',
+						'option': 'num_intervals_scale_down',
+						'required': False,
+						'type': 'int'
+					}
                 ])
 
     return dict(

@@ -11,13 +11,14 @@ from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option, get_global_option
 
 
-def ensure_provisioning(table_name, key_name):
+def ensure_provisioning(table_name, key_name, consec_True_Checks):
     """ Ensure that provisioning is correct
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
     :type key_name: str
     :param key_name: Configuration option key name
+	:returns: (int) -- consec_True_Checks
     """
     if get_global_option('circuit_breaker_url'):
         if circuit_breaker.is_open():
@@ -27,8 +28,8 @@ def ensure_provisioning(table_name, key_name):
     try:
         read_update_needed, updated_read_units = __ensure_provisioning_reads(
             table_name, key_name)
-        write_update_needed, updated_write_units = __ensure_provisioning_writes(
-            table_name, key_name)
+        write_update_needed, updated_write_units, consec_True_Checks = __ensure_provisioning_writes(
+            table_name, key_name, consec_True_Checks)
 
         # Handle throughput updates
         if read_update_needed or write_update_needed:
@@ -40,9 +41,11 @@ def ensure_provisioning(table_name, key_name):
                     int(updated_write_units)))
             __update_throughput(
                 table_name, updated_read_units, updated_write_units, key_name)
+			return consec_True_Checks
         else:
             logger.info('{0} - No need to change provisioning'.format(
                 table_name))
+			return consec_True_Checks
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -219,7 +222,7 @@ def __ensure_provisioning_writes(table_name, key_name):
     :param table_name: Name of the DynamoDB table
     :type key_name: str
     :param key_name: Configuration option key name
-    :returns: (bool, int) -- update_needed, updated_write_units
+    :returns: (bool, int, int) -- update_needed, updated_write_units, consec_True_Checks
     """
     if not get_table_option(key_name, 'enable_writes_autoscaling'):
         logger.info(
@@ -250,6 +253,8 @@ def __ensure_provisioning_writes(table_name, key_name):
             get_table_option(key_name, 'decrease_writes_with')
         max_provisioned_writes = \
             get_table_option(key_name, 'max_provisioned_writes')
+		num_intervals_scale_down = \
+			get_table_option(key_name, 'num_intervals_scale_down')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -280,6 +285,8 @@ def __ensure_provisioning_writes(table_name, key_name):
                 table_name)
 
         if updated_write_units != updated_provisioning:
+			#if we need to increase provisioning, then we need to reset the consecTrueChecks to 0 as it applies only to down-scaling
+			consecTrueChecks = 0
             update_needed = True
             updated_write_units = updated_provisioning
 
@@ -300,6 +307,8 @@ def __ensure_provisioning_writes(table_name, key_name):
                     table_name)
 
             if updated_write_units != updated_provisioning:
+				#if we need to increase provisioning, then we need to reset the consecTrueChecks to 0 as it applies only to down-scaling
+				consecTrueChecks = 0
                 update_needed = True
                 updated_write_units = updated_provisioning
 
@@ -319,8 +328,12 @@ def __ensure_provisioning_writes(table_name, key_name):
                 table_name)
 
         if updated_write_units != updated_provisioning:
-            update_needed = True
-            updated_write_units = updated_provisioning
+			#We need to look at how many times the consecTrueChecks integer has incremented and Compare to config file value
+			if consecTrueChecks > num_intervals_scale_down
+				update_needed = True
+				updated_write_units = updated_provisioning
+			else:
+				consecTrueChecks += 1
 
     if max_provisioned_writes:
         if int(updated_write_units) > int(max_provisioned_writes):
@@ -330,7 +343,7 @@ def __ensure_provisioning_writes(table_name, key_name):
                 'Will not increase writes over max-provisioned-writes '
                 'limit ({0} writes)'.format(updated_write_units))
 
-    return update_needed, int(updated_write_units)
+    return update_needed, int(updated_write_units), consec_True_Checks
 
 
 def __is_maintenance_window(table_name, maintenance_windows):

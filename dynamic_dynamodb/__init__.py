@@ -31,9 +31,9 @@ from dynamic_dynamodb.daemon import Daemon
 from dynamic_dynamodb.config_handler import get_global_option, get_table_option
 from dynamic_dynamodb.log_handler import LOGGER as logger
 
-
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
+consec_True_Checks = 0
 
     def run(self):
         """ Run the daemon
@@ -90,7 +90,9 @@ def execute():
     # Ensure provisioning
     for table_name, table_key in sorted(dynamodb.get_tables_and_gsis()):
         try:
-            table.ensure_provisioning(table_name, table_key)
+			#the return var shows how many times the scale-down criteria has been met
+			#this is coupled with a var in config, "num_intervals_scale_down", to delay the scale-down
+            consec_True_Checks = table.ensure_provisioning(table_name, table_key, consec_True_Checks)
 
             gsi_names = set()
             # Add regexp table names

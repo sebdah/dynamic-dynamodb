@@ -48,6 +48,7 @@ DEFAULT_OPTIONS = {
         'max_provisioned_reads': None,
         'min_provisioned_writes': None,
         'max_provisioned_writes': None,
+		'num_intervals_scale_down': None,
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
@@ -76,6 +77,7 @@ DEFAULT_OPTIONS = {
         'max_provisioned_reads': None,
         'min_provisioned_writes': None,
         'max_provisioned_writes': None,
+		'num_intervals_scale_down': None,
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
@@ -341,7 +343,8 @@ def __check_gsi_rules(configuration):
                 'min_provisioned_reads',
                 'max_provisioned_reads',
                 'min_provisioned_writes',
-                'max_provisioned_writes'
+                'max_provisioned_writes',
+				'num_intervals_scale_down'
             ]
             for option in options:
                 if gsi[option] < 1:
@@ -443,7 +446,8 @@ def __check_table_rules(configuration):
             'min_provisioned_reads',
             'max_provisioned_reads',
             'min_provisioned_writes',
-            'max_provisioned_writes'
+            'max_provisioned_writes',
+			'num_intervals_scale_down'
         ]
         for option in options:
             if table[option] < 1:
