@@ -165,7 +165,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
         if updated_read_units != updated_provisioning:
 			logger.info(
-				'{0} - Resetting number of Consecutive True Checks to 0 (Reason: Scaling up) New Value: '
+				'{0} - Resetting number of Consecutive True Read Checks to 0 (Reason: Scaling up) New Value: '
 				'{1}'.format(num_intervals_scale_down_reads, consec_True_Read_Checks))
 			consec_True_Read_Checks = 0
 			update_needed = True
@@ -189,7 +189,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
             if updated_read_units != updated_provisioning:
 				logger.info(
-					'{0} - Resetting number of Consecutive True Checks to 0 (Reason: Scaling up) New Value: '
+					'{0} - Resetting number of Consecutive True Read Checks to 0 (Reason: Scaling up) New Value: '
 					'{1}'.format(num_intervals_scale_down_reads, consec_True_Read_Checks))
 				consec_True_Read_Checks = 0
 				update_needed = True
@@ -216,12 +216,12 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 				update_needed = True
 				updated_read_units = updated_provisioning
 				logger.info(
-					'{0} - Number of Consecutive True Checks is Less than the number of Required True Checks: '
+					'{0} - Number of Consecutive True Read Checks is Less than the number of Required True Checks: '
 					'{1}'.format(consec_True_Read_Checks, num_intervals_scale_down_reads))
 				consec_True_Read_Checks += 1
 			else:
 				logger.info(
-					'{0} - Number of Consecutive True Checks is Less than the number of Required True Checks: '
+					'{0} - Number of Consecutive True Read Checks is Less than the number of Required True Checks: '
 					'{1}'.format(consec_True_Read_Checks, num_intervals_scale_down_reads))
 				consec_True_Read_Checks += 1
 
@@ -308,7 +308,7 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
 		if updated_write_units != updated_provisioning:
 			#if we need to increase provisioning, then we need to reset the consecTrueChecks to 0 as it applies only to down-scaling
 			logger.info(
-				'{0} - Resetting number of Consecutive True Checks to 0 (Reason: Scaling up) New Value: '
+				'{0} - Resetting number of Consecutive True Write Checks to 0 (Reason: Scaling up) New Value: '
 				'{1}'.format(num_intervals_scale_down_writes, consec_True_Write_Checks))
 			consec_True_Write_Checks = 0
 			update_needed = True
@@ -333,7 +333,7 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
             if updated_write_units != updated_provisioning:
 				#if we need to increase provisioning, then we need to reset the consecTrueChecks to 0 as it applies only to down-scaling
 				logger.info(
-					'{0} - Resetting number of Consecutive True Checks to 0 (Reason: Scaling up) New Value: '
+					'{0} - Resetting number of Consecutive True Write Checks to 0 (Reason: Scaling up) New Value: '
 					'{1}'.format(num_intervals_scale_down_writes, consec_True_Write_Checks))
 				consec_True_Write_Checks = 0
 				update_needed = True
@@ -360,12 +360,12 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
 				update_needed = True
 				updated_write_units = updated_provisioning
 				logger.info(
-					'{0} - Number of Consecutive True Checks is Equal or Greater than the number of Required True Checks: '
+					'{0} - Number of Consecutive True Write Checks is Equal or Greater than the number of Required True Checks: '
 					'{1}'.format(consec_True_Write_Checks, num_intervals_scale_down_writes))
 				consec_True_Write_Checks += 1
 			else:
 				logger.info(
-					'{0} - Number of Consecutive True Checks is Less than the number of Required True Checks: '
+					'{0} - Number of Consecutive True Write Checks is Less than the number of Required True Checks: '
 					'{1}'.format(consec_True_Write_Checks, num_intervals_scale_down_writes))
 				consec_True_Write_Checks += 1
 
