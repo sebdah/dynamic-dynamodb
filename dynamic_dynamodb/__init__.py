@@ -94,7 +94,8 @@ def execute():
 			global consec_True_Read_Checks
 			global consec_True_Write_Checks
 			consec_True_Read_Checks, consec_True_Write_Checks = table.ensure_provisioning(table_name, table_key, consec_True_Read_Checks, consec_True_Write_Checks)
-
+			logger.debug('Number of Consecutive Checks for Scaling Down Reads: "{0}"'.format(consec_True_Read_Checks))
+			logger.debug('Number of Consecutive Checks for Scaling Down Reads: "{0}"'.format(consec_True_Write_Checks))
 			gsi_names = set()
 			# Add regexp table names
 			for gst_instance in dynamodb.table_gsis(table_name):
