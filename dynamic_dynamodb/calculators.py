@@ -312,7 +312,7 @@ def __get_min_reads(current_provisioning, min_provisioned_reads, log_tag):
             reads = int(current_provisioning * 2)
             logger.debug(
                 '{0} - '
-                'Cannot reach min_provisioned_reads as max scale up '
+                'Cannot reach min-provisioned-reads as max scale up '
                 'is 100% of current provisioning'.format(log_tag))
 
     logger.debug(
@@ -343,7 +343,7 @@ def __get_min_writes(current_provisioning, min_provisioned_writes, log_tag):
             writes = int(current_provisioning * 2)
             logger.debug(
                 '{0} - '
-                'Cannot reach min_provisioned_writes as max scale up '
+                'Cannot reach min-provisioned-writes as max scale up '
                 'is 100% of current provisioning'.format(log_tag))
 
     logger.debug(
