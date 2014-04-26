@@ -352,8 +352,8 @@ def __check_gsi_rules(configuration):
             if (int(gsi['min_provisioned_reads']) >
                     int(gsi['max_provisioned_reads'])):
                 print(
-                    'min_provisioned_reads ({0}) may not be higher than '
-                    'max_provisioned_reads ({1}) for GSI {2}'.format(
+                    'min-provisioned-reads ({0}) may not be higher than '
+                    'max-provisioned-reads ({1}) for GSI {2}'.format(
                         gsi['min_provisioned_reads'],
                         gsi['max_provisioned_reads'],
                         gsi_name))
@@ -361,8 +361,8 @@ def __check_gsi_rules(configuration):
             elif (int(gsi['min_provisioned_writes']) >
                     int(gsi['max_provisioned_writes'])):
                 print(
-                    'min_provisioned_writes ({0}) may not be higher than '
-                    'max_provisioned_writes ({1}) for GSI {2}'.format(
+                    'min-provisioned-writes ({0}) may not be higher than '
+                    'max-provisioned-writes ({1}) for GSI {2}'.format(
                         gsi['min_provisioned_writes'],
                         gsi['max_provisioned_writes'],
                         gsi_name))
