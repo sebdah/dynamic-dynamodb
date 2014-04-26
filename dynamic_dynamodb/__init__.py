@@ -121,12 +121,12 @@ def execute():
 							gsi_key))
 						sys.exit(1)
 
-            for gsi_name, gsi_key in sorted(gsi_names):
-                gsi.ensure_provisioning(
-                    table_name,
-                    table_key,
-                    gsi_name,
-                    gsi_key)
+			for gsi_name, gsi_key in sorted(gsi_names):
+				gsi.ensure_provisioning(
+					table_name,
+					table_key,
+					gsi_name,
+					gsi_key)
 
         except JSONResponseError as error:
             exception = error.body['__type'].split('#')[1]
