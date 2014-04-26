@@ -111,28 +111,28 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
     update_needed = False
     try:
-        updated_read_units = dynamodb.get_provisioned_table_read_units(
-            table_name)
-        consumed_read_units_percent = \
-            table_stats.get_consumed_read_units_percent(table_name)
-        throttled_read_count = \
-            table_stats.get_throttled_read_event_count(table_name)
-        reads_upper_threshold = \
-            get_table_option(key_name, 'reads_upper_threshold')
-        reads_lower_threshold = \
-            get_table_option(key_name, 'reads_lower_threshold')
-        throttled_reads_upper_threshold = \
-            get_table_option(key_name, 'throttled_reads_upper_threshold')
-        increase_reads_with = \
-            get_table_option(key_name, 'increase_reads_with')
-        increase_reads_unit = \
-            get_table_option(key_name, 'increase_reads_unit')
-        decrease_reads_with = \
-            get_table_option(key_name, 'decrease_reads_with')
-        decrease_reads_unit = \
-            get_table_option(key_name, 'decrease_reads_unit')
-        max_provisioned_reads = \
-            get_table_option(key_name, 'max_provisioned_reads')
+		updated_read_units = dynamodb.get_provisioned_table_read_units(
+			table_name)
+		consumed_read_units_percent = \
+			table_stats.get_consumed_read_units_percent(table_name)
+		throttled_read_count = \
+			table_stats.get_throttled_read_event_count(table_name)
+		reads_upper_threshold = \
+			get_table_option(key_name, 'reads_upper_threshold')
+		reads_lower_threshold = \
+			get_table_option(key_name, 'reads_lower_threshold')
+		throttled_reads_upper_threshold = \
+			get_table_option(key_name, 'throttled_reads_upper_threshold')
+		increase_reads_with = \
+			get_table_option(key_name, 'increase_reads_with')
+		increase_reads_unit = \
+			get_table_option(key_name, 'increase_reads_unit')
+		decrease_reads_with = \
+			get_table_option(key_name, 'decrease_reads_with')
+		decrease_reads_unit = \
+			get_table_option(key_name, 'decrease_reads_unit')
+		max_provisioned_reads = \
+			get_table_option(key_name, 'max_provisioned_reads')
 		num_intervals_scale_down_reads = \
 			get_table_option(key_name, 'num_intervals_scale_down_reads')
     except JSONResponseError:
@@ -240,28 +240,28 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
 
     update_needed = False
     try:
-        updated_write_units = dynamodb.get_provisioned_table_write_units(
-            table_name)
-        consumed_write_units_percent = \
-            table_stats.get_consumed_write_units_percent(table_name)
-        throttled_write_count = \
-            table_stats.get_throttled_write_event_count(table_name)
-        writes_upper_threshold = \
-            get_table_option(key_name, 'writes_upper_threshold')
-        writes_lower_threshold = \
-            get_table_option(key_name, 'writes_lower_threshold')
-        throttled_writes_upper_threshold = \
-            get_table_option(key_name, 'throttled_writes_upper_threshold')
-        increase_writes_unit = \
-            get_table_option(key_name, 'increase_writes_unit')
-        increase_writes_with = \
-            get_table_option(key_name, 'increase_writes_with')
-        decrease_writes_unit = \
-            get_table_option(key_name, 'decrease_writes_unit')
-        decrease_writes_with = \
-            get_table_option(key_name, 'decrease_writes_with')
-        max_provisioned_writes = \
-            get_table_option(key_name, 'max_provisioned_writes')
+		updated_write_units = dynamodb.get_provisioned_table_write_units(
+			table_name)
+		consumed_write_units_percent = \
+			table_stats.get_consumed_write_units_percent(table_name)
+		throttled_write_count = \
+			table_stats.get_throttled_write_event_count(table_name)
+		writes_upper_threshold = \
+			get_table_option(key_name, 'writes_upper_threshold')
+		writes_lower_threshold = \
+			get_table_option(key_name, 'writes_lower_threshold')
+		throttled_writes_upper_threshold = \
+			get_table_option(key_name, 'throttled_writes_upper_threshold')
+		increase_writes_unit = \
+			get_table_option(key_name, 'increase_writes_unit')
+		increase_writes_with = \
+			get_table_option(key_name, 'increase_writes_with')
+		decrease_writes_unit = \
+			get_table_option(key_name, 'decrease_writes_unit')
+		decrease_writes_with = \
+			get_table_option(key_name, 'decrease_writes_with')
+		max_provisioned_writes = \
+			get_table_option(key_name, 'max_provisioned_writes')
 		num_intervals_scale_down_writes = \
 			get_table_option(key_name, 'num_intervals_scale_down_writes')
     except JSONResponseError:
