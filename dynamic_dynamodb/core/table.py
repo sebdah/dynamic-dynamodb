@@ -33,18 +33,18 @@ def ensure_provisioning(table_name, key_name, consec_True_Read_Checks, consec_Tr
 
         # Handle throughput updates
         if read_update_needed or write_update_needed:
-            logger.info(
-                '{0} - Changing provisioning to {1:d} '
-                'read units and {2:d} write units'.format(
-                    table_name,
-                    int(updated_read_units),
-                    int(updated_write_units)))
-            __update_throughput(
-                table_name, updated_read_units, updated_write_units, key_name)
+			logger.info(
+				'{0} - Changing provisioning to {1:d} '
+				'read units and {2:d} write units'.format(
+					table_name,
+					int(updated_read_units),
+					int(updated_write_units)))
+			__update_throughput(
+				table_name, updated_read_units, updated_write_units, key_name)
 			return consec_True_Write_Checks, consec_True_Write_Checks
         else:
-            logger.info('{0} - No need to change provisioning'.format(
-                table_name))
+			logger.info('{0} - No need to change provisioning'.format(
+				table_name))
 			return consec_True_Read_Checks, consec_True_Write_Checks
     except JSONResponseError:
         raise
