@@ -280,24 +280,24 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
 
     elif consumed_write_units_percent >= writes_upper_threshold:
 
-        if increase_writes_unit == 'percent':
-            updated_provisioning = calculators.increase_writes_in_percent(
-                updated_write_units,
-                increase_writes_with,
-                key_name,
-                table_name)
-        else:
-            updated_provisioning = calculators.increase_writes_in_units(
-                updated_write_units,
-                increase_writes_with,
-                key_name,
-                table_name)
+		if increase_writes_unit == 'percent':
+			updated_provisioning = calculators.increase_writes_in_percent(
+				updated_write_units,
+				increase_writes_with,
+				key_name,
+				table_name)
+		else:
+			updated_provisioning = calculators.increase_writes_in_units(
+				updated_write_units,
+				increase_writes_with,
+				key_name,
+				table_name)
 
-        if updated_write_units != updated_provisioning:
+		if updated_write_units != updated_provisioning:
 			#if we need to increase provisioning, then we need to reset the consecTrueChecks to 0 as it applies only to down-scaling
 			consec_True_Write_Checks = 0
-            update_needed = True
-            updated_write_units = updated_provisioning
+			update_needed = True
+			updated_write_units = updated_provisioning
 
     elif throttled_write_count > throttled_writes_upper_threshold:
 
