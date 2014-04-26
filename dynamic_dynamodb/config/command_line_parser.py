@@ -164,7 +164,7 @@ w_scaling_ag.add_argument(
 		type=int,
 		help="""Number of Consecutive Checks that Meet Criteria before
 				Scale-Down Occurs""")
-    args = parser.parse_args()
+args = parser.parse_args()
 
     # Print the version and quit
     if args.version:
