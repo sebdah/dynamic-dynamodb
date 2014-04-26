@@ -78,8 +78,7 @@ else:
             'backupCount': 5
         }
         LOG_CONFIG['loggers']['']['handlers'].append('file')
-        LOG_CONFIG['loggers']['dynamic-dynamodb']['handlers'].append(
-            'file')
+        LOG_CONFIG['loggers']['dynamic-dynamodb']['handlers'].append('file')
 
     # Configure a custom log level
     if config_handler.get_logging_option('log_level'):

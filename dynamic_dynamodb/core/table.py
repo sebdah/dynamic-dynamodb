@@ -2,8 +2,8 @@
 """ Core components """
 from boto.exception import JSONResponseError, BotoServerError
 
+from dynamic_dynamodb import calculators
 from dynamic_dynamodb.aws import dynamodb
-from dynamic_dynamodb.calculators import table as calculators
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import table as table_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
@@ -151,13 +151,13 @@ def __ensure_provisioning_reads(table_name, key_name):
             updated_provisioning = calculators.increase_reads_in_percent(
                 updated_read_units,
                 increase_reads_with,
-                key_name,
+                get_table_option(key_name, 'max_provisioned_reads'),
                 table_name)
         else:
             updated_provisioning = calculators.increase_reads_in_units(
                 updated_read_units,
                 increase_reads_with,
-                key_name,
+                get_table_option(key_name, 'max_provisioned_reads'),
                 table_name)
 
         if updated_read_units != updated_provisioning:
@@ -171,13 +171,13 @@ def __ensure_provisioning_reads(table_name, key_name):
                 updated_provisioning = calculators.increase_reads_in_percent(
                     updated_read_units,
                     increase_reads_with,
-                    key_name,
+                    get_table_option(key_name, 'max_provisioned_reads'),
                     table_name)
             else:
                 updated_provisioning = calculators.increase_reads_in_units(
                     updated_read_units,
                     increase_reads_with,
-                    key_name,
+                    get_table_option(key_name, 'max_provisioned_reads'),
                     table_name)
 
             if updated_read_units != updated_provisioning:
@@ -190,13 +190,13 @@ def __ensure_provisioning_reads(table_name, key_name):
             updated_provisioning = calculators.decrease_reads_in_percent(
                 updated_read_units,
                 decrease_reads_with,
-                key_name,
+                get_table_option(key_name, 'min_provisioned_reads'),
                 table_name)
         else:
             updated_provisioning = calculators.decrease_reads_in_units(
                 updated_read_units,
                 decrease_reads_with,
-                key_name,
+                get_table_option(key_name, 'min_provisioned_reads'),
                 table_name)
 
         if updated_read_units != updated_provisioning:
@@ -272,13 +272,13 @@ def __ensure_provisioning_writes(table_name, key_name):
             updated_provisioning = calculators.increase_writes_in_percent(
                 updated_write_units,
                 increase_writes_with,
-                key_name,
+                get_table_option(key_name, 'max_provisioned_writes'),
                 table_name)
         else:
             updated_provisioning = calculators.increase_writes_in_units(
                 updated_write_units,
                 increase_writes_with,
-                key_name,
+                get_table_option(key_name, 'max_provisioned_reads'),
                 table_name)
 
         if updated_write_units != updated_provisioning:
@@ -292,13 +292,13 @@ def __ensure_provisioning_writes(table_name, key_name):
                 updated_provisioning = calculators.increase_writes_in_percent(
                     updated_write_units,
                     increase_writes_with,
-                    key_name,
+                    get_table_option(key_name, 'max_provisioned_writes'),
                     table_name)
             else:
                 updated_provisioning = calculators.increase_writes_in_units(
                     updated_write_units,
                     increase_writes_with,
-                    key_name,
+                    get_table_option(key_name, 'max_provisioned_reads'),
                     table_name)
 
             if updated_write_units != updated_provisioning:
@@ -311,13 +311,13 @@ def __ensure_provisioning_writes(table_name, key_name):
             updated_provisioning = calculators.decrease_writes_in_percent(
                 updated_write_units,
                 decrease_writes_with,
-                key_name,
+                get_table_option(key_name, 'min_provisioned_writes'),
                 table_name)
         else:
             updated_provisioning = calculators.decrease_writes_in_units(
                 updated_write_units,
                 decrease_writes_with,
-                key_name,
+                get_table_option(key_name, 'min_provisioned_reads'),
                 table_name)
 
         if updated_write_units != updated_provisioning:

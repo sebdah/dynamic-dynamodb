@@ -26,7 +26,8 @@ import time
 
 from boto.exception import JSONResponseError, BotoServerError
 
-from dynamic_dynamodb.core import dynamodb, gsi, table
+from dynamic_dynamodb.aws import dynamodb
+from dynamic_dynamodb.core import gsi, table
 from dynamic_dynamodb.daemon import Daemon
 from dynamic_dynamodb.config_handler import get_global_option, get_table_option
 from dynamic_dynamodb.log_handler import LOGGER as logger
