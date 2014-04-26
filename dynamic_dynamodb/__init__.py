@@ -34,10 +34,8 @@ from dynamic_dynamodb.log_handler import LOGGER as logger
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
 consec_True_Checks = 0
-
-    def run(self):
+def run(self):
         """ Run the daemon
-
         :type check_interval: int
         :param check_interval: Delay in seconds between checks
         """
