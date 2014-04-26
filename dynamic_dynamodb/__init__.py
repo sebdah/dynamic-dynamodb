@@ -91,6 +91,8 @@ def execute():
         try:
 			#the return var shows how many times the scale-down criteria has been met
 			#this is coupled with a var in config, "num_intervals_scale_down", to delay the scale-down
+			global consec_True_Read_Checks
+			global consec_True_Write_Checks
             consec_True_Read_Checks, consec_True_Write_Checks = table.ensure_provisioning(table_name, table_key, consec_True_Read_Checks, consec_True_Write_Checks)
 
             gsi_names = set()
