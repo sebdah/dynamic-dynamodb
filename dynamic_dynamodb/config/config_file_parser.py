@@ -323,7 +323,7 @@ def parse(config_path):
                     'option': 'sns-message-types',
                     'required': False,
                     'type': 'str'
-                }
+                },
 				{
                     'key': 'num_intervals_scale_down',
                     'option': 'num_intervals_scale_down',
@@ -515,7 +515,7 @@ def parse(config_path):
                         'option': 'sns-message-types',
                         'required': False,
                         'type': 'str'
-                    }
+                    },
 					{
 						'key': 'num_intervals_scale_down',
 						'option': 'num_intervals_scale_down',
