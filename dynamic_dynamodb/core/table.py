@@ -218,7 +218,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 				update_needed = True
 				updated_read_units = updated_provisioning
 				logger.info(
-					'{0} - Number of Consecutive True Read Checks is Less than the number of Required True Checks: '
+					'{0} - Number of Consecutive True Read Checks is Equal to or Greater than the number of Required True Checks: '
 					'{1}'.format(consec_True_Read_Checks, num_intervals_scale_down_reads))
 				consec_True_Read_Checks = consec_True_Read_Checks + 1
 			else:
@@ -364,7 +364,7 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
 				update_needed = True
 				updated_write_units = updated_provisioning
 				logger.info(
-					'{0} - Number of Consecutive True Write Checks is Equal or Greater than the number of Required True Checks: '
+					'{0} - Number of Consecutive True Write Checks is Equal to or Greater than the number of Required True Checks: '
 					'{1}'.format(consec_True_Write_Checks, num_intervals_scale_down_writes))
 				consec_True_Write_Checks = consec_True_Write_Checks + 1
 			else:
