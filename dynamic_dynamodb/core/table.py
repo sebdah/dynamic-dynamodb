@@ -366,12 +366,12 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
 				logger.info(
 					'{0} - Number of Consecutive True Write Checks is Equal or Greater than the number of Required True Checks: '
 					'{1}'.format(consec_True_Write_Checks, num_intervals_scale_down_writes))
-				consec_True_Write_Checks += 1
+				consec_True_Write_Checks = consec_True_Write_Checks + 1
 			else:
 				logger.info(
 					'{0} - Number of Consecutive True Write Checks is Less than the number of Required True Checks: '
 					'{1}'.format(consec_True_Write_Checks, num_intervals_scale_down_writes))
-				consec_True_Write_Checks += 1
+				consec_True_Write_Checks = consec_True_Write_Checks + 1
 
     if max_provisioned_writes:
         if int(updated_write_units) > int(max_provisioned_writes):
