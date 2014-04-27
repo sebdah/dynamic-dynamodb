@@ -41,7 +41,7 @@ def ensure_provisioning(table_name, key_name, consec_True_Read_Checks, consec_Tr
 					int(updated_write_units)))
 			__update_throughput(
 				table_name, updated_read_units, updated_write_units, key_name)
-			return consec_True_Write_Checks, consec_True_Write_Checks
+			return consec_True_Read_Checks, consec_True_Write_Checks
         else:
 			logger.info('{0} - No need to change provisioning'.format(
 				table_name))
@@ -102,6 +102,8 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
     :param table_name: Name of the DynamoDB table
     :type key_name: str
     :param key_name: Configuration option key name
+	:type consec_True_Read_Checks: int
+	:param consec_True_Read_Checks: Number of Times Scale-Down Criteria Has Been Met
     :returns: (bool, int, int) -- update_needed, updated_read_units, consec_True_Read_Checks
     """
     if not get_table_option(key_name, 'enable_reads_autoscaling'):
@@ -218,12 +220,12 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 				logger.info(
 					'{0} - Number of Consecutive True Read Checks is Less than the number of Required True Checks: '
 					'{1}'.format(consec_True_Read_Checks, num_intervals_scale_down_reads))
-				consec_True_Read_Checks += 1
+				consec_True_Read_Checks = consec_True_Read_Checks + 1
 			else:
 				logger.info(
 					'{0} - Number of Consecutive True Read Checks is Less than the number of Required True Checks: '
 					'{1}'.format(consec_True_Read_Checks, num_intervals_scale_down_reads))
-				consec_True_Read_Checks += 1
+				consec_True_Read_Checks = consec_True_Read_Checks + 1
 
     if max_provisioned_reads:
         if (int(updated_read_units) > int(max_provisioned_reads)):
@@ -243,6 +245,8 @@ def __ensure_provisioning_writes(table_name, key_name, consec_True_Write_Checks)
     :param table_name: Name of the DynamoDB table
     :type key_name: str
     :param key_name: Configuration option key name
+	:type consec_True_Read_Checks: int
+	:param consec_True_Read_Checks: Number of Times Scale-Down Criteria Has Been Met
     :returns: (bool, int, int) -- update_needed, updated_write_units, consec_True_Write_Checks
     """
     if not get_table_option(key_name, 'enable_writes_autoscaling'):
