@@ -53,9 +53,9 @@ def ensure_provisioning(
                     int(updated_write_units)))
             __update_throughput(
                 table_name,
+                key_name,
                 updated_read_units,
-                updated_write_units,
-                key_name)
+                updated_write_units)
             return num_consec_read_checks, num_consec_write_checks
         else:
             logger.info('{0} - No need to change provisioning'.format(
@@ -411,17 +411,17 @@ def __ensure_provisioning_writes(
     return update_needed, updated_write_units, num_consec_write_checks
 
 
-def __update_throughput(table_name, read_units, write_units, key_name):
+def __update_throughput(table_name, key_name, read_units, write_units):
     """ Update throughput on the DynamoDB table
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
+    :type key_name: str
+    :param key_name: Configuration option key name
     :type read_units: int
     :param read_units: New read unit provisioning
     :type write_units: int
     :param write_units: New write unit provisioning
-    :type key_name: str
-    :param key_name: Configuration option key name
     """
     try:
         current_ru = dynamodb.get_provisioned_table_read_units(table_name)
