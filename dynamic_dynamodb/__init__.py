@@ -107,12 +107,7 @@ def execute():
                     table_key,
                     num_consec_read_checks,
                     num_consec_write_checks)
-            logger.debug(
-                'Number of Consecutive Checks for Scaling Down '
-                'Reads: "{0}"'.format(num_consec_read_checks))
-            logger.debug(
-                'Number of Consecutive Checks for Scaling Down '
-                'Writes: "{0}"'.format(num_consec_write_checks))
+
             gsi_names = set()
             # Add regexp table names
             for gst_instance in dynamodb.table_gsis(table_name):
