@@ -326,14 +326,14 @@ def parse(config_path):
                     'type': 'str'
                 },
                 {
-                    'key': 'num_intervals_scale_down_reads',
-                    'option': 'num-intervals-scale-down-reads',
+                    'key': 'num_read_checks_before_scale_down',
+                    'option': 'num-read-checks-before-scale-down',
                     'required': False,
                     'type': 'int'
                 },
                 {
-                    'key': 'num_intervals_scale_down_writes',
-                    'option': 'num-intervals-scale-down-writes',
+                    'key': 'num_write_checks_before_scale_down',
+                    'option': 'num-write-checks-before-scale-down',
                     'required': False,
                     'type': 'int'
                 }

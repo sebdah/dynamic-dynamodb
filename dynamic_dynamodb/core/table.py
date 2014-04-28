@@ -148,8 +148,8 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
             get_table_option(key_name, 'decrease_reads_unit')
         max_provisioned_reads = \
             get_table_option(key_name, 'max_provisioned_reads')
-        num_intervals_scale_down_reads = \
-            get_table_option(key_name, 'num_intervals_scale_down_reads')
+        num_read_checks_before_scale_down = \
+            get_table_option(key_name, 'num_read_checks_before_scale_down')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -182,7 +182,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
             logger.info(
                 '{0} - Resetting number of Consecutive True Read Checks to 0 '
                 '(Reason: Scaling up) New Value: {1}'.format(
-                    num_intervals_scale_down_reads, consec_True_Read_Checks))
+                    num_read_checks_before_scale_down, consec_True_Read_Checks))
             consec_True_Read_Checks = 0
             update_needed = True
             updated_read_units = updated_provisioning
@@ -207,7 +207,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
                 logger.info(
                     '{0} - Resetting number of Consecutive True Read Checks to '
                     '0 (Reason: Scaling up) New Value: {1}'.format(
-                        num_intervals_scale_down_reads,
+                        num_read_checks_before_scale_down,
                         consec_True_Read_Checks))
                 consec_True_Read_Checks = 0
                 update_needed = True
@@ -232,7 +232,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
             # We need to look at how many times the consec_True_Read_Checks
             # integer has incremented and Compare to config file value
             if (int(consec_True_Read_Checks) >=
-                    int(num_intervals_scale_down_reads)):
+                    int(num_read_checks_before_scale_down)):
                 update_needed = True
                 updated_read_units = updated_provisioning
                 logger.info(
@@ -240,7 +240,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
                     'or Greater than the number of Required True Checks: '
                     '{1}'.format(
                         consec_True_Read_Checks,
-                        num_intervals_scale_down_reads))
+                        num_read_checks_before_scale_down))
                 consec_True_Read_Checks = consec_True_Read_Checks + 1
             else:
                 logger.info(
@@ -248,7 +248,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
                     'the number of Required True Checks: '
                     '{1}'.format(
                         consec_True_Read_Checks,
-                        num_intervals_scale_down_reads))
+                        num_read_checks_before_scale_down))
                 consec_True_Read_Checks = consec_True_Read_Checks + 1
 
     if max_provisioned_reads:
@@ -305,8 +305,8 @@ def __ensure_provisioning_writes(
             get_table_option(key_name, 'decrease_writes_with')
         max_provisioned_writes = \
             get_table_option(key_name, 'max_provisioned_writes')
-        num_intervals_scale_down_writes = \
-            get_table_option(key_name, 'num_intervals_scale_down_writes')
+        num_write_checks_before_scale_down = \
+            get_table_option(key_name, 'num_write_checks_before_scale_down')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -342,7 +342,7 @@ def __ensure_provisioning_writes(
             logger.info(
                 '{0} - Resetting number of Consecutive True Write Checks to 0 '
                 '(Reason: Scaling up) New Value: {1}'.format(
-                    num_intervals_scale_down_writes,
+                    num_write_checks_before_scale_down,
                     consec_True_Write_Checks))
             consec_True_Write_Checks = 0
             update_needed = True
@@ -371,7 +371,7 @@ def __ensure_provisioning_writes(
                     '{0} - Resetting number of Consecutive True Write Checks '
                     'to 0 (Reason: Scaling up) New Value: '
                     '{1}'.format(
-                        num_intervals_scale_down_writes,
+                        num_write_checks_before_scale_down,
                         consec_True_Write_Checks))
                 consec_True_Write_Checks = 0
                 update_needed = True
@@ -396,7 +396,7 @@ def __ensure_provisioning_writes(
             # We need to look at how many times the consecTrueChecks integer
             # has incremented and Compare to config file value
             if (int(consec_True_Write_Checks) >=
-                    int(num_intervals_scale_down_writes)):
+                    int(num_write_checks_before_scale_down)):
                 update_needed = True
                 updated_write_units = updated_provisioning
                 logger.info(
@@ -404,7 +404,7 @@ def __ensure_provisioning_writes(
                     'or Greater than the number of Required True Checks: '
                     '{1}'.format(
                         consec_True_Write_Checks,
-                        num_intervals_scale_down_writes))
+                        num_write_checks_before_scale_down))
                 consec_True_Write_Checks = consec_True_Write_Checks + 1
             else:
                 logger.info(
@@ -412,7 +412,7 @@ def __ensure_provisioning_writes(
                     'than the number of Required True Checks: '
                     '{1}'.format(
                         consec_True_Write_Checks,
-                        num_intervals_scale_down_writes))
+                        num_write_checks_before_scale_down))
                 consec_True_Write_Checks = consec_True_Write_Checks + 1
 
     if max_provisioned_writes:

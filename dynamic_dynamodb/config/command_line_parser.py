@@ -116,7 +116,7 @@ def parse():
         type=int,
         help="""Maximum number of provisioned reads""")
     r_scaling_ag.add_argument(
-        '--num-intervals-scale-down-reads',
+        '--num-read-checks-before-scale-down',
         type=int,
         help="""Number of Consecutive Checks that Meet Criteria before
                 Scale-Down for Reads Occurs""")
@@ -166,7 +166,7 @@ def parse():
         type=int,
         help="""Maximum number of provisioned writes""")
     w_scaling_ag.add_argument(
-        '--num-intervals-scale-down-writes',
+        '--num-write-checks-before-scale-down',
         type=int,
         help="""Number of Consecutive Checks that Meet Criteria before
                 Scale-Down for Writes Occurs""")
