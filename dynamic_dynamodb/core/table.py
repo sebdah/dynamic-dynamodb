@@ -12,15 +12,19 @@ from dynamic_dynamodb.config_handler import get_table_option, get_global_option
 
 def ensure_provisioning(
         table_name, key_name,
-        consec_True_Read_Checks,
-        consec_True_Write_Checks):
+        num_consec_read_checks,
+        num_consec_write_checks):
     """ Ensure that provisioning is correct
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
     :type key_name: str
     :param key_name: Configuration option key name
-    :returns: (int, int) -- consec_True_Read_Checks, consec_True_Write_Checks
+    :type num_consec_read_checks: int
+    :param num_consec_read_checks: How many consecutive checks have we had
+    :type num_consec_write_checks: int
+    :param num_consec_write_checks: How many consecutive checks have we had
+    :returns: (int, int) -- num_consec_read_checks, num_consec_write_checks
     """
     if get_global_option('circuit_breaker_url'):
         if circuit_breaker.is_open():
@@ -28,16 +32,16 @@ def ensure_provisioning(
             return None
 
     try:
-        read_update_needed, updated_read_units, consec_True_Read_Checks = \
+        read_update_needed, updated_read_units, num_consec_read_checks = \
             __ensure_provisioning_reads(
                 table_name,
                 key_name,
-                consec_True_Read_Checks)
-        write_update_needed, updated_write_units, consec_True_Write_Checks = \
+                num_consec_read_checks)
+        write_update_needed, updated_write_units, num_consec_write_checks = \
             __ensure_provisioning_writes(
                 table_name,
                 key_name,
-                consec_True_Write_Checks)
+                num_consec_write_checks)
 
         # Handle throughput updates
         if read_update_needed or write_update_needed:
@@ -52,11 +56,11 @@ def ensure_provisioning(
                 updated_read_units,
                 updated_write_units,
                 key_name)
-            return consec_True_Read_Checks, consec_True_Write_Checks
+            return num_consec_read_checks, num_consec_write_checks
         else:
             logger.info('{0} - No need to change provisioning'.format(
                 table_name))
-            return consec_True_Read_Checks, consec_True_Write_Checks
+            return num_consec_read_checks, num_consec_write_checks
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -106,18 +110,17 @@ def __calculate_always_decrease_rw_values(
     return (read_units, write_units)
 
 
-def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
+def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
     """ Ensure that provisioning is correct
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
     :type key_name: str
     :param key_name: Configuration option key name
-    :type consec_True_Read_Checks: int
-    :param consec_True_Read_Checks:
-        Number of Times Scale-Down Criteria Has Been Met
+    :type num_consec_read_checks: int
+    :param num_consec_read_checks: How many consecutive checks have we had
     :returns: (bool, int, int)
-        update_needed, updated_read_units, consec_True_Read_Checks
+        update_needed, updated_read_units, num_consec_read_checks
     """
     if not get_table_option(key_name, 'enable_reads_autoscaling'):
         logger.info(
@@ -182,7 +185,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
                 '{0} - Resetting the number of consecutive '
                 'read checks. Reason: scale up event detected'.format(
                     table_name))
-            consec_True_Read_Checks = 0
+            num_consec_read_checks = 0
             update_needed = True
             updated_read_units = updated_provisioning
 
@@ -207,7 +210,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
                     '{0} - Resetting the number of consecutive '
                     'read checks. Reason: scale up event detected'.format(
                         table_name))
-                consec_True_Read_Checks = 0
+                num_consec_read_checks = 0
                 update_needed = True
                 updated_read_units = updated_provisioning
 
@@ -227,11 +230,11 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
                 table_name)
 
         if updated_read_units != updated_provisioning:
-            # We need to look at how many times the consec_True_Read_Checks
+            # We need to look at how many times the num_consec_read_checks
             # integer has incremented and Compare to config file value
-            consec_True_Read_Checks = consec_True_Read_Checks + 1
+            num_consec_read_checks = num_consec_read_checks + 1
 
-            if consec_True_Read_Checks >= num_read_checks_before_scale_down:
+            if num_consec_read_checks >= num_read_checks_before_scale_down:
                 update_needed = True
                 updated_read_units = updated_provisioning
 
@@ -245,25 +248,24 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
     logger.info('{0} - Consecutive read checks {1}/{2}'.format(
         table_name,
-        consec_True_Read_Checks,
+        num_consec_read_checks,
         num_read_checks_before_scale_down))
 
-    return update_needed, updated_read_units, consec_True_Read_Checks
+    return update_needed, updated_read_units, num_consec_read_checks
 
 
 def __ensure_provisioning_writes(
-        table_name, key_name, consec_True_Write_Checks):
+        table_name, key_name, num_consec_write_checks):
     """ Ensure that provisioning of writes is correct
 
     :type table_name: str
     :param table_name: Name of the DynamoDB table
     :type key_name: str
     :param key_name: Configuration option key name
-    :type consec_True_Read_Checks: int
-    :param consec_True_Read_Checks:
-        Number of Times Scale-Down Criteria Has Been Met
+    :type num_consec_write_checks: int
+    :param num_consec_write_checks: How many consecutive checks have we had
     :returns: (bool, int, int)
-        update_needed, updated_write_units, consec_True_Write_Checks
+        update_needed, updated_write_units, num_consec_write_checks
     """
     if not get_table_option(key_name, 'enable_writes_autoscaling'):
         logger.info(
@@ -332,7 +334,7 @@ def __ensure_provisioning_writes(
                 '{0} - Resetting the number of consecutive '
                 'read checks. Reason: scale up event detected'.format(
                     table_name))
-            consec_True_Write_Checks = 0
+            num_consec_write_checks = 0
             update_needed = True
             updated_write_units = updated_provisioning
 
@@ -359,7 +361,7 @@ def __ensure_provisioning_writes(
                     '{0} - Resetting the number of consecutive '
                     'read checks. Reason: scale up event detected'.format(
                         table_name))
-                consec_True_Write_Checks = 0
+                num_consec_write_checks = 0
                 update_needed = True
                 updated_write_units = updated_provisioning
 
@@ -381,9 +383,9 @@ def __ensure_provisioning_writes(
         if updated_write_units != updated_provisioning:
             # We need to look at how many times the consecTrueChecks integer
             # has incremented and Compare to config file value
-            consec_True_Write_Checks = consec_True_Write_Checks + 1
+            num_consec_write_checks = num_consec_write_checks + 1
 
-            if consec_True_Write_Checks >= num_write_checks_before_scale_down:
+            if num_consec_write_checks >= num_write_checks_before_scale_down:
                 update_needed = True
                 updated_write_units = updated_provisioning
 
@@ -397,10 +399,10 @@ def __ensure_provisioning_writes(
 
     logger.info('{0} - Consecutive read checks {1}/{2}'.format(
         table_name,
-        consec_True_Write_Checks,
+        num_consec_write_checks,
         num_write_checks_before_scale_down))
 
-    return update_needed, updated_write_units, consec_True_Write_Checks
+    return update_needed, updated_write_units, num_consec_write_checks
 
 
 def __update_throughput(table_name, read_units, write_units, key_name):
