@@ -334,8 +334,6 @@ def __ensure_provisioning_writes(
                 table_name)
 
         if current_write_units != calulated_provisioning:
-            # If we need to increase provisioning, then we need to reset the
-            # consecTrueChecks to 0 as it applies only to down-scaling
             logger.info(
                 '{0} - Resetting the number of consecutive '
                 'read checks. Reason: scale up event detected'.format(
@@ -361,8 +359,6 @@ def __ensure_provisioning_writes(
                     table_name)
 
             if current_write_units != calulated_provisioning:
-                # If we need to increase provisioning, then we need to reset
-                # the consecTrueChecks to 0 as it applies only to down-scaling
                 logger.info(
                     '{0} - Resetting the number of consecutive '
                     'read checks. Reason: scale up event detected'.format(
@@ -387,8 +383,6 @@ def __ensure_provisioning_writes(
                 table_name)
 
         if current_write_units != calulated_provisioning:
-            # We need to look at how many times the consecTrueChecks integer
-            # has incremented and Compare to config file value
             num_consec_write_checks = num_consec_write_checks + 1
 
             if num_consec_write_checks >= num_write_checks_before_scale_down:
