@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.12.1
+------
+
+**Release date:** 2014-04-28
+
+- Fixed reading of wrong config options
+
 1.12.0
 ------
 
