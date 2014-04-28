@@ -48,8 +48,8 @@ DEFAULT_OPTIONS = {
         'max_provisioned_reads': None,
         'min_provisioned_writes': None,
         'max_provisioned_writes': None,
-		'num_intervals_scale_down_reads': 10,
-		'num_intervals_scale_down_writes': 10,
+        'num_intervals_scale_down_reads': 10,
+        'num_intervals_scale_down_writes': 10,
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
@@ -446,8 +446,8 @@ def __check_table_rules(configuration):
             'max_provisioned_reads',
             'min_provisioned_writes',
             'max_provisioned_writes',
-			'num_intervals_scale_down_reads',
-			'num_intervals_scale_down_writes'
+            'num_intervals_scale_down_reads',
+            'num_intervals_scale_down_writes'
         ]
         for option in options:
             if table[option] < 1:
