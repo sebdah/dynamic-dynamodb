@@ -32,13 +32,12 @@ from dynamic_dynamodb.daemon import Daemon
 from dynamic_dynamodb.config_handler import get_global_option, get_table_option
 from dynamic_dynamodb.log_handler import LOGGER as logger
 
-
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
-
-    def run(self):
+consec_True_Read_Checks = 0
+consec_True_Write_Checks = 0
+def run(self):
         """ Run the daemon
-
         :type check_interval: int
         :param check_interval: Delay in seconds between checks
         """
@@ -91,40 +90,45 @@ def execute():
     # Ensure provisioning
     for table_name, table_key in sorted(dynamodb.get_tables_and_gsis()):
         try:
-            table.ensure_provisioning(table_name, table_key)
+			#the return var shows how many times the scale-down criteria has been met
+			#this is coupled with a var in config, "num_intervals_scale_down", to delay the scale-down
+			global consec_True_Read_Checks
+			global consec_True_Write_Checks
+			consec_True_Read_Checks, consec_True_Write_Checks = table.ensure_provisioning(table_name, table_key, consec_True_Read_Checks, consec_True_Write_Checks)
+			logger.debug('Number of Consecutive Checks for Scaling Down Reads: "{0}"'.format(consec_True_Read_Checks))
+			logger.debug('Number of Consecutive Checks for Scaling Down Writes: "{0}"'.format(consec_True_Write_Checks))
+			gsi_names = set()
+			# Add regexp table names
+			for gst_instance in dynamodb.table_gsis(table_name):
+				gsi_name = gst_instance[u'IndexName']
 
-            gsi_names = set()
-            # Add regexp table names
-            for gst_instance in dynamodb.table_gsis(table_name):
-                gsi_name = gst_instance[u'IndexName']
+				try:
+					gsi_keys = get_table_option(table_key, 'gsis').keys()
 
-                try:
-                    gsi_keys = get_table_option(table_key, 'gsis').keys()
+				except AttributeError:
+					# Continue if there are not GSIs configured
+					continue
 
-                except AttributeError:
-                    # Continue if there are not GSIs configured
-                    continue
+				for gsi_key in gsi_keys:
+					try:
+						if re.match(gsi_key, gsi_name):
+							logger.debug(
+								'Table {0} GSI {1} matches '
+								'GSI config key {2}'.format(
+									table_name, gsi_name, gsi_key))
+							gsi_names.add((gsi_name, gsi_key))
 
-                for gsi_key in gsi_keys:
-                    try:
-                        if re.match(gsi_key, gsi_name):
-                            logger.debug(
-                                'Table {0} GSI {1} matches '
-                                'GSI config key {2}'.format(
-                                    table_name, gsi_name, gsi_key))
-                            gsi_names.add((gsi_name, gsi_key))
+					except re.error:
+						logger.error('Invalid regular expression: "{0}"'.format(
+							gsi_key))
+						sys.exit(1)
 
-                    except re.error:
-                        logger.error('Invalid regular expression: "{0}"'.format(
-                            gsi_key))
-                        sys.exit(1)
-
-            for gsi_name, gsi_key in sorted(gsi_names):
-                gsi.ensure_provisioning(
-                    table_name,
-                    table_key,
-                    gsi_name,
-                    gsi_key)
+			for gsi_name, gsi_key in sorted(gsi_names):
+				gsi.ensure_provisioning(
+					table_name,
+					table_key,
+					gsi_name,
+					gsi_key)
 
         except JSONResponseError as error:
             exception = error.body['__type'].split('#')[1]
