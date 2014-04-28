@@ -56,15 +56,15 @@ def ensure_provisioning(
                 key_name,
                 updated_read_units,
                 updated_write_units)
-            return num_consec_read_checks, num_consec_write_checks
         else:
             logger.info('{0} - No need to change provisioning'.format(
                 table_name))
-            return num_consec_read_checks, num_consec_write_checks
     except JSONResponseError:
         raise
     except BotoServerError:
         raise
+
+    return num_consec_read_checks, num_consec_write_checks
 
 
 def __calculate_always_decrease_rw_values(
