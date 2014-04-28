@@ -29,7 +29,7 @@ def ensure_provisioning(
     if get_global_option('circuit_breaker_url'):
         if circuit_breaker.is_open():
             logger.warning('Circuit breaker is OPEN!')
-            return None
+            return (0, 0)
 
     try:
         read_update_needed, updated_read_units, num_consec_read_checks = \
