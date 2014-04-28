@@ -149,7 +149,7 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
         max_provisioned_reads = \
             get_table_option(key_name, 'max_provisioned_reads')
         num_read_checks_before_scale_down = \
-            get_table_option(key_name, 'num_read_checks_before_scale_down')
+            int(get_table_option(key_name, 'num_read_checks_before_scale_down'))
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -158,7 +158,6 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
     if (consumed_read_units_percent == 0 and not
             get_table_option(
                 key_name, 'allow_scaling_down_reads_on_0_percent')):
-        print('1')
         logger.info(
             '{0} - Scaling down reads is not done when usage is at 0%'.format(
                 table_name))
@@ -180,9 +179,9 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
         if updated_read_units != updated_provisioning:
             logger.info(
-                '{0} - Resetting number of Consecutive True Read Checks to 0 '
-                '(Reason: Scaling up) New Value: {1}'.format(
-                    num_read_checks_before_scale_down, consec_True_Read_Checks))
+                '{0} - Resetting the number of consecutive '
+                'read checks. Reason: scale up event detected'.format(
+                    table_name))
             consec_True_Read_Checks = 0
             update_needed = True
             updated_read_units = updated_provisioning
@@ -205,10 +204,9 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
 
             if updated_read_units != updated_provisioning:
                 logger.info(
-                    '{0} - Resetting number of Consecutive True Read Checks to '
-                    '0 (Reason: Scaling up) New Value: {1}'.format(
-                        num_read_checks_before_scale_down,
-                        consec_True_Read_Checks))
+                    '{0} - Resetting the number of consecutive '
+                    'read checks. Reason: scale up event detected'.format(
+                        table_name))
                 consec_True_Read_Checks = 0
                 update_needed = True
                 updated_read_units = updated_provisioning
@@ -231,25 +229,11 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
         if updated_read_units != updated_provisioning:
             # We need to look at how many times the consec_True_Read_Checks
             # integer has incremented and Compare to config file value
-            if (int(consec_True_Read_Checks) >=
-                    int(num_read_checks_before_scale_down)):
+            consec_True_Read_Checks = consec_True_Read_Checks + 1
+
+            if consec_True_Read_Checks >= num_read_checks_before_scale_down:
                 update_needed = True
                 updated_read_units = updated_provisioning
-                logger.info(
-                    '{0} - Number of Consecutive True Read Checks is Equal to '
-                    'or Greater than the number of Required True Checks: '
-                    '{1}'.format(
-                        consec_True_Read_Checks,
-                        num_read_checks_before_scale_down))
-                consec_True_Read_Checks = consec_True_Read_Checks + 1
-            else:
-                logger.info(
-                    '{0} - Number of Consecutive True Read Checks is Less than '
-                    'the number of Required True Checks: '
-                    '{1}'.format(
-                        consec_True_Read_Checks,
-                        num_read_checks_before_scale_down))
-                consec_True_Read_Checks = consec_True_Read_Checks + 1
 
     if max_provisioned_reads:
         if (int(updated_read_units) > int(max_provisioned_reads)):
@@ -259,7 +243,12 @@ def __ensure_provisioning_reads(table_name, key_name, consec_True_Read_Checks):
                 'Will not increase writes over max-provisioned-reads '
                 'limit ({0} writes)'.format(updated_read_units))
 
-    return update_needed, int(updated_read_units), int(consec_True_Read_Checks)
+    logger.info('{0} - Consecutive read checks {1}/{2}'.format(
+        table_name,
+        consec_True_Read_Checks,
+        num_read_checks_before_scale_down))
+
+    return update_needed, updated_read_units, consec_True_Read_Checks
 
 
 def __ensure_provisioning_writes(
@@ -340,10 +329,9 @@ def __ensure_provisioning_writes(
             # If we need to increase provisioning, then we need to reset the
             # consecTrueChecks to 0 as it applies only to down-scaling
             logger.info(
-                '{0} - Resetting number of Consecutive True Write Checks to 0 '
-                '(Reason: Scaling up) New Value: {1}'.format(
-                    num_write_checks_before_scale_down,
-                    consec_True_Write_Checks))
+                '{0} - Resetting the number of consecutive '
+                'read checks. Reason: scale up event detected'.format(
+                    table_name))
             consec_True_Write_Checks = 0
             update_needed = True
             updated_write_units = updated_provisioning
@@ -368,11 +356,9 @@ def __ensure_provisioning_writes(
                 # If we need to increase provisioning, then we need to reset
                 # the consecTrueChecks to 0 as it applies only to down-scaling
                 logger.info(
-                    '{0} - Resetting number of Consecutive True Write Checks '
-                    'to 0 (Reason: Scaling up) New Value: '
-                    '{1}'.format(
-                        num_write_checks_before_scale_down,
-                        consec_True_Write_Checks))
+                    '{0} - Resetting the number of consecutive '
+                    'read checks. Reason: scale up event detected'.format(
+                        table_name))
                 consec_True_Write_Checks = 0
                 update_needed = True
                 updated_write_units = updated_provisioning
@@ -395,25 +381,11 @@ def __ensure_provisioning_writes(
         if updated_write_units != updated_provisioning:
             # We need to look at how many times the consecTrueChecks integer
             # has incremented and Compare to config file value
-            if (int(consec_True_Write_Checks) >=
-                    int(num_write_checks_before_scale_down)):
+            consec_True_Write_Checks = consec_True_Write_Checks + 1
+
+            if consec_True_Write_Checks >= num_write_checks_before_scale_down:
                 update_needed = True
                 updated_write_units = updated_provisioning
-                logger.info(
-                    '{0} - Number of Consecutive True Write Checks is Equal to '
-                    'or Greater than the number of Required True Checks: '
-                    '{1}'.format(
-                        consec_True_Write_Checks,
-                        num_write_checks_before_scale_down))
-                consec_True_Write_Checks = consec_True_Write_Checks + 1
-            else:
-                logger.info(
-                    '{0} - Number of Consecutive True Write Checks is Less '
-                    'than the number of Required True Checks: '
-                    '{1}'.format(
-                        consec_True_Write_Checks,
-                        num_write_checks_before_scale_down))
-                consec_True_Write_Checks = consec_True_Write_Checks + 1
 
     if max_provisioned_writes:
         if int(updated_write_units) > int(max_provisioned_writes):
@@ -423,7 +395,12 @@ def __ensure_provisioning_writes(
                 'Will not increase writes over max-provisioned-writes '
                 'limit ({0} writes)'.format(updated_write_units))
 
-    return update_needed, int(updated_write_units), consec_True_Write_Checks
+    logger.info('{0} - Consecutive read checks {1}/{2}'.format(
+        table_name,
+        consec_True_Write_Checks,
+        num_write_checks_before_scale_down))
+
+    return update_needed, updated_write_units, consec_True_Write_Checks
 
 
 def __update_throughput(table_name, read_units, write_units, key_name):
