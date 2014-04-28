@@ -136,7 +136,7 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
 
     update_needed = False
     try:
-        updated_read_units = dynamodb.get_provisioned_gsi_read_units(
+        current_read_units = dynamodb.get_provisioned_gsi_read_units(
             table_name, gsi_name)
         consumed_read_units_percent = \
             gsi_stats.get_consumed_read_units_percent(table_name, gsi_name)
@@ -164,6 +164,9 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
     except BotoServerError:
         raise
 
+    # Set the updated units to the current read unit value
+    updated_read_units = current_read_units
+
     if (consumed_read_units_percent == 0 and not
             get_gsi_option(
                 table_key,
@@ -177,61 +180,61 @@ def __ensure_provisioning_reads(table_name, table_key, gsi_name, gsi_key):
 
     elif consumed_read_units_percent >= reads_upper_threshold:
         if increase_reads_unit == 'percent':
-            updated_provisioning = calculators.increase_reads_in_percent(
-                updated_read_units,
+            calulated_provisioning = calculators.increase_reads_in_percent(
+                current_read_units,
                 increase_reads_with,
                 get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
                 '{0} - GSI: {1}'.format(table_name, gsi_name))
         else:
-            updated_provisioning = calculators.increase_reads_in_units(
-                updated_read_units,
+            calulated_provisioning = calculators.increase_reads_in_units(
+                current_read_units,
                 increase_reads_with,
                 get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
                 '{0} - GSI: {1}'.format(table_name, gsi_name))
 
-        if updated_read_units != updated_provisioning:
+        if current_read_units != calulated_provisioning:
             update_needed = True
-            updated_read_units = updated_provisioning
+            updated_read_units = calulated_provisioning
 
     elif throttled_read_count > throttled_reads_upper_threshold:
 
         if throttled_reads_upper_threshold > 0:
 
             if increase_reads_unit == 'percent':
-                updated_provisioning = calculators.increase_reads_in_percent(
-                    updated_read_units,
+                calulated_provisioning = calculators.increase_reads_in_percent(
+                    current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
-                updated_provisioning = calculators.increase_reads_in_units(
-                    updated_read_units,
+                calulated_provisioning = calculators.increase_reads_in_units(
+                    current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
-            if updated_read_units != updated_provisioning:
+            if current_read_units != calulated_provisioning:
                 update_needed = True
-                updated_read_units = updated_provisioning
+                updated_read_units = calulated_provisioning
 
     elif consumed_read_units_percent <= reads_lower_threshold:
 
         if decrease_reads_unit == 'percent':
-            updated_provisioning = calculators.decrease_reads_in_percent(
-                updated_read_units,
+            calulated_provisioning = calculators.decrease_reads_in_percent(
+                current_read_units,
                 decrease_reads_with,
                 get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
                 '{0} - GSI: {1}'.format(table_name, gsi_name))
         else:
-            updated_provisioning = calculators.decrease_reads_in_units(
-                updated_read_units,
+            calulated_provisioning = calculators.decrease_reads_in_units(
+                current_read_units,
                 decrease_reads_with,
                 get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
                 '{0} - GSI: {1}'.format(table_name, gsi_name))
 
-        if updated_read_units != updated_provisioning:
+        if current_read_units != calulated_provisioning:
             update_needed = True
-            updated_read_units = updated_provisioning
+            updated_read_units = calulated_provisioning
 
     if max_provisioned_reads:
         if int(updated_read_units) > int(max_provisioned_reads):
@@ -267,7 +270,7 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
 
     update_needed = False
     try:
-        updated_write_units = dynamodb.get_provisioned_gsi_write_units(
+        current_write_units = dynamodb.get_provisioned_gsi_write_units(
             table_name, gsi_name)
         consumed_write_units_percent = \
             gsi_stats.get_consumed_write_units_percent(table_name, gsi_name)
@@ -295,6 +298,9 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
     except BotoServerError:
         raise
 
+    # Set the updated units to the current write unit value
+    updated_write_units = current_write_units
+
     # Check if we should update write provisioning
     if (consumed_write_units_percent == 0 and not get_gsi_option(
             table_key, gsi_key, 'allow_scaling_down_writes_on_0_percent')):
@@ -307,60 +313,60 @@ def __ensure_provisioning_writes(table_name, table_key, gsi_name, gsi_key):
     elif consumed_write_units_percent >= writes_upper_threshold:
 
         if increase_writes_unit == 'percent':
-            updated_provisioning = calculators.increase_writes_in_percent(
-                updated_write_units,
+            calulated_provisioning = calculators.increase_writes_in_percent(
+                current_write_units,
                 increase_writes_with,
                 get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
                 '{0} - GSI: {1}'.format(table_name, gsi_name))
         else:
-            updated_provisioning = calculators.increase_writes_in_units(
-                updated_write_units,
+            calulated_provisioning = calculators.increase_writes_in_units(
+                current_write_units,
                 increase_writes_with,
                 get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
                 '{0} - GSI: {1}'.format(table_name, gsi_name))
 
-        if updated_write_units != updated_provisioning:
+        if current_write_units != calulated_provisioning:
             update_needed = True
-            updated_write_units = updated_provisioning
+            updated_write_units = calulated_provisioning
 
     elif throttled_write_count > throttled_writes_upper_threshold:
 
         if throttled_writes_upper_threshold > 0:
             if increase_writes_unit == 'percent':
-                updated_provisioning = calculators.increase_writes_in_percent(
-                    updated_write_units,
+                calulated_provisioning = calculators.increase_writes_in_percent(
+                    current_write_units,
                     increase_writes_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
-                updated_provisioning = calculators.increase_writes_in_units(
-                    updated_write_units,
+                calulated_provisioning = calculators.increase_writes_in_units(
+                    current_write_units,
                     increase_writes_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
-            if updated_write_units != updated_provisioning:
+            if current_write_units != calulated_provisioning:
                 update_needed = True
-                updated_write_units = updated_provisioning
+                updated_write_units = calulated_provisioning
 
     elif consumed_write_units_percent <= writes_lower_threshold:
 
         if decrease_writes_unit == 'percent':
-            updated_provisioning = calculators.decrease_writes_in_percent(
-                updated_write_units,
+            calulated_provisioning = calculators.decrease_writes_in_percent(
+                current_write_units,
                 decrease_writes_with,
                 get_gsi_option(table_key, gsi_key, 'min_provisioned_writes'),
                 '{0} - GSI: {1}'.format(table_name, gsi_name))
         else:
-            updated_provisioning = calculators.decrease_writes_in_units(
-                updated_write_units,
+            calulated_provisioning = calculators.decrease_writes_in_units(
+                current_write_units,
                 decrease_writes_with,
                 get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
                 '{0} - GSI: {1}'.format(table_name, gsi_name))
 
-        if updated_write_units != updated_provisioning:
+        if current_write_units != calulated_provisioning:
             update_needed = True
-            updated_write_units = updated_provisioning
+            updated_write_units = calulated_provisioning
 
     if max_provisioned_writes:
         if int(updated_write_units) > int(max_provisioned_writes):

@@ -129,7 +129,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
 
     update_needed = False
     try:
-        updated_read_units = dynamodb.get_provisioned_table_read_units(
+        current_read_units = dynamodb.get_provisioned_table_read_units(
             table_name)
         consumed_read_units_percent = \
             table_stats.get_consumed_read_units_percent(table_name)
@@ -158,6 +158,9 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
     except BotoServerError:
         raise
 
+    # Set the updated units to the current read unit value
+    updated_read_units = current_read_units
+
     if (consumed_read_units_percent == 0 and not
             get_table_option(
                 key_name, 'allow_scaling_down_reads_on_0_percent')):
@@ -168,75 +171,75 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
     elif consumed_read_units_percent >= reads_upper_threshold:
 
         if increase_reads_unit == 'percent':
-            updated_provisioning = calculators.increase_reads_in_percent(
-                updated_read_units,
+            calulated_provisioning = calculators.increase_reads_in_percent(
+                current_read_units,
                 increase_reads_with,
                 get_table_option(key_name, 'max_provisioned_reads'),
                 table_name)
         else:
-            updated_provisioning = calculators.increase_reads_in_units(
-                updated_read_units,
+            calulated_provisioning = calculators.increase_reads_in_units(
+                current_read_units,
                 increase_reads_with,
                 get_table_option(key_name, 'max_provisioned_reads'),
                 table_name)
 
-        if updated_read_units != updated_provisioning:
+        if current_read_units != calulated_provisioning:
             logger.info(
                 '{0} - Resetting the number of consecutive '
                 'read checks. Reason: scale up event detected'.format(
                     table_name))
             num_consec_read_checks = 0
             update_needed = True
-            updated_read_units = updated_provisioning
+            updated_read_units = calulated_provisioning
 
     elif throttled_read_count > throttled_reads_upper_threshold:
 
         if throttled_reads_upper_threshold > 0:
             if increase_reads_unit == 'percent':
-                updated_provisioning = calculators.increase_reads_in_percent(
+                calulated_provisioning = calculators.increase_reads_in_percent(
                     updated_read_units,
                     increase_reads_with,
                     get_table_option(key_name, 'max_provisioned_reads'),
                     table_name)
             else:
-                updated_provisioning = calculators.increase_reads_in_units(
+                calulated_provisioning = calculators.increase_reads_in_units(
                     updated_read_units,
                     increase_reads_with,
                     get_table_option(key_name, 'max_provisioned_reads'),
                     table_name)
 
-            if updated_read_units != updated_provisioning:
+            if current_read_units != calulated_provisioning:
                 logger.info(
                     '{0} - Resetting the number of consecutive '
                     'read checks. Reason: scale up event detected'.format(
                         table_name))
                 num_consec_read_checks = 0
                 update_needed = True
-                updated_read_units = updated_provisioning
+                updated_read_units = calulated_provisioning
 
     elif consumed_read_units_percent <= reads_lower_threshold:
 
         if decrease_reads_unit == 'percent':
-            updated_provisioning = calculators.decrease_reads_in_percent(
+            calulated_provisioning = calculators.decrease_reads_in_percent(
                 updated_read_units,
                 decrease_reads_with,
                 get_table_option(key_name, 'min_provisioned_reads'),
                 table_name)
         else:
-            updated_provisioning = calculators.decrease_reads_in_units(
+            calulated_provisioning = calculators.decrease_reads_in_units(
                 updated_read_units,
                 decrease_reads_with,
                 get_table_option(key_name, 'min_provisioned_reads'),
                 table_name)
 
-        if updated_read_units != updated_provisioning:
+        if current_read_units != calulated_provisioning:
             # We need to look at how many times the num_consec_read_checks
             # integer has incremented and Compare to config file value
             num_consec_read_checks = num_consec_read_checks + 1
 
             if num_consec_read_checks >= num_read_checks_before_scale_down:
                 update_needed = True
-                updated_read_units = updated_provisioning
+                updated_read_units = calulated_provisioning
 
     if max_provisioned_reads:
         if (int(updated_read_units) > int(max_provisioned_reads)):
@@ -274,7 +277,7 @@ def __ensure_provisioning_writes(
 
     update_needed = False
     try:
-        updated_write_units = dynamodb.get_provisioned_table_write_units(
+        current_write_units = dynamodb.get_provisioned_table_write_units(
             table_name)
         consumed_write_units_percent = \
             table_stats.get_consumed_write_units_percent(table_name)
@@ -303,6 +306,9 @@ def __ensure_provisioning_writes(
     except BotoServerError:
         raise
 
+    # Set the updated units to the current read unit value
+    updated_write_units = current_write_units
+
     # Check if we should update write provisioning
     if (consumed_write_units_percent == 0 and not
             get_table_option(
@@ -315,19 +321,19 @@ def __ensure_provisioning_writes(
     elif consumed_write_units_percent >= writes_upper_threshold:
 
         if increase_writes_unit == 'percent':
-            updated_provisioning = calculators.increase_writes_in_percent(
-                updated_write_units,
+            calulated_provisioning = calculators.increase_writes_in_percent(
+                current_write_units,
                 increase_writes_with,
                 get_table_option(key_name, 'max_provisioned_writes'),
                 table_name)
         else:
-            updated_provisioning = calculators.increase_writes_in_units(
-                updated_write_units,
+            calulated_provisioning = calculators.increase_writes_in_units(
+                current_write_units,
                 increase_writes_with,
                 get_table_option(key_name, 'max_provisioned_reads'),
                 table_name)
 
-        if updated_write_units != updated_provisioning:
+        if current_write_units != calulated_provisioning:
             # If we need to increase provisioning, then we need to reset the
             # consecTrueChecks to 0 as it applies only to down-scaling
             logger.info(
@@ -336,25 +342,25 @@ def __ensure_provisioning_writes(
                     table_name))
             num_consec_write_checks = 0
             update_needed = True
-            updated_write_units = updated_provisioning
+            updated_write_units = calulated_provisioning
 
     elif throttled_write_count > throttled_writes_upper_threshold:
 
         if throttled_writes_upper_threshold > 0:
             if increase_writes_unit == 'percent':
-                updated_provisioning = calculators.increase_writes_in_percent(
-                    updated_write_units,
+                calulated_provisioning = calculators.increase_writes_in_percent(
+                    current_write_units,
                     increase_writes_with,
                     get_table_option(key_name, 'max_provisioned_writes'),
                     table_name)
             else:
-                updated_provisioning = calculators.increase_writes_in_units(
-                    updated_write_units,
+                calulated_provisioning = calculators.increase_writes_in_units(
+                    current_write_units,
                     increase_writes_with,
                     get_table_option(key_name, 'max_provisioned_reads'),
                     table_name)
 
-            if updated_write_units != updated_provisioning:
+            if current_write_units != calulated_provisioning:
                 # If we need to increase provisioning, then we need to reset
                 # the consecTrueChecks to 0 as it applies only to down-scaling
                 logger.info(
@@ -363,31 +369,31 @@ def __ensure_provisioning_writes(
                         table_name))
                 num_consec_write_checks = 0
                 update_needed = True
-                updated_write_units = updated_provisioning
+                updated_write_units = calulated_provisioning
 
     elif consumed_write_units_percent <= writes_lower_threshold:
 
         if decrease_writes_unit == 'percent':
-            updated_provisioning = calculators.decrease_writes_in_percent(
-                updated_write_units,
+            calulated_provisioning = calculators.decrease_writes_in_percent(
+                current_write_units,
                 decrease_writes_with,
                 get_table_option(key_name, 'min_provisioned_writes'),
                 table_name)
         else:
-            updated_provisioning = calculators.decrease_writes_in_units(
-                updated_write_units,
+            calulated_provisioning = calculators.decrease_writes_in_units(
+                current_write_units,
                 decrease_writes_with,
                 get_table_option(key_name, 'min_provisioned_reads'),
                 table_name)
 
-        if updated_write_units != updated_provisioning:
+        if current_write_units != calulated_provisioning:
             # We need to look at how many times the consecTrueChecks integer
             # has incremented and Compare to config file value
             num_consec_write_checks = num_consec_write_checks + 1
 
             if num_consec_write_checks >= num_write_checks_before_scale_down:
                 update_needed = True
-                updated_write_units = updated_provisioning
+                updated_write_units = calulated_provisioning
 
     if max_provisioned_writes:
         if int(updated_write_units) > int(max_provisioned_writes):
