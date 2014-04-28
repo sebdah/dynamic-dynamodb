@@ -32,6 +32,9 @@ from dynamic_dynamodb.daemon import Daemon
 from dynamic_dynamodb.config_handler import get_global_option, get_table_option
 from dynamic_dynamodb.log_handler import LOGGER as logger
 
+num_consec_read_checks = 0
+num_consec_write_checks = 0
+
 
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
@@ -87,6 +90,9 @@ def main():
 
 def execute():
     """ Ensure provisioning """
+    global num_consec_read_checks
+    global num_consec_write_checks
+
     boto_server_error_retries = 3
 
     # Ensure provisioning
@@ -95,20 +101,18 @@ def execute():
             # The return var shows how many times the scale-down criteria
             #  has been met. This is coupled with a var in config,
             # "num_intervals_scale_down", to delay the scale-down
-            global consec_True_Read_Checks
-            global consec_True_Write_Checks
-            consec_True_Read_Checks, consec_True_Write_Checks = \
+            num_consec_read_checks, num_consec_write_checks = \
                 table.ensure_provisioning(
                     table_name,
                     table_key,
-                    consec_True_Read_Checks,
-                    consec_True_Write_Checks)
+                    num_consec_read_checks,
+                    num_consec_write_checks)
             logger.debug(
                 'Number of Consecutive Checks for Scaling Down '
-                'Reads: "{0}"'.format(consec_True_Read_Checks))
+                'Reads: "{0}"'.format(num_consec_read_checks))
             logger.debug(
                 'Number of Consecutive Checks for Scaling Down '
-                'Writes: "{0}"'.format(consec_True_Write_Checks))
+                'Writes: "{0}"'.format(num_consec_write_checks))
             gsi_names = set()
             # Add regexp table names
             for gst_instance in dynamodb.table_gsis(table_name):
