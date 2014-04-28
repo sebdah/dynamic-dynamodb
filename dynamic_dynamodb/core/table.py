@@ -11,7 +11,8 @@ from dynamic_dynamodb.config_handler import get_table_option, get_global_option
 
 
 def ensure_provisioning(
-        table_name, key_name, consec_True_Read_Checks,
+        table_name, key_name,
+        consec_True_Read_Checks,
         consec_True_Write_Checks):
     """ Ensure that provisioning is correct
 
