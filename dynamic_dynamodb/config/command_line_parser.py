@@ -118,8 +118,8 @@ def parse():
     r_scaling_ag.add_argument(
         '--num-read-checks-before-scale-down',
         type=int,
-        help="""Number of Consecutive Checks that Meet Criteria before
-                Scale-Down for Reads Occurs""")
+        help="""Number of consecutive checks that must meet criteria
+            before a scale down event occurs""")
     w_scaling_ag = parser.add_argument_group('Write units scaling properties')
     w_scaling_ag.add_argument(
         '--writes-upper-threshold',
@@ -168,8 +168,8 @@ def parse():
     w_scaling_ag.add_argument(
         '--num-write-checks-before-scale-down',
         type=int,
-        help="""Number of Consecutive Checks that Meet Criteria before
-                Scale-Down for Writes Occurs""")
+        help="""Number of consecutive checks that must meet criteria
+            before a scale down event occurs""")
     args = parser.parse_args()
 
     # Print the version and quit
