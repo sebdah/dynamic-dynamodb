@@ -32,9 +32,6 @@ from dynamic_dynamodb.daemon import Daemon
 from dynamic_dynamodb.config_handler import get_global_option, get_table_option
 from dynamic_dynamodb.log_handler import LOGGER as logger
 
-num_consec_read_checks = 0
-num_consec_write_checks = 0
-
 CHECK_STATUS = {
     'tables': {},
     'gsis': {}
