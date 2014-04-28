@@ -233,8 +233,6 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                 table_name)
 
         if current_read_units != calulated_provisioning:
-            # We need to look at how many times the num_consec_read_checks
-            # integer has incremented and Compare to config file value
             num_consec_read_checks = num_consec_read_checks + 1
 
             if num_consec_read_checks >= num_read_checks_before_scale_down:
@@ -242,7 +240,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                 updated_read_units = calulated_provisioning
 
     if max_provisioned_reads:
-        if (int(updated_read_units) > int(max_provisioned_reads)):
+        if int(updated_read_units) > int(max_provisioned_reads):
             update_needed = True
             updated_read_units = int(max_provisioned_reads)
             logger.info(
