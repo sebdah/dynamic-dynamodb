@@ -38,9 +38,6 @@ num_consec_write_checks = 0
 
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
-    consec_True_Read_Checks = 0
-    consec_True_Write_Checks = 0
-
     def run(self):
         """ Run the daemon
         :type check_interval: int
