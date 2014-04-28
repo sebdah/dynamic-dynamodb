@@ -78,6 +78,8 @@ DEFAULT_OPTIONS = {
         'max_provisioned_reads': None,
         'min_provisioned_writes': None,
         'max_provisioned_writes': None,
+        'num_read_checks_before_scale_down': 1,
+        'num_write_checks_before_scale_down': 1,
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,

@@ -522,6 +522,18 @@ def parse(config_path):
                         'option': 'sns-message-types',
                         'required': False,
                         'type': 'str'
+                    },
+                    {
+                        'key': 'num_read_checks_before_scale_down',
+                        'option': 'num-read-checks-before-scale-down',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'num_write_checks_before_scale_down',
+                        'option': 'num-write-checks-before-scale-down',
+                        'required': False,
+                        'type': 'int'
                     }
                 ])
 

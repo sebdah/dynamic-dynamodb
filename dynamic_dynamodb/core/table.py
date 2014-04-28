@@ -152,7 +152,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         max_provisioned_reads = \
             get_table_option(key_name, 'max_provisioned_reads')
         num_read_checks_before_scale_down = \
-            int(get_table_option(key_name, 'num_read_checks_before_scale_down'))
+            get_table_option(key_name, 'num_read_checks_before_scale_down')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -336,7 +336,7 @@ def __ensure_provisioning_writes(
         if current_write_units != calulated_provisioning:
             logger.info(
                 '{0} - Resetting the number of consecutive '
-                'read checks. Reason: scale up event detected'.format(
+                'write checks. Reason: scale up event detected'.format(
                     table_name))
             num_consec_write_checks = 0
             update_needed = True
@@ -361,7 +361,7 @@ def __ensure_provisioning_writes(
             if current_write_units != calulated_provisioning:
                 logger.info(
                     '{0} - Resetting the number of consecutive '
-                    'read checks. Reason: scale up event detected'.format(
+                    'write checks. Reason: scale up event detected'.format(
                         table_name))
                 num_consec_write_checks = 0
                 update_needed = True
@@ -397,7 +397,7 @@ def __ensure_provisioning_writes(
                 'Will not increase writes over max-provisioned-writes '
                 'limit ({0} writes)'.format(updated_write_units))
 
-    logger.info('{0} - Consecutive read checks {1}/{2}'.format(
+    logger.info('{0} - Consecutive write checks {1}/{2}'.format(
         table_name,
         num_consec_write_checks,
         num_write_checks_before_scale_down))
