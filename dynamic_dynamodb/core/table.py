@@ -278,7 +278,7 @@ def __ensure_provisioning_writes(table_name, key_name):
             updated_provisioning = calculators.increase_writes_in_units(
                 updated_write_units,
                 increase_writes_with,
-                get_table_option(key_name, 'max_provisioned_reads'),
+                get_table_option(key_name, 'max_provisioned_writes'),
                 table_name)
 
         if updated_write_units != updated_provisioning:
@@ -298,7 +298,7 @@ def __ensure_provisioning_writes(table_name, key_name):
                 updated_provisioning = calculators.increase_writes_in_units(
                     updated_write_units,
                     increase_writes_with,
-                    get_table_option(key_name, 'max_provisioned_reads'),
+                    get_table_option(key_name, 'max_provisioned_writes'),
                     table_name)
 
             if updated_write_units != updated_provisioning:
@@ -317,7 +317,7 @@ def __ensure_provisioning_writes(table_name, key_name):
             updated_provisioning = calculators.decrease_writes_in_units(
                 updated_write_units,
                 decrease_writes_with,
-                get_table_option(key_name, 'min_provisioned_reads'),
+                get_table_option(key_name, 'min_provisioned_writes'),
                 table_name)
 
         if updated_write_units != updated_provisioning:
