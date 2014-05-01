@@ -11,7 +11,7 @@ All you need to do is to tell Dynamic DynamoDB is at which point and how much yo
 
 See an example of how to configure Dynamic DynamoDB under **Basic usage** or checkout `dynamic-dynamodb --help`.
 
-**Gratefully receiving donations at [Gittip](https://www.gittip.com/sebdah/).**
+**Gratefully receiving donations via [Flattr](https://www.gittip.com/sebdah/).** <script id='fb6mmnt'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=sebdah&button=compact&url='+encodeURIComponent(document.URL);f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('fb6mmnt');</script>
 
 Features in short
 -----------------
