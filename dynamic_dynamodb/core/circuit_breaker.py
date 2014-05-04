@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Circuit breaker functionality """
 import re
 import sys

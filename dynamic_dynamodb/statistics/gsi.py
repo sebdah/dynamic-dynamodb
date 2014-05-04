@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ This module returns stats about the DynamoDB table """
 import math
 from datetime import datetime, timedelta
@@ -5,9 +6,9 @@ from datetime import datetime, timedelta
 from boto.exception import JSONResponseError, BotoServerError
 from retrying import retry
 
-from dynamic_dynamodb.core import dynamodb
+from dynamic_dynamodb.aws import dynamodb
 from dynamic_dynamodb.log_handler import LOGGER as logger
-from dynamic_dynamodb.core.cloudwatch import (
+from dynamic_dynamodb.aws.cloudwatch import (
     CLOUDWATCH_CONNECTION as cloudwatch_connection)
 
 
@@ -24,7 +25,7 @@ def get_consumed_read_units_percent(table_name, gsi_name, time_frame=300):
     """
     try:
         metrics = __get_aws_metric(
-            table_name, gsi_name, time_frame,  'ConsumedReadCapacityUnits')
+            table_name, gsi_name, time_frame, 'ConsumedReadCapacityUnits')
     except BotoServerError:
         raise
 

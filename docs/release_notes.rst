@@ -1,6 +1,21 @@
 Release notes
 =============
 
+1.12.1
+------
+
+**Release date:** 2014-04-28
+
+- Fixed reading of wrong config options
+
+1.12.0
+------
+
+**Release date:** 2014-04-26
+
+- Scaling up will now be allowed even outside maintenance windows (`#138 <https://github.com/sebdah/dynamic-dynamodb/issues/138>`__)
+- Reduced code duplication between GSI and table scaling. Implemented some tests for the core calculatations (`#139 <https://github.com/sebdah/dynamic-dynamodb/issues/139>`__)
+
 1.11.0
 ------
 

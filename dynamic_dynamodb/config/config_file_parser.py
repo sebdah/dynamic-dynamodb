@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Command line configuration parser """
 import sys
 import os.path
@@ -324,15 +325,27 @@ def parse(config_path):
                     'required': False,
                     'type': 'str'
                 },
-				{
-                    'key': 'num_intervals_scale_down_reads',
-                    'option': 'num-intervals-scale-down-reads',
+                {
+                    'key': 'num_read_checks_before_scale_down',
+                    'option': 'num-read-checks-before-scale-down',
                     'required': False,
                     'type': 'int'
                 },
-				{
-                    'key': 'num_intervals_scale_down_writes',
-                    'option': 'num-intervals-scale-down-writes',
+                {
+                    'key': 'num_write_checks_before_scale_down',
+                    'option': 'num-write-checks-before-scale-down',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'num_write_checks_reset_percent',
+                    'option': 'num-write-checks-reset-percent',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'num_read_checks_reset_percent',
+                    'option': 'num-read-checks-reset-percent',
                     'required': False,
                     'type': 'int'
                 }
@@ -521,7 +534,31 @@ def parse(config_path):
                         'option': 'sns-message-types',
                         'required': False,
                         'type': 'str'
-                    }
+                    },
+                    {
+                        'key': 'num_read_checks_before_scale_down',
+                        'option': 'num-read-checks-before-scale-down',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'num_write_checks_before_scale_down',
+                        'option': 'num-write-checks-before-scale-down',
+                        'required': False,
+                        'type': 'int'
+                    },
+		    {
+			'key': 'num_write_checks_reset_percent',
+			'option': 'num-write-checks-reset-percent',
+			'required': False,
+			'type': 'int'
+		    },
+		    {
+			'key': 'num_read_checks_reset_percent',
+			'option': 'num-read-checks-reset-percent',
+			'required': False,
+			'type': 'int'
+		    }
                 ])
 
     return dict(

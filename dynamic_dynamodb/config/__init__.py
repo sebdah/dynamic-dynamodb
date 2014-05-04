@@ -48,8 +48,10 @@ DEFAULT_OPTIONS = {
         'max_provisioned_reads': None,
         'min_provisioned_writes': None,
         'max_provisioned_writes': None,
-		'num_intervals_scale_down_reads': 10,
-		'num_intervals_scale_down_writes': 10,
+        'num_read_checks_before_scale_down': 1,
+        'num_write_checks_before_scale_down': 1,
+	'num_read_checks_reset_percent' : 31,
+	'num_write_checks_reset_percent' : 31,
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
@@ -78,6 +80,10 @@ DEFAULT_OPTIONS = {
         'max_provisioned_reads': None,
         'min_provisioned_writes': None,
         'max_provisioned_writes': None,
+        'num_read_checks_before_scale_down': 1,
+        'num_write_checks_before_scale_down': 1,
+	'num_read_checks_reset_percent' : 31,
+	'num_write_checks_reset_percent' : 31,
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
@@ -354,8 +360,8 @@ def __check_gsi_rules(configuration):
             if (int(gsi['min_provisioned_reads']) >
                     int(gsi['max_provisioned_reads'])):
                 print(
-                    'min_provisioned_reads ({0}) may not be higher than '
-                    'max_provisioned_reads ({1}) for GSI {2}'.format(
+                    'min-provisioned-reads ({0}) may not be higher than '
+                    'max-provisioned-reads ({1}) for GSI {2}'.format(
                         gsi['min_provisioned_reads'],
                         gsi['max_provisioned_reads'],
                         gsi_name))
@@ -363,8 +369,8 @@ def __check_gsi_rules(configuration):
             elif (int(gsi['min_provisioned_writes']) >
                     int(gsi['max_provisioned_writes'])):
                 print(
-                    'min_provisioned_writes ({0}) may not be higher than '
-                    'max_provisioned_writes ({1}) for GSI {2}'.format(
+                    'min-provisioned-writes ({0}) may not be higher than '
+                    'max-provisioned-writes ({1}) for GSI {2}'.format(
                         gsi['min_provisioned_writes'],
                         gsi['max_provisioned_writes'],
                         gsi_name))
@@ -446,8 +452,10 @@ def __check_table_rules(configuration):
             'max_provisioned_reads',
             'min_provisioned_writes',
             'max_provisioned_writes',
-			'num_intervals_scale_down_reads',
-			'num_intervals_scale_down_writes'
+            'num_read_checks_before_scale_down',
+            'num_write_checks_before_scale_down',
+	    'num_read_checks_reset_percent',
+	    'num_write_checks_reset_percent'
         ]
         for option in options:
             if table[option] < 1:
