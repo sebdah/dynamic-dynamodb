@@ -54,6 +54,12 @@ def ensure_provisioning(
                 gsi_key,
                 num_consec_write_checks)
 
+        if read_update_needed:
+            num_consec_read_checks = 0
+
+        if write_update_needed:
+            num_consec_write_checks = 0
+
         # Handle throughput updates
         if read_update_needed or write_update_needed:
             logger.info(
