@@ -252,12 +252,12 @@ def __ensure_provisioning_reads(
                 update_needed = True
                 updated_read_units = calulated_provisioning
 				
-    elif consumed_read_units_percent >= num_read_checks_reset_percent
-	logger.info(
+    elif consumed_read_units_percent >= num_read_checks_reset_percent:
+		logger.info(
             '{0} - Resetting the number of consecutive '
             'read checks. Reason: Consumed Percent {1} is Greater than Reset Percent: {2}'.format(
                 table_name, consumed_read_units_percent, num_read_checks_reset_percent))
-	num_consec_read_checks = 0
+		num_consec_read_checks = 0
 
     elif consumed_read_units_percent <= reads_lower_threshold:
 
@@ -420,12 +420,12 @@ def __ensure_provisioning_writes(
                 update_needed = True
                 updated_write_units = calulated_provisioning
 				
-    elif consumed_write_units_percent >= num_write_checks_reset_percent
-	logger.info(
+    elif consumed_write_units_percent >= num_write_checks_reset_percent:
+		logger.info(
             '{0} - Resetting the number of consecutive '
             'write checks. Reason: Consumed Percent {1} is Greater than Reset Percent: {2}'.format(
                 table_name, consumed_write_units_percent, num_write_checks_reset_percent))
-	num_consec_write_checks = 0
+		num_consec_write_checks = 0
 
     elif consumed_write_units_percent <= writes_lower_threshold:
 
