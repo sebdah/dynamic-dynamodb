@@ -255,6 +255,8 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                 get_table_option(key_name, 'min_provisioned_reads'),
                 table_name)
 
+        print(current_read_units)
+        print(calculated_provisioning)
         if current_read_units != calculated_provisioning:
             num_consec_read_checks = num_consec_read_checks + 1
 

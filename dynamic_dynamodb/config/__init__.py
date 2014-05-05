@@ -453,9 +453,7 @@ def __check_table_rules(configuration):
             'min_provisioned_writes',
             'max_provisioned_writes',
             'num_read_checks_before_scale_down',
-            'num_write_checks_before_scale_down',
-            'num_read_checks_reset_percent',
-            'num_write_checks_reset_percent'
+            'num_write_checks_before_scale_down'
         ]
         for option in options:
             if table[option] < 1:
