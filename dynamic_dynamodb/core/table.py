@@ -43,6 +43,12 @@ def ensure_provisioning(
                 key_name,
                 num_consec_write_checks)
 
+        if read_update_needed:
+            num_consec_read_checks = 0
+
+        if write_update_needed:
+            num_consec_write_checks = 0
+
         # Handle throughput updates
         if read_update_needed or write_update_needed:
             logger.info(
@@ -219,7 +225,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                 update_needed = True
                 updated_read_units = calulated_provisioning
 
-    elif consumed_read_units_percent >= num_read_checks_reset_percent:
+    if consumed_read_units_percent >= num_read_checks_reset_percent:
 
         logger.info(
             '{0} - Resetting the number of consecutive '
