@@ -120,6 +120,11 @@ def parse():
         type=int,
         help="""Number of consecutive checks that must meet criteria
             before a scale down event occurs""")
+    r_scaling_ag.add_argument(
+        '--num-read-checks-reset-percent',
+        type=int,
+        help="""Percentage Value that will cause the num_read_checks_before
+            scale_down var to reset back to 0""")
     w_scaling_ag = parser.add_argument_group('Write units scaling properties')
     w_scaling_ag.add_argument(
         '--writes-upper-threshold',
@@ -149,11 +154,11 @@ def parse():
         type=int,
         help="""How many percent should we decrease the write
                 units with? (default: 50)""")
-    r_scaling_ag.add_argument(
+    w_scaling_ag.add_argument(
         '--increase-writes-unit',
         type=str,
         help='Do you want to scale in percent or units? (default: percent)')
-    r_scaling_ag.add_argument(
+    w_scaling_ag.add_argument(
         '--decrease-writes-unit',
         type=str,
         help='Do you want to scale in percent or units? (default: percent)')
@@ -170,6 +175,11 @@ def parse():
         type=int,
         help="""Number of consecutive checks that must meet criteria
             before a scale down event occurs""")
+    w_scaling_ag.add_argument(
+        '--num-write-checks-reset-percent',
+        type=int,
+        help="""Percentage Value that will cause the num_write_checks_before
+            scale_down var to reset back to 0""")
     args = parser.parse_args()
 
     # Print the version and quit

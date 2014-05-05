@@ -50,6 +50,8 @@ DEFAULT_OPTIONS = {
         'max_provisioned_writes': None,
         'num_read_checks_before_scale_down': 1,
         'num_write_checks_before_scale_down': 1,
+        'num_read_checks_reset_percent': 31,
+        'num_write_checks_reset_percent': 31,
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
@@ -80,6 +82,8 @@ DEFAULT_OPTIONS = {
         'max_provisioned_writes': None,
         'num_read_checks_before_scale_down': 1,
         'num_write_checks_before_scale_down': 1,
+        'num_read_checks_reset_percent': 31,
+        'num_write_checks_reset_percent': 31,
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
@@ -449,7 +453,9 @@ def __check_table_rules(configuration):
             'min_provisioned_writes',
             'max_provisioned_writes',
             'num_read_checks_before_scale_down',
-            'num_write_checks_before_scale_down'
+            'num_write_checks_before_scale_down',
+            'num_read_checks_reset_percent',
+            'num_write_checks_reset_percent'
         ]
         for option in options:
             if table[option] < 1:

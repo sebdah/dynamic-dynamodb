@@ -336,6 +336,18 @@ def parse(config_path):
                     'option': 'num-write-checks-before-scale-down',
                     'required': False,
                     'type': 'int'
+                },
+                {
+                    'key': 'num_write_checks_reset_percent',
+                    'option': 'num-write-checks-reset-percent',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'num_read_checks_reset_percent',
+                    'option': 'num-read-checks-reset-percent',
+                    'required': False,
+                    'type': 'int'
                 }
             ])
 
@@ -532,6 +544,18 @@ def parse(config_path):
                     {
                         'key': 'num_write_checks_before_scale_down',
                         'option': 'num-write-checks-before-scale-down',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'num_write_checks_reset_percent',
+                        'option': 'num-write-checks-reset-percent',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'num_read_checks_reset_percent',
+                        'option': 'num-read-checks-reset-percent',
                         'required': False,
                         'type': 'int'
                     }

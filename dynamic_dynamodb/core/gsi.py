@@ -181,6 +181,8 @@ def __ensure_provisioning_reads(
         num_read_checks_before_scale_down = \
             get_gsi_option(
                 table_key, gsi_key, 'num_read_checks_before_scale_down')
+        num_read_checks_reset_percent = \
+            get_gsi_option(table_key, gsi_key, 'num_read_checks_reset_percent')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -249,6 +251,18 @@ def __ensure_provisioning_reads(
                 num_consec_read_checks = 0
                 update_needed = True
                 updated_read_units = calulated_provisioning
+
+    elif consumed_read_units_percent >= num_read_checks_reset_percent:
+
+        logger.info(
+            '{0} - Resetting the number of consecutive '
+            'read checks. Reason: Consumed percent {1} is '
+            'greater than reset percent: {2}'.format(
+                table_name,
+                consumed_read_units_percent,
+                num_read_checks_reset_percent))
+
+        num_consec_read_checks = 0
 
     elif consumed_read_units_percent <= reads_lower_threshold:
 
@@ -343,6 +357,8 @@ def __ensure_provisioning_writes(
         num_write_checks_before_scale_down = \
             get_gsi_option(
                 table_key, gsi_key, 'num_write_checks_before_scale_down')
+        num_write_checks_reset_percent = \
+            get_gsi_option(table_key, gsi_key, 'num_write_checks_reset_percent')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -408,6 +424,18 @@ def __ensure_provisioning_writes(
                 num_consec_write_checks = 0
                 update_needed = True
                 updated_write_units = calulated_provisioning
+
+    elif consumed_write_units_percent >= num_write_checks_reset_percent:
+
+        logger.info(
+            '{0} - Resetting the number of consecutive '
+            'write checks. Reason: Consumed percent {1} is '
+            'greater than reset percent: {2}'.format(
+                table_name,
+                consumed_write_units_percent,
+                num_write_checks_reset_percent))
+
+        num_consec_write_checks = 0
 
     elif consumed_write_units_percent <= writes_lower_threshold:
 
