@@ -191,6 +191,21 @@ def __ensure_provisioning_reads(
     # Set the updated units to the current read unit value
     updated_read_units = current_read_units
 
+    # Reset consecutive reads if num_read_checks_reset_percent is reached
+    if num_read_checks_reset_percent:
+
+        if consumed_read_units_percent >= num_read_checks_reset_percent:
+
+            logger.info(
+                '{0} - Resetting the number of consecutive '
+                'read checks. Reason: Consumed percent {1} is '
+                'greater than reset percent: {2}'.format(
+                    table_name,
+                    consumed_read_units_percent,
+                    num_read_checks_reset_percent))
+
+            num_consec_read_checks = 0
+
     if (consumed_read_units_percent == 0 and not
             get_gsi_option(
                 table_key,
@@ -251,18 +266,6 @@ def __ensure_provisioning_reads(
                 num_consec_read_checks = 0
                 update_needed = True
                 updated_read_units = calulated_provisioning
-
-    elif consumed_read_units_percent >= num_read_checks_reset_percent:
-
-        logger.info(
-            '{0} - Resetting the number of consecutive '
-            'read checks. Reason: Consumed percent {1} is '
-            'greater than reset percent: {2}'.format(
-                table_name,
-                consumed_read_units_percent,
-                num_read_checks_reset_percent))
-
-        num_consec_read_checks = 0
 
     elif consumed_read_units_percent <= reads_lower_threshold:
 
@@ -367,6 +370,21 @@ def __ensure_provisioning_writes(
     # Set the updated units to the current write unit value
     updated_write_units = current_write_units
 
+    # Reset write consecutive count if num_write_checks_reset_percent is reached
+    if num_write_checks_reset_percent:
+
+        if consumed_write_units_percent >= num_write_checks_reset_percent:
+
+            logger.info(
+                '{0} - Resetting the number of consecutive '
+                'write checks. Reason: Consumed percent {1} is '
+                'greater than reset percent: {2}'.format(
+                    table_name,
+                    consumed_write_units_percent,
+                    num_write_checks_reset_percent))
+
+            num_consec_write_checks = 0
+
     # Check if we should update write provisioning
     if (consumed_write_units_percent == 0 and not get_gsi_option(
             table_key, gsi_key, 'allow_scaling_down_writes_on_0_percent')):
@@ -424,18 +442,6 @@ def __ensure_provisioning_writes(
                 num_consec_write_checks = 0
                 update_needed = True
                 updated_write_units = calulated_provisioning
-
-    elif consumed_write_units_percent >= num_write_checks_reset_percent:
-
-        logger.info(
-            '{0} - Resetting the number of consecutive '
-            'write checks. Reason: Consumed percent {1} is '
-            'greater than reset percent: {2}'.format(
-                table_name,
-                consumed_write_units_percent,
-                num_write_checks_reset_percent))
-
-        num_consec_write_checks = 0
 
     elif consumed_write_units_percent <= writes_lower_threshold:
 
