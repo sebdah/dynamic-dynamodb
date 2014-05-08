@@ -23,6 +23,7 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             [--decrease-reads-unit DECREASE_READS_UNIT]
                             [--min-provisioned-reads MIN_PROVISIONED_READS]
                             [--max-provisioned-reads MAX_PROVISIONED_READS]
+                            [--num-read-checks-before-scale-down NUM_READ_CHECKS_BEFORE_SCALE_DOWN]
                             [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
                             [--throttled-writes-upper-threshold THROTTLED_WRITES_UPPER_THRESHOLD]
                             [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
@@ -32,6 +33,7 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             [--decrease-writes-unit DECREASE_WRITES_UNIT]
                             [--min-provisioned-writes MIN_PROVISIONED_WRITES]
                             [--max-provisioned-writes MAX_PROVISIONED_WRITES]
+                            [--num-write-checks-before-scale-down NUM_WRITE_CHECKS_BEFORE_SCALE_DOWN]
 
     Dynamic DynamoDB - Auto provisioning AWS DynamoDB
 
@@ -65,7 +67,8 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             instance a unique name and control them separately
                             with the --daemon flag. (default: default)
       --pid-file-dir PID_FILE_DIR
-                            Directory where pid file is located in. Defaults to /tmp
+                            Directory where pid file is located in. Defaults to
+                            /tmp
 
     DynamoDB options:
       -r REGION, --region REGION
@@ -103,6 +106,9 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             Minimum number of provisioned reads
       --max-provisioned-reads MAX_PROVISIONED_READS
                             Maximum number of provisioned reads
+      --num-read-checks-before-scale-down NUM_READ_CHECKS_BEFORE_SCALE_DOWN
+                            Number of consecutive checks that must meet criteria
+                            before a scale down event occurs
       --increase-writes-unit INCREASE_WRITES_UNIT
                             Do you want to scale in percent or units? (default:
                             percent)
@@ -133,3 +139,6 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             Minimum number of provisioned writes
       --max-provisioned-writes MAX_PROVISIONED_WRITES
                             Maximum number of provisioned writes
+      --num-write-checks-before-scale-down NUM_WRITE_CHECKS_BEFORE_SCALE_DOWN
+                            Number of consecutive checks that must meet criteria
+                            before a scale down event occurs
