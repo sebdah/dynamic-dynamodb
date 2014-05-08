@@ -80,8 +80,11 @@ def main():
                 print('Valid options for --daemon are start, stop and restart')
                 sys.exit(1)
         else:
-            while True:
+            if get_global_option('run_once'):
                 execute()
+            else:
+                while True:
+                    execute()
 
     except Exception as error:
         logger.exception(error)
@@ -198,6 +201,7 @@ def execute():
                 raise
 
     # Sleep between the checks
-    logger.debug('Sleeping {0} seconds until next check'.format(
-        get_global_option('check_interval')))
-    time.sleep(get_global_option('check_interval'))
+    if not get_global_option('run_once'):
+        logger.debug('Sleeping {0} seconds until next check'.format(
+            get_global_option('check_interval')))
+        time.sleep(get_global_option('check_interval'))

@@ -18,6 +18,10 @@ def parse():
         action='store_true',
         help='Run without making any changes to your DynamoDB table')
     parser.add_argument(
+        '--run-once',
+        action='store_true',
+        help='Run once and then exit Dynamic DynamoDB, instead of looping')
+    parser.add_argument(
         '--check-interval',
         type=int,
         help="""How many seconds should we wait between
