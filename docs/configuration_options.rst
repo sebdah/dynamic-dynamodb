@@ -64,8 +64,10 @@ increase-writes-unit                       str  Set if we should scale up in ``u
 decrease-writes-unit                       str  Set if we should scale down in ``units`` or ``percent``
 min-provisioned-writes                     int  Minimum number of write units for the table
 max-provisioned-writes                     int  Maximum number of write units for the table
-num-read-checks-before-scale-down          int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1`
-num-write-checks-before-scale-down         int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1`
+num-read-checks-before-scale-down          int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1` (i.e. scale down immediately)
+num-write-checks-before-scale-down         int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1` (i.e. scale down immediately)
+num-read-checks-reset-percent              int  Set a read consumption percentage when the `num-read-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-read-checks-before-scale-down` feature
+num-write-checks-reset-percent             int  Set a write consumption percentage when the `num-write-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-write-checks-before-scale-down` feature
 maintenance-windows                        str  Force Dynamic DynamoDB to operate within maintenance windows. E.g. ``22:00-23:59,00:00-06:00``
 sns-topic-arn                              str  Full Topic ARN to use for sending SNS notifications
 sns-message-types                          str  Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` and ``scale-down``
@@ -106,8 +108,10 @@ increase-writes-unit                       str  Set if we should scale up in ``u
 decrease-writes-unit                       str  Set if we should scale down in ``units`` or ``percent``
 min-provisioned-writes                     int  Minimum number of write units for the table
 max-provisioned-writes                     int  Maximum number of write units for the table
-num-read-checks-before-scale-down          int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1`
-num-write-checks-before-scale-down         int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1`
+num-read-checks-before-scale-down          int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1` (i.e. scale down immediately)
+num-write-checks-before-scale-down         int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1` (i.e. scale down immediately)
+num-read-checks-reset-percent              int  Set a read consumption percentage when the `num-read-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-read-checks-before-scale-down` feature
+num-write-checks-reset-percent             int  Set a write consumption percentage when the `num-write-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-write-checks-before-scale-down` feature
 maintenance-windows                        str  Force Dynamic DynamoDB to operate within maintenance windows. E.g. ``22:00-23:59,00:00-06:00``
 sns-topic-arn                              str  Full Topic ARN to use for sending SNS notifications
 sns-message-types                          str  Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` and ``scale-down``
