@@ -4,7 +4,7 @@ Command line options
 Below is a listing of Dynamic DynamoDB's command line parameters.
 ::
 
-    usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run]
+    usage: dynamic-dynamodb [-h] [-c CONFIG] [--dry-run] [--run-once]
                             [--check-interval CHECK_INTERVAL]
                             [--log-file LOG_FILE]
                             [--log-level {debug,info,warning,error}]
@@ -24,6 +24,7 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             [--min-provisioned-reads MIN_PROVISIONED_READS]
                             [--max-provisioned-reads MAX_PROVISIONED_READS]
                             [--num-read-checks-before-scale-down NUM_READ_CHECKS_BEFORE_SCALE_DOWN]
+                            [--num-read-checks-reset-percent NUM_READ_CHECKS_RESET_PERCENT]
                             [--writes-upper-threshold WRITES_UPPER_THRESHOLD]
                             [--throttled-writes-upper-threshold THROTTLED_WRITES_UPPER_THRESHOLD]
                             [--writes-lower-threshold WRITES_LOWER_THRESHOLD]
@@ -34,6 +35,7 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
                             [--min-provisioned-writes MIN_PROVISIONED_WRITES]
                             [--max-provisioned-writes MAX_PROVISIONED_WRITES]
                             [--num-write-checks-before-scale-down NUM_WRITE_CHECKS_BEFORE_SCALE_DOWN]
+                            [--num-write-checks-reset-percent NUM_WRITE_CHECKS_RESET_PERCENT]
 
     Dynamic DynamoDB - Auto provisioning AWS DynamoDB
 
@@ -42,6 +44,8 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
       -c CONFIG, --config CONFIG
                             Read configuration from a configuration file
       --dry-run             Run without making any changes to your DynamoDB table
+      --run-once            Run once and then exit Dynamic DynamoDB, instead of
+                            looping
       --check-interval CHECK_INTERVAL
                             How many seconds should we wait between the checks
                             (default: 300)
@@ -109,12 +113,10 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
       --num-read-checks-before-scale-down NUM_READ_CHECKS_BEFORE_SCALE_DOWN
                             Number of consecutive checks that must meet criteria
                             before a scale down event occurs
-      --increase-writes-unit INCREASE_WRITES_UNIT
-                            Do you want to scale in percent or units? (default:
-                            percent)
-      --decrease-writes-unit DECREASE_WRITES_UNIT
-                            Do you want to scale in percent or units? (default:
-                            percent)
+      --num-read-checks-reset-percent NUM_READ_CHECKS_RESET_PERCENT
+                            Percentage Value that will cause the
+                            num_read_checks_before scale_down var to reset back to
+                            0
 
     Write units scaling properties:
       --writes-upper-threshold WRITES_UPPER_THRESHOLD
@@ -135,6 +137,12 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
       --decrease-writes-with DECREASE_WRITES_WITH
                             How many percent should we decrease the write units
                             with? (default: 50)
+      --increase-writes-unit INCREASE_WRITES_UNIT
+                            Do you want to scale in percent or units? (default:
+                            percent)
+      --decrease-writes-unit DECREASE_WRITES_UNIT
+                            Do you want to scale in percent or units? (default:
+                            percent)
       --min-provisioned-writes MIN_PROVISIONED_WRITES
                             Minimum number of provisioned writes
       --max-provisioned-writes MAX_PROVISIONED_WRITES
@@ -142,3 +150,7 @@ Below is a listing of Dynamic DynamoDB's command line parameters.
       --num-write-checks-before-scale-down NUM_WRITE_CHECKS_BEFORE_SCALE_DOWN
                             Number of consecutive checks that must meet criteria
                             before a scale down event occurs
+      --num-write-checks-reset-percent NUM_WRITE_CHECKS_RESET_PERCENT
+                            Percentage Value that will cause the
+                            num_write_checks_before scale_down var to reset back
+                            to 0
