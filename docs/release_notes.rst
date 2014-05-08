@@ -1,6 +1,23 @@
 Release notes
 =============
 
+1.13.0
+------
+
+**Release date:** 2014-05-08
+
+A special thanks to (`@johnbartels <https://github.com/johnbartels>`__) for his help with the consecutive checks feature.
+
+- It is now possible to scale down after `x` consecutive checks where Dynamic DynamoDB have seen a need for scaling down. This will make it even easier to target the times during the day where you want to scale down. See the ``num-read-checks-before-scale-down`` and ``num-write-checks-before-scale-down`` options. (`#148 <https://github.com/sebdah/dynamic-dynamodb/issues/148>`__)
+- In addition to the consecutive checks feature we have support for resetting the consecutive checks counter on certain consumption percentages using ``num-read-checks-reset-percent`` and ``num-write-checks-reset-percent``. In the example below we would be able to avoid the second scale down by setting a reset percentage that was slightly higher than the consumption spikes.
+
+.. image:: images/reset-consecutive-counter.png
+
+- You can now run Dynamic DynamoDB once instead of looping using the ``--run-once`` command line option (`#152 <https://github.com/sebdah/dynamic-dynamodb/issues/152>`__)
+- Merged pull request: Fixed regex wildcard example (`#151 <https://github.com/sebdah/dynamic-dynamodb/issues/151>`__) by (`@tayl0r <https://github.com/tayl0r>`__)
+- Merged pull request: Fix log message when autoscaling of writes has been disabled (`#150 <https://github.com/sebdah/dynamic-dynamodb/issues/150>`__) by (`@alexkuang <https://github.com/alexkuang>`__)
+
+
 1.12.1
 ------
 

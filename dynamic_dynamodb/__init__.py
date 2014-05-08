@@ -32,13 +32,16 @@ from dynamic_dynamodb.daemon import Daemon
 from dynamic_dynamodb.config_handler import get_global_option, get_table_option
 from dynamic_dynamodb.log_handler import LOGGER as logger
 
+CHECK_STATUS = {
+    'tables': {},
+    'gsis': {}
+}
+
 
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
-
     def run(self):
         """ Run the daemon
-
         :type check_interval: int
         :param check_interval: Delay in seconds between checks
         """
@@ -77,8 +80,11 @@ def main():
                 print('Valid options for --daemon are start, stop and restart')
                 sys.exit(1)
         else:
-            while True:
+            if get_global_option('run_once'):
                 execute()
+            else:
+                while True:
+                    execute()
 
     except Exception as error:
         logger.exception(error)
@@ -91,7 +97,32 @@ def execute():
     # Ensure provisioning
     for table_name, table_key in sorted(dynamodb.get_tables_and_gsis()):
         try:
-            table.ensure_provisioning(table_name, table_key)
+            table_num_consec_read_checks = \
+                CHECK_STATUS['tables'][table_name]['reads']
+        except KeyError:
+            table_num_consec_read_checks = 0
+
+        try:
+            table_num_consec_write_checks = \
+                CHECK_STATUS['tables'][table_name]['writes']
+        except KeyError:
+            table_num_consec_write_checks = 0
+
+        try:
+            # The return var shows how many times the scale-down criteria
+            #  has been met. This is coupled with a var in config,
+            # "num_intervals_scale_down", to delay the scale-down
+            table_num_consec_read_checks, table_num_consec_write_checks = \
+                table.ensure_provisioning(
+                    table_name,
+                    table_key,
+                    table_num_consec_read_checks,
+                    table_num_consec_write_checks)
+
+            CHECK_STATUS['tables'][table_name] = {
+                'reads': table_num_consec_read_checks,
+                'writes': table_num_consec_write_checks
+            }
 
             gsi_names = set()
             # Add regexp table names
@@ -120,11 +151,31 @@ def execute():
                         sys.exit(1)
 
             for gsi_name, gsi_key in sorted(gsi_names):
-                gsi.ensure_provisioning(
-                    table_name,
-                    table_key,
-                    gsi_name,
-                    gsi_key)
+                try:
+                    gsi_num_consec_read_checks = \
+                        CHECK_STATUS['tables'][table_name]['reads']
+                except KeyError:
+                    gsi_num_consec_read_checks = 0
+
+                try:
+                    gsi_num_consec_write_checks = \
+                        CHECK_STATUS['tables'][table_name]['writes']
+                except KeyError:
+                    gsi_num_consec_write_checks = 0
+
+                gsi_num_consec_read_checks, gsi_num_consec_write_checks = \
+                    gsi.ensure_provisioning(
+                        table_name,
+                        table_key,
+                        gsi_name,
+                        gsi_key,
+                        gsi_num_consec_read_checks,
+                        gsi_num_consec_write_checks)
+
+                CHECK_STATUS['gsis'][gsi_name] = {
+                    'reads': gsi_num_consec_read_checks,
+                    'writes': gsi_num_consec_write_checks
+                }
 
         except JSONResponseError as error:
             exception = error.body['__type'].split('#')[1]
@@ -150,6 +201,7 @@ def execute():
                 raise
 
     # Sleep between the checks
-    logger.debug('Sleeping {0} seconds until next check'.format(
-        get_global_option('check_interval')))
-    time.sleep(get_global_option('check_interval'))
+    if not get_global_option('run_once'):
+        logger.debug('Sleeping {0} seconds until next check'.format(
+            get_global_option('check_interval')))
+        time.sleep(get_global_option('check_interval'))
