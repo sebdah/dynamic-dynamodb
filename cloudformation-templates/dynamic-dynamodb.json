@@ -4,20 +4,13 @@
   "Description": "This is a sample CloudFormation template for deploying Dynamic DynamoDB. This package will be installed from the Python Package Index repository. For more information, see http://dynamic-dynamodb.readthedocs.org.",
 
   "Parameters": {
-    "AWSAccessKey": {
+    "RoleName": {
       "Type": "String",
-      "Default": "access-key",
-      "NoEcho": "true",
-      "Description": "Remove this default value and enter your Access key"
+      "Default": "default-role",
+      "Description": "Remove this default value and enter your IAM role",
+      "ConstraintDescription" : "Must be a valid IAM role"
     },
-
-    "AWSSecretKey": {
-      "Type": "String",
-      "Default": "secret-key",
-      "NoEcho": "true",
-      "Description": "Remove this default value and enter your Secret key"
-    },
-
+    
     "S3Bucket": {
       "Type": "String",
       "Default": "s3://bucket-name/folder-path-if-applicable/",
@@ -80,6 +73,7 @@
         "InstanceType": "t1.micro",
         "KeyName": { "Ref": "KeyPair" },
         "SecurityGroups": [ { "Ref": "DynamicDynamoDBSG" } ],
+        "IamInstanceProfile"  : { "Ref" : "RoleName" },
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [ "\n", [
@@ -143,19 +137,9 @@
                 ]]
               },
               {
-                "Fn::Join": [ "", [
-                  "_r1=\"", { "Ref": "AWSSecretKey" }, "\"\n",
-                  "_r1=\"${_r1//\\//\\\\/}\"\n",
-                  "sed -i -e \"s/AWS_ACCESS_KEY/", { "Ref": "AWSAccessKey" }, "/g\" /etc/dynamic-dynamodb/example-dynamic-dynamodb.conf\n",
-                  "sed -i -e \"s/AWS_SECRET_KEY/${_r1}/g\" /etc/dynamic-dynamodb/example-dynamic-dynamodb.conf"
-                ]]
-              },
-              {
                 "Fn::Join": [ " ", [
                   "sh /etc/dynamic-dynamodb/scripts/init_config_file.sh /etc/dynamic-dynamodb/dynamic-dynamodb.conf",
                   { "Ref": "S3Bucket" },
-                  { "Ref": "AWSAccessKey" },
-                  { "Ref": "AWSSecretKey" },
                   " $INSTALLER_LOG_FILE_LOCATION",
                   " || error_exit 'Failed to initialize config file'"
                 ]]
@@ -179,9 +163,7 @@
               "/home/ec2-user/.aws/config": {
                 "content" : { "Fn::Join" : ["", [
                   "[default]\n",
-                  "region=", { "Ref": "AWS::Region" }, "\n",
-                  "aws_access_key_id=", { "Ref": "AWSAccessKey" }, "\n",
-                  "aws_secret_access_key=", { "Ref": "AWSSecretKey" }, "\n"
+                  "region=", { "Ref": "AWS::Region" }, "\n"
                 ]]},
                 "mode": "000755",
                 "owner": "root",
@@ -294,9 +276,7 @@
                       "#!/usr/bin/env bash",
                       "CONFIG_FILE_LOCAL_LOCATION=$1",
                       "S3_BUCKET=$2",
-                      "AWS_ACCESS_KEY=$3",
-                      "AWS_SECRET_KEY=$4",
-                      "INSTALLER_LOG_FILE_LOCATION=$5",
+                      "INSTALLER_LOG_FILE_LOCATION=$3",
                       "CONFIG_FILE_S3_LOCATION=\"$S3_BUCKET\"dynamic-dynamodb.conf",
                       "DOES_CONFIG_FILE_EXIST_ON_S3=0",
                       "DOES_CONFIG_FILE_EXIST_ON_LOCALLY=0",
