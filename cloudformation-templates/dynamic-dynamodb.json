@@ -137,7 +137,7 @@
               {
                 "Fn::Join": [ "", [
                   "echo \"aws s3 cp /etc/dynamic-dynamodb/dynamic-dynamodb.conf ", { "Ref": "S3Bucket" }, "dynamic-dynamodb.conf ",
-                  " || (echo 'Failed to /etc/dynamic-dynamodb/dynamic-dynamodb.conf to ",
+                  " || (echo 'Failed to upload /etc/dynamic-dynamodb/dynamic-dynamodb.conf to ",
                   { "Ref": "S3Bucket" }, "' ; exit 1)\">/etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh",
                   " || error_exit 'Failed to create /etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh'"
                 ]]
@@ -326,7 +326,7 @@
                       "",
                       "download_from_s3(){",
                       "  aws s3 cp $CONFIG_FILE_S3_LOCATION $CONFIG_FILE_LOCAL_LOCATION || error_exit \"Failed to download config file from $CONFIG_FILE_S3_LOCATION to $CONFIG_FILE_S3_LOCATION  even though it existed on S3\"",
-                      "  log \"Downloaded config file from $CONFIG_FILE_S3_LOCATION to $CONFIG_FILE_S3_LOCATION\"",
+                      "  log \"Downloaded config file from $CONFIG_FILE_S3_LOCATION to $CONFIG_FILE_LOCAL_LOCATION\"",
                       "}",
                       "",
                       "",
