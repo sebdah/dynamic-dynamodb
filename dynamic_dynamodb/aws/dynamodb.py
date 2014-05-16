@@ -342,7 +342,7 @@ def update_table_provisioning(
         message = []
         if current_reads > reads:
             message.append('{0} - Reads: DOWN from {1} to {2}\n', table_name, current_reads, reads)
-        elif current_reads < reads::
+        elif current_reads < reads:
             message.append('{0} - Reads: UP from {1} to {2}\n', table_name, current_reads, reads)
         if current_writes > writes:
             message.append('{0} - Writes: DOWN from {1} to {2}\n', table_name, current_reads, reads)
