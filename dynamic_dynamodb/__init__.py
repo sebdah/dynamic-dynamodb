@@ -62,7 +62,9 @@ def main():
                     get_global_option('instance')))
 
             if get_global_option('daemon') == 'start':
+                logger.debug('Starting daemon')
                 daemon.start()
+                logger.info('Daemon started')
 
             elif get_global_option('daemon') == 'stop':
                 logger.debug('Stopping daemon')
@@ -71,13 +73,17 @@ def main():
                 sys.exit(0)
 
             elif get_global_option('daemon') == 'restart':
+                logger.debug('Restarting daemon')
                 daemon.restart()
+                logger.info('Daemon restarted')
 
             elif get_global_option('daemon') in ['foreground', 'fg']:
+                logger.debug('Starting daemon in foreground')
                 daemon.run()
+                logger.info('Daemon started in foreground')
 
             else:
-                print('Valid options for --daemon are start, stop and restart')
+                print('Valid options for --daemon are start, stop, restart, and run')
                 sys.exit(1)
         else:
             if get_global_option('run_once'):
