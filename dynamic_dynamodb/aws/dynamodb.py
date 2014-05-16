@@ -493,7 +493,7 @@ def update_gsi_provisioning(
         message = []
         if current_reads > reads:
             message.append('{0} - GSI: {1} - Reads: DOWN from {2} to {3}\n', table_name, gsi_name, current_reads, reads)
-        elif current_reads < reads::
+        elif current_reads < reads:
             message.append('{0} - GSI: {1} - Reads: UP from {2} to {3}\n', table_name, gsi_name, current_reads, reads)
         if current_writes > writes:
             message.append('{0} - GSI: {1} - Writes: DOWN from {2} to {3}\n', table_name, gsi_name, current_reads, reads)
