@@ -341,13 +341,13 @@ def update_table_provisioning(
 
         message = []
         if current_reads > reads:
-            message.append('{0} - Reads: DOWN from {1} to {2}\n', table_name, current_reads, reads)
+            message.append('{0} - Reads: DOWN from {1} to {2}\n'.format(table_name, current_reads, reads))
         elif current_reads < reads:
-            message.append('{0} - Reads: UP from {1} to {2}\n', table_name, current_reads, reads)
+            message.append('{0} - Reads: UP from {1} to {2}\n'.format(table_name, current_reads, reads))
         if current_writes > writes:
-            message.append('{0} - Writes: DOWN from {1} to {2}\n', table_name, current_reads, reads)
+            message.append('{0} - Writes: DOWN from {1} to {2}\n'.format(table_name, current_reads, reads))
         elif current_writes < writes:
-            message.append('{0} - Writes: UP from {1} to {2}\n', table_name, current_reads, reads)
+            message.append('{0} - Writes: UP from {1} to {2}\n'.format(table_name, current_reads, reads))
 
         sns.publish_table_notification(
             key_name,
@@ -492,13 +492,13 @@ def update_gsi_provisioning(
 
         message = []
         if current_reads > reads:
-            message.append('{0} - GSI: {1} - Reads: DOWN from {2} to {3}\n', table_name, gsi_name, current_reads, reads)
+            message.append('{0} - GSI: {1} - Reads: DOWN from {2} to {3}\n'.format(table_name, gsi_name, current_reads, reads))
         elif current_reads < reads:
-            message.append('{0} - GSI: {1} - Reads: UP from {2} to {3}\n', table_name, gsi_name, current_reads, reads)
+            message.append('{0} - GSI: {1} - Reads: UP from {2} to {3}\n'.format(table_name, gsi_name, current_reads, reads))
         if current_writes > writes:
-            message.append('{0} - GSI: {1} - Writes: DOWN from {2} to {3}\n', table_name, gsi_name, current_reads, reads)
+            message.append('{0} - GSI: {1} - Writes: DOWN from {2} to {3}\n'.format(table_name, gsi_name, current_reads, reads))
         elif current_writes < writes:
-            message.append('{0} - GSI: {1} - Writes: UP from {2} to {3}\n', table_name, gsi_name, current_reads, reads)
+            message.append('{0} - GSI: {1} - Writes: UP from {2} to {3}\n'.format(table_name, gsi_name, current_reads, reads))
 
         sns.publish_gsi_notification(
             table_key,
