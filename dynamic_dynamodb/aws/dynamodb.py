@@ -334,18 +334,24 @@ def update_table_provisioning(
 
         # See if we should send notifications for scale-down, scale-up or both
         sns_message_types = []
-        if current_reads > reads or current_writes > current_writes:
+        if current_reads > reads or current_writes > writes:
             sns_message_types.append('scale-down')
-        if current_reads < reads or current_writes < current_writes:
+        if current_reads < reads or current_writes < writes:
             sns_message_types.append('scale-up')
 
-        message = (
-            '{0} - Provisioning updated to {1} reads and {2} writes').format(
-                table_name, reads, writes)
+        message = []
+        if current_reads > reads:
+            message.append('{0} - Reads: DOWN from {1} to {2}\n'.format(table_name, current_reads, reads))
+        elif current_reads < reads:
+            message.append('{0} - Reads: UP from {1} to {2}\n'.format(table_name, current_reads, reads))
+        if current_writes > writes:
+            message.append('{0} - Writes: DOWN from {1} to {2}\n'.format(table_name, current_writes, writes))
+        elif current_writes < writes:
+            message.append('{0} - Writes: UP from {1} to {2}\n'.format(table_name, current_writes, writes))
 
         sns.publish_table_notification(
             key_name,
-            message,
+            ''.join(message),
             sns_message_types,
             subject='Updated provisioning for table {0}'.format(table_name))
     except JSONResponseError as error:
@@ -477,22 +483,27 @@ def update_gsi_provisioning(
                 }
             ])
 
-        message = (
-            '{0} - GSI: {1} - Provisioning updated to '
-            '{2} reads and {3} writes').format(
-                table_name, gsi_name, reads, writes)
-
         # See if we should send notifications for scale-down, scale-up or both
         sns_message_types = []
-        if current_reads > reads or current_writes > current_writes:
+        if current_reads > reads or current_writes > writes:
             sns_message_types.append('scale-down')
-        if current_reads < reads or current_writes < current_writes:
+        if current_reads < reads or current_writes < writes:
             sns_message_types.append('scale-up')
+
+        message = []
+        if current_reads > reads:
+            message.append('{0} - GSI: {1} - Reads: DOWN from {2} to {3}\n'.format(table_name, gsi_name, current_reads, reads))
+        elif current_reads < reads:
+            message.append('{0} - GSI: {1} - Reads: UP from {2} to {3}\n'.format(table_name, gsi_name, current_reads, reads))
+        if current_writes > writes:
+            message.append('{0} - GSI: {1} - Writes: DOWN from {2} to {3}\n'.format(table_name, gsi_name, current_writes, writes))
+        elif current_writes < writes:
+            message.append('{0} - GSI: {1} - Writes: UP from {2} to {3}\n'.format(table_name, gsi_name, current_writes, writes))
 
         sns.publish_gsi_notification(
             table_key,
             gsi_key,
-            message,
+            ''.join(message),
             sns_message_types,
             subject='Updated provisioning for GSI {0}'.format(gsi_name))
 
