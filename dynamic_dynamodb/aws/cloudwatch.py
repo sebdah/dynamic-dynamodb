@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Ensure connections to DynamoDB and CloudWatch """
+""" Ensure connections to CloudWatch """
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_global_option
 
@@ -8,7 +8,7 @@ from boto.utils import get_instance_metadata
 
 
 def __get_connection_cloudwatch():
-    """ Ensure connection to SNS """
+    """ Ensure connection to CloudWatch """
     try:
         if (get_global_option('aws_access_key_id') and
                 get_global_option('aws_secret_access_key')):
