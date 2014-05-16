@@ -203,10 +203,11 @@ def __ensure_provisioning_reads(
         if consumed_read_units_percent >= num_read_checks_reset_percent:
 
             logger.info(
-                '{0} - Resetting the number of consecutive '
-                'read checks. Reason: Consumed percent {1} is '
-                'greater than reset percent: {2}'.format(
+                '{0} - GSI: {1} - Resetting the number of consecutive '
+                'read checks. Reason: Consumed percent {2} is '
+                'greater than reset percent: {3}'.format(
                     table_name,
+                    gsi_name,
                     consumed_read_units_percent,
                     num_read_checks_reset_percent))
 
@@ -266,9 +267,9 @@ def __ensure_provisioning_reads(
 
             if current_read_units != calculated_provisioning:
                 logger.info(
-                    '{0} - Resetting the number of consecutive '
+                    '{0} - GSI: {1} - Resetting the number of consecutive '
                     'read checks. Reason: scale up event detected'.format(
-                        table_name))
+                        table_name, gsi_name))
                 num_consec_read_checks = 0
                 update_needed = True
                 updated_read_units = calculated_provisioning
@@ -305,8 +306,9 @@ def __ensure_provisioning_reads(
                 'Will not increase writes over gsi-max-provisioned-reads '
                 'limit ({0} writes)'.format(updated_read_units))
 
-    logger.info('{0} - Consecutive read checks {1}/{2}'.format(
+    logger.info('{0} - GSI: {1} - Consecutive read checks {2}/{3}'.format(
         table_name,
+        gsi_name,
         num_consec_read_checks,
         num_read_checks_before_scale_down))
 
@@ -382,10 +384,11 @@ def __ensure_provisioning_writes(
         if consumed_write_units_percent >= num_write_checks_reset_percent:
 
             logger.info(
-                '{0} - Resetting the number of consecutive '
-                'write checks. Reason: Consumed percent {1} is '
-                'greater than reset percent: {2}'.format(
+                '{0} - GSI: {1} - Resetting the number of consecutive '
+                'write checks. Reason: Consumed percent {2} is '
+                'greater than reset percent: {3}'.format(
                     table_name,
+                    gsi_name,
                     consumed_write_units_percent,
                     num_write_checks_reset_percent))
 
@@ -417,9 +420,9 @@ def __ensure_provisioning_writes(
 
         if current_write_units != calculated_provisioning:
             logger.info(
-                '{0} - Resetting the number of consecutive '
+                '{0} - GSI: {1} - Resetting the number of consecutive '
                 'write checks. Reason: scale up event detected'.format(
-                    table_name))
+                    table_name, gsi_name))
             num_consec_write_checks = 0
             update_needed = True
             updated_write_units = calculated_provisioning
@@ -444,9 +447,9 @@ def __ensure_provisioning_writes(
 
             if current_write_units != calculated_provisioning:
                 logger.info(
-                    '{0} - Resetting the number of consecutive '
+                    '{0} - GSI: {1} - Resetting the number of consecutive '
                     'write checks. Reason: scale up event detected'.format(
-                        table_name))
+                        table_name, gsi_name))
                 num_consec_write_checks = 0
                 update_needed = True
                 updated_write_units = calculated_provisioning
@@ -485,8 +488,9 @@ def __ensure_provisioning_writes(
                     gsi_name,
                     updated_write_units))
 
-    logger.info('{0} - Consecutive write checks {1}/{2}'.format(
+    logger.info('{0} - GSI: {1} - Consecutive write checks {2}/{3}'.format(
         table_name,
+        gsi_name,
         num_consec_write_checks,
         num_write_checks_before_scale_down))
 
