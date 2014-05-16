@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.13.1
+------
+
+**Release date:** 2014-05-16
+
+- Bugfix: Fix a few provisioning update issues (`#160 <https://github.com/sebdah/dynamic-dynamodb/issues/160>`__). Thanks (`@Jofen <https://github.com/Jofen>`__) for the pull request!
+
 1.13.0
 ------
 
