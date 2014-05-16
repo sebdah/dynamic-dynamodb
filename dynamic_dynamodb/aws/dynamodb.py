@@ -279,6 +279,13 @@ def update_table_provisioning(
         if current_writes > writes:
             writes = current_writes
 
+        # Return if we do not need to scale at all
+        if reads == current_reads and writes == current_writes:
+            logger.info(
+                '{0} - No need to scale up reads nor writes'.format(
+                    table_name))
+            return
+
         logger.info(
             '{0} - Retrying to update provisioning, excluding any decreases. '
             'Setting new reads to {1} and new writes to {2}'.format(
@@ -398,8 +405,8 @@ def update_gsi_provisioning(
     :type retry_with_only_increase: bool
     :param retry_with_only_increase: Set to True to ensure only increases
     """
-    current_reads = int(get_provisioned_table_read_units(table_name))
-    current_writes = int(get_provisioned_table_write_units(table_name))
+    current_reads = int(get_provisioned_gsi_read_units(table_name, gsi_name))
+    current_writes = int(get_provisioned_gsi_write_units(table_name, gsi_name))
 
     if retry_with_only_increase:
         # Ensure that we are only doing increases
@@ -408,10 +415,17 @@ def update_gsi_provisioning(
         if current_writes > writes:
             writes = current_writes
 
+        # Return if we do not need to scale at all
+        if reads == current_reads and writes == current_writes:
+            logger.info(
+                '{0} - GSI: {1} - No need to scale up reads nor writes'.format(
+                    table_name, gsi_name))
+            return
+
         logger.info(
-            '{0} - Retrying to update provisioning, excluding any decreases. '
-            'Setting new reads to {1} and new writes to {2}'.format(
-                table_name, reads, writes))
+            '{0} - GSI: {1} - Retrying to update provisioning, excluding any decreases. '
+            'Setting new reads to {2} and new writes to {3}'.format(
+                table_name, gsi_name, reads, writes))
 
     # Check that we are in the right time frame
     m_windows = get_gsi_option(table_key, gsi_key, 'maintenance_windows')
