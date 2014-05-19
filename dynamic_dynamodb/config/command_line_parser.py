@@ -73,7 +73,10 @@ def parse():
         help='AWS region to operate in (default: us-east-1')
     dynamodb_ag.add_argument(
         '-t', '--table-name',
-        help='How many percent should we decrease the read units with?')
+        help=(
+            'Table(s) to target. '
+            'The name is treated as a regular expression. '
+            'E.g. "^my_table.*$" or "my_table"'))
     r_scaling_ag = parser.add_argument_group('Read units scaling properties')
     r_scaling_ag.add_argument(
         '--reads-upper-threshold',
