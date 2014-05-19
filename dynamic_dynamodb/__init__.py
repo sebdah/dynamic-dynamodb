@@ -86,7 +86,9 @@ def main():
                 logger.info('Daemon started in foreground')
 
             else:
-                print('Valid options for --daemon are start, stop, restart, and run')
+                print(
+                    'Valid options for --daemon are start, '
+                    'stop, restart, and foreground')
                 sys.exit(1)
         else:
             if get_global_option('run_once'):
