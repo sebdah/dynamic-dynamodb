@@ -63,9 +63,12 @@ def main():
 
             if get_global_option('daemon') == 'start':
                 logger.debug('Starting daemon')
-                daemon.start()
-                logger.info('Daemon started')
-
+                try:
+                    daemon.start()
+                    logger.info('Daemon started')
+                except IOError as error:
+                    logger.error('Could not create pid file: {0}'.format(error))
+                    logger.error('Daemon not started')
             elif get_global_option('daemon') == 'stop':
                 logger.debug('Stopping daemon')
                 daemon.stop()

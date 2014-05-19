@@ -70,7 +70,10 @@ class Daemon:
         # write pidfile
         atexit.register(self.delpid)
         pid = str(os.getpid())
-        file(self.pidfile, 'w+').write("%s\n" % pid)
+        try:
+            file(self.pidfile, 'w+').write("%s\n" % pid)
+        except IOError as err:
+            raise
 
     def delpid(self):
         os.remove(self.pidfile)
@@ -91,7 +94,10 @@ class Daemon:
             sys.exit(1)
 
         # Start the daemon
-        self.daemonize()
+        try:
+            self.daemonize()
+        except IOError:
+            raise
         self.run(*args, **kwargs)
 
     def stop(self):
@@ -127,7 +133,10 @@ class Daemon:
     def restart(self, *args, **kwargs):
         """ Restart the daemon """
         self.stop()
-        self.start(*args, **kwargs)
+        try:
+            self.start(*args, **kwargs)
+        except IOError:
+            raise
 
     def run(self):
         """
