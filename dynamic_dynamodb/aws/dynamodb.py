@@ -552,9 +552,6 @@ def __get_connection_dynamodb(retries=3):
     """
     connected = False
     while not connected:
-        logger.debug('Connecting to DynamoDB in {0}'.format(
-            get_global_option('region')))
-
         if (get_global_option('aws_access_key_id') and
                 get_global_option('aws_secret_access_key')):
             logger.debug(
