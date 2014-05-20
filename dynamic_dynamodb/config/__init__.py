@@ -329,7 +329,7 @@ def __check_gsi_rules(configuration):
                 gsi['increase_reads_with'] = 100
 
             # Check sns-message-types
-            valid_sns_message_types = ['scale-up', 'scale-down']
+            valid_sns_message_types = ['scale-up', 'scale-down', 'throughput-alarm']
             if gsi['sns_message_types']:
                 for sns_type in gsi['sns_message_types']:
                     if sns_type not in valid_sns_message_types:
