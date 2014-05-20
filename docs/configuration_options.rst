@@ -46,24 +46,24 @@ Option                                     Type Comment
 ========================================== ==== ==========================================
 enable-reads-autoscaling                   bool Turn on or off autoscaling of read capacity. Default is ``true``
 enable-writes-autoscaling                  bool Turn on or off autoscaling of write capacity. Default is ``true``
-reads-upper-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales up the read provisioning?
-reads-lower-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales down the read provisioning?
-throttled-reads-upper-threshold            int  How many reads should be throttled before Dynamic DynamoDB scales up the read provisioning?
-throttled-writes-upper-threshold           int  How many writes should be throttled before Dynamic DynamoDB scales up the write provisioning?
-increase-reads-with                        int  Number of units or percent we should scale up the provisioning with. Choose entity with ``increase-reads-unit``.
-decrease-reads-with                        int  Number of units or percent we should scale down the provisioning with. Choose entity with ``decrease-reads-unit``.
-increase-reads-unit                        str  Set if we should scale up in ``units`` or ``percent``
-decrease-reads-unit                        str  Set if we should scale down in ``units`` or ``percent``
-min-provisioned-reads                      int  Minimum number of read units for the table
-max-provisioned-reads                      int  Maximum number of read units for the table
-writes-upper-threshold                     int  How many percent of the table capacity should be used before Dynamic DynamoDB scales up the write provisioning?
-writes-lower-threshold                     int  How many percent of the table capacity should be used before Dynamic DynamoDB scales down the write provisioning?
-increase-writes-with                       int  Number of units or percent we should scale up the provisioning with. Choose entity with ``increase-writes-unit``.
-decrease-writes-with                       int  Number of units or percent we should scale down the provisioning with. Choose entity with ``decrease-writes-unit``.
+reads-upper-threshold                      int  Scale up the reads with ``--increase-reads-with`` if the currently consumed reads reaches this many percent
+reads-lower-threshold                      int  Scale down the reads with ``--decrease-reads-with`` if the currently consumed reads is as low as this percentage
+throttled-reads-upper-threshold            int  Scale up the reads with ``--increase-reads-with`` if the count of throttled read events exceeds this count
+increase-reads-with                        int  Number of ``units`` or ``percent`` we should scale up the read provisioning with. Choose entity with ``increase-reads-unit``.
+decrease-reads-with                        int  Number of ``units`` or ``percent`` we should scale down the read provisioning with. Choose entity with ``decrease-reads-unit``.
+increase-reads-unit                        str  Set if we should scale up reads in ``units`` or ``percent``
+decrease-reads-unit                        str  Set if we should scale down reads in ``units`` or ``percent``
+min-provisioned-reads                      int  Minimum number of provisioned reads for the table
+max-provisioned-reads                      int  Maximum number of provisioned reads for the table
+writes-upper-threshold                     int  Scale up the writes with ``--increase-writes-with`` if the currently consumed writes reaches this many percent
+writes-lower-threshold                     int  Scale down the writes with ``--decrease-writes-with`` if the currently consumed writes is as low as this many percent
+throttled-writes-upper-threshold           int  Scale up the writes with ``--increase-writes-with`` if the count of throttled write events exceeds this count
+increase-writes-with                       int  Number of ``units`` or ``percent`` we should scale up the write provisioning with. Choose entity with ``increase-writes-unit``.
+decrease-writes-with                       int  Number of ``units`` or ``percent`` we should scale down the write provisioning with. Choose entity with ``decrease-writes-unit``.
 increase-writes-unit                       str  Set if we should scale up in ``units`` or ``percent``
 decrease-writes-unit                       str  Set if we should scale down in ``units`` or ``percent``
-min-provisioned-writes                     int  Minimum number of write units for the table
-max-provisioned-writes                     int  Maximum number of write units for the table
+min-provisioned-writes                     int  Minimum number of provisioned writes for the table
+max-provisioned-writes                     int  Maximum number of provisioned writes for the table
 num-read-checks-before-scale-down          int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1` (i.e. scale down immediately)
 num-write-checks-before-scale-down         int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1` (i.e. scale down immediately)
 num-read-checks-reset-percent              int  Set a read consumption percentage when the `num-read-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-read-checks-before-scale-down` feature
@@ -90,24 +90,24 @@ Option                                     Type Comment
 ========================================== ==== ==========================================
 enable-reads-autoscaling                   bool Turn on or off autoscaling of read capacity. Default is ``true``
 enable-writes-autoscaling                  bool Turn on or off autoscaling of write capacity. Default is ``true``
-reads-upper-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales up the read provisioning?
-reads-lower-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales down the read provisioning?
-throttled-reads-upper-threshold            int  How many reads should be throttled before Dynamic DynamoDB scales up the read provisioning?
-throttled-writes-upper-threshold           int  How many writes should be throttled before Dynamic DynamoDB scales up the write provisioning?
-increase-reads-with                        int  Number of units or percent we should scale up the provisioning with. Choose entity with ``increase-reads-unit``.
-decrease-reads-with                        int  Number of units or percent we should scale down the provisioning with. Choose entity with ``decrease-reads-unit``.
+reads-upper-threshold                      int  Scale up the reads with ``--increase-reads-with`` if the currently consumed reads reaches this many percent
+reads-lower-threshold                      int  Scale down the reads with ``--decrease-reads-with`` if the currently consumed reads is as low as this percentage
+throttled-reads-upper-threshold            int  Scale up the reads with ``--increase-reads-with`` if the count of throttled read events exceeds this count
+increase-reads-with                        int  Number of ``units`` or ``percent`` we should scale up the read provisioning with. Choose entity with ``increase-reads-unit``.
+decrease-reads-with                        int  Number of ``units`` or ``percent`` we should scale down the read provisioning with. Choose entity with ``decrease-reads-unit``.
 increase-reads-unit                        str  Set if we should scale up in ``units`` or ``percent``
 decrease-reads-unit                        str  Set if we should scale down in ``units`` or ``percent``
-min-provisioned-reads                      int  Minimum number of read units for the table
-max-provisioned-reads                      int  Maximum number of read units for the table
-writes-upper-threshold                     int  How many percent of the table capacity should be used before Dynamic DynamoDB scales up the write provisioning?
-writes-lower-threshold                     int  How many percent of the table capacity should be used before Dynamic DynamoDB scales down the write provisioning?
-increase-writes-with                       int  Number of units or percent we should scale up the provisioning with. Choose entity with ``increase-writes-unit``.
-decrease-writes-with                       int  Number of units or percent we should scale down the provisioning with. Choose entity with ``decrease-writes-unit``.
+min-provisioned-reads                      int  Minimum number of reads for the table
+max-provisioned-reads                      int  Maximum number of reads for the table
+writes-upper-threshold                     int  Scale up the writes with ``--increase-writes-with`` if the currently consumed writes reaches this many percent
+writes-lower-threshold                     int  Scale down the writes with ``--decrease-writes-with`` if the currently consumed writes is as low as this many percent
+throttled-writes-upper-threshold           int  Scale up the writes with ``--increase-writes-with`` if the count of throttled write events exceeds this count
+increase-writes-with                       int  Number of ``units`` or ``percent`` we should scale up the write provisioning with. Choose entity with ``increase-writes-unit``.
+decrease-writes-with                       int  Number of ``units`` or ``percent`` we should scale down the write provisioning with. Choose entity with ``decrease-writes-unit``.
 increase-writes-unit                       str  Set if we should scale up in ``units`` or ``percent``
 decrease-writes-unit                       str  Set if we should scale down in ``units`` or ``percent``
-min-provisioned-writes                     int  Minimum number of write units for the table
-max-provisioned-writes                     int  Maximum number of write units for the table
+min-provisioned-writes                     int  Minimum number of writes for the table
+max-provisioned-writes                     int  Maximum number of writes for the table
 num-read-checks-before-scale-down          int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1` (i.e. scale down immediately)
 num-write-checks-before-scale-down         int  Force Dynamic DynamoDB to have `x` consecutive positive results before scaling down. Default is `1` (i.e. scale down immediately)
 num-read-checks-reset-percent              int  Set a read consumption percentage when the `num-read-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-read-checks-before-scale-down` feature
