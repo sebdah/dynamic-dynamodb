@@ -522,14 +522,14 @@ def __ensure_provisioning_alarm(table_name, key_name):
         alert_triggered = True
         message.append(
             '{0} - Consumed Read Capacity {1:d}% '
-            'was greater than or equal to the alarm threshold {2:d}%\n'.format(
+            'was greater than or equal to the reads alarm threshold {2:d}%\n'.format(
                 table_name, consumed_read_units_percent, reads_alarm_threshold))
 
     if writes_alarm_threshold > 0 and consumed_write_units_percent >= writes_alarm_threshold:
         alert_triggered = True
         message.append(
             '{0} - Consumed Write Capacity {1:d}% '
-            'was greater than or equal to the alarm threshold {2:d}%\n'.format(
+            'was greater than or equal to the writes alarm threshold {2:d}%\n'.format(
                 table_name, consumed_write_units_percent, writes_alarm_threshold))
         
     # Send alert if needed
