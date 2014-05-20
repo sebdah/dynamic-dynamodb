@@ -8,6 +8,7 @@ from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import gsi as gsi_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_global_option, get_gsi_option
+from dynamic_dynamodb.aws import sns
 
 
 def ensure_provisioning(
@@ -559,3 +560,54 @@ def __update_throughput(
         gsi_key,
         int(read_units),
         int(write_units))
+
+def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
+    """ Ensure that provisioning alarm threshold is not exceeded
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type table_key: str
+    :param table_key: Table configuration option key name
+    :type gsi_name: str
+    :param gsi_name: Name of the GSI
+    :type gsi_key: str
+    :param gsi_key: Configuration option key name
+    """
+    consumed_read_units_percent = \
+        gsi_stats.get_consumed_read_units_percent(table_name, gsi_name)
+    consumed_write_units_percent = \
+        gsi_stats.get_consumed_write_units_percent(table_name, gsi_name)
+
+    reads_alarm_threshold = \
+        get_gsi_option(table_key, gsi_key, 'reads-alarm-threshold')
+    writes_alarm_threshold = \
+        get_table_option(table_key, gsi_key, 'writes-alarm-threshold')
+
+    # If throughput exceeds alarm threshold, send SNS notifications to alert user
+    alert_triggered = False
+    message = []
+    if consumed_read_units_percent >= reads_alarm_threshold:
+        alert_triggered = True
+        message.append(
+            '{0} - GSI: {1} - Consumed Read Capacity {2} was greater than or equal to the alarm threshold {3}.\n'.format(
+                table_name, gsi_name, consumed_read_units_percent, reads_alarm_threshold))
+
+    if consumed_write_units_percent >= writes_alarm_threshold:
+        alert_triggered = True
+        message.append(
+            '{0} - GSI: {1} - Consumed Write Capacity {1} was greater than or equal to the alarm threshold {2}.\n'.format(
+                table_name, gsi_name, consumed_write_units_percent, writes_alarm_threshold))
+        
+    # Send alert if needed
+    if alert_triggered:
+        logger.info(
+            '{0} - GSI: {1} - Will send provisioning alert'.format(table_name, gsi_name)
+        sns.publish_gsi_notification(
+            table_key,
+            gsi_key,
+            ''.join(message),
+            [].append('throughput-alarm'),
+            subject='ALARM: Provisioning threshold crossed for table {0} - GSI: {1}'.format(table_name, gsi_name))
+    else:
+        logger.info('{0} - GSI: {1} - Provisioning threshold not exceeded'.format(
+            table_name, gsi_name))

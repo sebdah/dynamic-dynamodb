@@ -41,12 +41,15 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Read provisioning configuration
     #
+    
+    # Thresholds for trigging throughput alarm to send notification (%)
+    # reads-alarm-threshold: 90
 
     # Enable or disable reads autoscaling
     enable-reads-autoscaling = true
 
     # Thresholds for scaling up or down the provisioning (%)
-    reads-upper-threshold: 90
+    reads-upper-threshold: 70
     reads-lower-threshold: 30
 
     # How many percent should Dynamic DynamoDB increase/decrease provisioning with (%)
@@ -66,11 +69,14 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # Write provisioning configuration
     #
 
+    # Threshold for trigging throughput alarm to send notification (%)
+    # writes-alarm-threshold: 90
+
     # Enable or disable writes autoscaling
     enable-writes-autoscaling = true
 
     # Thresholds for scaling up or down the provisioning (%)
-    writes-upper-threshold: 90
+    writes-upper-threshold: 70
     writes-lower-threshold: 30
 
     # How many percent should Dynamic DynamoDB increase/decrease provisioning with (%)
@@ -105,9 +111,10 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # Comma separated list. Currently supported values:
     # - scale-up                Get notifications when the table is scaled up
     # - scale-down              Get notifications when the table is scaled down
+    # - throughput-alarm        Get notifications when exceed alarm threshold
     #
     # Example:
-    # sns-message-types: scale-up, scale-down
+    # sns-message-types: scale-up, scale-down, throughput-alarm
 
     #
     # Other settings
@@ -126,11 +133,14 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # Read provisioning configuration
     #
 
+    # Thresholds for trigging throughput alarm to send notification (%)
+    # reads-alarm-threshold: 90
+
     # Enable or disable reads autoscaling
     enable-reads-autoscaling = true
 
     # Thresholds for scaling up or down the provisioning (%)
-    reads-upper-threshold: 90
+    reads-upper-threshold: 70
     reads-lower-threshold: 30
 
     # How many percent should Dynamic DynamoDB increase/decrease provisioning with (%)
@@ -150,11 +160,14 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # Write provisioning configuration
     #
 
+    # Threshold for trigging throughput alarm to send notification (%)
+    # writes-alarm-threshold: 90
+
     # Enable or disable writes autoscaling
     enable-writes-autoscaling = true
 
     # Thresholds for scaling up or down the provisioning (%)
-    writes-upper-threshold: 90
+    writes-upper-threshold: 70
     writes-lower-threshold: 30
 
     # How many percent should Dynamic DynamoDB increase/decrease provisioning with (%)
@@ -188,10 +201,11 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Comma separated list. Currently supported values:
     # - scale-up                Get notifications when the table is scaled up
-    # - scale-down              Get notifications when the table is scaled down
+    # - scale-down              Get notifications when the table is scaled 
+    # - throughput-alarm        Get notifications when exceed alarm threshold
     #
     # Example:
-    # sns-message-types: scale-up, scale-down
+    # sns-message-types: scale-up, scale-down, throughput-alarm
 
     #
     # Other settings

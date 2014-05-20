@@ -8,7 +8,7 @@ from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import table as table_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option, get_global_option
-
+from dynamic_dynamodb.aws import sns
 
 def ensure_provisioning(
         table_name, key_name,
@@ -26,6 +26,10 @@ def ensure_provisioning(
     :param num_consec_write_checks: How many consecutive checks have we had
     :returns: (int, int) -- num_consec_read_checks, num_consec_write_checks
     """
+
+    # Handle throughput alarm checks
+    __ensure_provisioning_alarm(table_name, key_name)
+
     if get_global_option('circuit_breaker_url'):
         if circuit_breaker.is_open():
             logger.warning('Circuit breaker is OPEN!')
@@ -493,3 +497,51 @@ def __update_throughput(table_name, key_name, read_units, write_units):
         key_name,
         int(read_units),
         int(write_units))
+
+def __ensure_provisioning_alarm(table_name, key_name):
+    """ Ensure that provisioning alarm threshold is not exceeded
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type key_name: str
+    :param key_name: Configuration option key name
+    """
+    consumed_read_units_percent = \
+        table_stats.get_consumed_read_units_percent(table_name)
+    consumed_write_units_percent = \
+        table_stats.get_consumed_write_units_percent(table_name)
+
+    reads_alarm_threshold = \
+        get_table_option(key_name, 'reads-alarm-threshold')
+    writes_alarm_threshold = \
+        get_table_option(key_name, 'writes-alarm-threshold')
+
+    # If throughput exceeds alarm threshold, send SNS notifications to alert user
+    alert_triggered = False
+    message = []
+    if consumed_read_units_percent >= reads_alarm_threshold:
+        alert_triggered = True
+        message.append(
+            '{0} - Consumed Read Capacity {1} was greater than or equal to the alarm threshold {2}.\n'.format(
+                table_name, consumed_read_units_percent, reads_alarm_threshold))
+
+    if consumed_write_units_percent >= writes_alarm_threshold:
+        alert_triggered = True
+        message.append(
+            '{0} - Consumed Write Capacity {1} was greater than or equal to the alarm threshold {2}.\n'.format(
+                table_name, consumed_write_units_percent, writes_alarm_threshold))
+        
+    # Send alert if needed
+    if alert_triggered:
+        logger.info(
+            '{0} - Will send provisioning alert'.format(table_name)
+        sns.publish_table_notification(
+            key_name,
+            ''.join(message),
+            [].append('throughput-alarm'),
+            subject='ALARM: Provisioning threshold crossed for table {0}'.format(table_name))
+    else:
+        logger.info('{0} - Provisioning threshold not exceeded'.format(
+            table_name))
+
+    

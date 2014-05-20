@@ -170,6 +170,18 @@ def parse(config_path):
             current_section,
             [
                 {
+                    'key': 'reads-alarm-threshold',
+                    'option': 'reads-alarm-threshold',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
+                    'key': 'writes-alarm-threshold',
+                    'option': 'writes-alarm-threshold',
+                    'required': False,
+                    'type': 'int'
+                },
+                {
                     'key': 'enable_reads_autoscaling',
                     'option': 'enable-reads-autoscaling',
                     'required': False,
@@ -379,6 +391,18 @@ def parse(config_path):
                 config_file,
                 current_section,
                 [
+                    {
+                        'key': 'reads-alarm-threshold',
+                        'option': 'reads-alarm-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
+                    {
+                        'key': 'writes-alarm-threshold',
+                        'option': 'writes-alarm-threshold',
+                        'required': False,
+                        'type': 'int'
+                    },
                     {
                         'key': 'enable_reads_autoscaling',
                         'option': 'enable-reads-autoscaling',
