@@ -583,7 +583,7 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
     reads_alarm_threshold = \
         get_gsi_option(table_key, gsi_key, 'reads-alarm-threshold')
     writes_alarm_threshold = \
-        get_table_option(table_key, gsi_key, 'writes-alarm-threshold')
+        get_gsi_option(table_key, gsi_key, 'writes-alarm-threshold')
 
     # If throughput exceeds alarm threshold, send SNS notifications to alert user
     alert_triggered = False
