@@ -29,17 +29,19 @@ DEFAULT_OPTIONS = {
         'log_config_file': None
     },
     'table': {
+        'reads-alarm-threshold': 90,
+        'writes-alarm-threshold': 90,
         'enable_reads_autoscaling': True,
         'enable_writes_autoscaling': True,
         'reads_lower_threshold': 30,
-        'reads_upper_threshold': 90,
+        'reads_upper_threshold': 70,
         'throttled_reads_upper_threshold': 0,
         'increase_reads_with': 50,
         'decrease_reads_with': 50,
         'increase_reads_unit': 'percent',
         'decrease_reads_unit': 'percent',
         'writes_lower_threshold': 30,
-        'writes_upper_threshold': 90,
+        'writes_upper_threshold': 70,
         'throttled_writes_upper_threshold': 0,
         'increase_writes_with': 50,
         'decrease_writes_with': 50,
@@ -61,17 +63,19 @@ DEFAULT_OPTIONS = {
         'sns_message_types': []
     },
     'gsi': {
+        'reads-alarm-threshold': 90,
+        'writes-alarm-threshold': 90,
         'enable_reads_autoscaling': True,
         'enable_writes_autoscaling': True,
         'reads_lower_threshold': 30,
-        'reads_upper_threshold': 90,
+        'reads_upper_threshold': 70,
         'throttled_reads_upper_threshold': 0,
         'increase_reads_with': 50,
         'decrease_reads_with': 50,
         'increase_reads_unit': 'percent',
         'decrease_reads_unit': 'percent',
         'writes_lower_threshold': 30,
-        'writes_upper_threshold': 90,
+        'writes_upper_threshold': 70,
         'throttled_writes_upper_threshold': 0,
         'increase_writes_with': 50,
         'decrease_writes_with': 50,
@@ -414,7 +418,7 @@ def __check_table_rules(configuration):
             sys.exit(1)
 
         # Check sns-message-types
-        valid_sns_message_types = ['scale-up', 'scale-down']
+        valid_sns_message_types = ['scale-up', 'scale-down', 'throughput-alarm']
         if table['sns_message_types']:
             for sns_type in table['sns_message_types']:
                 if sns_type not in valid_sns_message_types:
