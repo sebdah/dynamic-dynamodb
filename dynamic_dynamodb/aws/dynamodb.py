@@ -417,7 +417,8 @@ def update_gsi_provisioning(
             return
 
         logger.info(
-            '{0} - GSI: {1} - Retrying to update provisioning, excluding any decreases. '
+            '{0} - GSI: {1} - Retrying to update provisioning, '
+            'excluding any decreases. '
             'Setting new reads to {2} and new writes to {3}'.format(
                 table_name, gsi_name, reads, writes))
 
