@@ -598,8 +598,8 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
     if writes_alarm_threshold > 0 and consumed_write_units_percent >= writes_alarm_threshold:
         alert_triggered = True
         message.append(
-            '{0} - GSI: {1} - Consumed Write Capacity {1:d}% '
-            'was greater than or equal to the alarm threshold {2:d}%\n'.format(
+            '{0} - GSI: {1} - Consumed Write Capacity {2:d}% '
+            'was greater than or equal to the alarm threshold {3:d}%\n'.format(
                 table_name, gsi_name, consumed_write_units_percent, writes_alarm_threshold))
         
     # Send alert if needed
@@ -611,7 +611,7 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
             gsi_key,
             ''.join(message),
             ['throughput-alarm'],
-            subject='ALARM: Provisioning threshold crossed for table {0} - GSI: {1}'.format(table_name, gsi_name))
+            subject='ALARM: Throughput threshold crossed for table {0} - GSI: {1}'.format(table_name, gsi_name))
     else:
-        logger.info('{0} - GSI: {1} - Provisioning threshold not exceeded'.format(
+        logger.info('{0} - GSI: {1} - Throughput alarm threshold not exceeded'.format(
             table_name, gsi_name))

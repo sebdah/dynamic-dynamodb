@@ -540,9 +540,9 @@ def __ensure_provisioning_alarm(table_name, key_name):
             key_name,
             ''.join(message),
             ['throughput-alarm'],
-            subject='ALARM: Provisioning threshold crossed for table {0}'.format(table_name))
+            subject='ALARM: Throughput threshold crossed for table {0}'.format(table_name))
     else:
-        logger.info('{0} - Provisioning threshold not exceeded'.format(
+        logger.info('{0} - Throughput alarm threshold not exceeded'.format(
             table_name))
 
     
