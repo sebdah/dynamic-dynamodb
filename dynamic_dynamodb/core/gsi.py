@@ -608,7 +608,7 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
             table_key,
             gsi_key,
             ''.join(message),
-            [].append('throughput-alarm'),
+            ['throughput-alarm'],
             subject='ALARM: Provisioning threshold crossed for table {0} - GSI: {1}'.format(table_name, gsi_name))
     else:
         logger.info('{0} - GSI: {1} - Provisioning threshold not exceeded'.format(

@@ -537,7 +537,7 @@ def __ensure_provisioning_alarm(table_name, key_name):
         sns.publish_table_notification(
             key_name,
             ''.join(message),
-            [].append('throughput-alarm'),
+            ['throughput-alarm'],
             subject='ALARM: Provisioning threshold crossed for table {0}'.format(table_name))
     else:
         logger.info('{0} - Provisioning threshold not exceeded'.format(
