@@ -48,8 +48,8 @@ enable-reads-autoscaling                   bool Turn on or off autoscaling of re
 enable-writes-autoscaling                  bool Turn on or off autoscaling of write capacity. Default is ``true``
 reads-upper-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales up the read provisioning?
 reads-lower-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales down the read provisioning?
-throttled-reads-upper-threshold            int  How many percent of the table capacity should be throttled before Dynamic DynamoDB scales up the read provisioning?
-throttled-writes-lower-threshold           int  How many percent of the table capacity should be throttled before Dynamic DynamoDB scales down the write provisioning?
+throttled-reads-upper-threshold            int  How many reads should be throttled before Dynamic DynamoDB scales up the read provisioning?
+throttled-writes-upper-threshold           int  How many writes should be throttled before Dynamic DynamoDB scales up the write provisioning?
 increase-reads-with                        int  Number of units or percent we should scale up the provisioning with. Choose entity with ``increase-reads-unit``.
 decrease-reads-with                        int  Number of units or percent we should scale down the provisioning with. Choose entity with ``decrease-reads-unit``.
 increase-reads-unit                        str  Set if we should scale up in ``units`` or ``percent``
@@ -92,8 +92,8 @@ enable-reads-autoscaling                   bool Turn on or off autoscaling of re
 enable-writes-autoscaling                  bool Turn on or off autoscaling of write capacity. Default is ``true``
 reads-upper-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales up the read provisioning?
 reads-lower-threshold                      int  How many percent of the table capacity should be used before Dynamic DynamoDB scales down the read provisioning?
-throttled-reads-upper-threshold            int  How many percent of the table capacity should be throttled before Dynamic DynamoDB scales up the read provisioning?
-throttled-writes-upper-threshold           int  How many percent of the table capacity should be throttled before Dynamic DynamoDB scales up the write provisioning?
+throttled-reads-upper-threshold            int  How many reads should be throttled before Dynamic DynamoDB scales up the read provisioning?
+throttled-writes-upper-threshold           int  How many writes should be throttled before Dynamic DynamoDB scales up the write provisioning?
 increase-reads-with                        int  Number of units or percent we should scale up the provisioning with. Choose entity with ``increase-reads-unit``.
 decrease-reads-with                        int  Number of units or percent we should scale down the provisioning with. Choose entity with ``decrease-reads-unit``.
 increase-reads-unit                        str  Set if we should scale up in ``units`` or ``percent``
