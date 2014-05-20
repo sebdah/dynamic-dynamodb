@@ -552,13 +552,13 @@ def __get_connection_dynamodb(retries=3):
     :param retries: Number of times to retry to connect to DynamoDB
     """
     connected = False
-    region = get_global_option('region')
     while not connected:
         if (get_global_option('aws_access_key_id') and
                 get_global_option('aws_secret_access_key')):
             logger.debug(
                 'Authenticating to DynamoDB using '
                 'credentials in configuration file')
+            region = get_global_option('region')
             connection = dynamodb2.connect_to_region(
                 region,
                 aws_access_key_id=get_global_option('aws_access_key_id'),

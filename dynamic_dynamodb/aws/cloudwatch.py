@@ -15,8 +15,9 @@ def __get_connection_cloudwatch():
             logger.debug(
                 'Authenticating to CloudWatch using '
                 'credentials in configuration file')
+            region = get_global_option('region')
             connection = cloudwatch.connect_to_region(
-                get_global_option('region'),
+                region,
                 aws_access_key_id=get_global_option('aws_access_key_id'),
                 aws_secret_access_key=get_global_option(
                     'aws_secret_access_key'))
@@ -25,15 +26,16 @@ def __get_connection_cloudwatch():
                 logger.debug(
                     'Authenticating to CloudWatch using EC2 instance profile')
                 metadata = get_instance_metadata(timeout=1, num_retries=1)
+                region = metadata['placement']['availability-zone'][:-1]
                 connection = cloudwatch.connect_to_region(
-                    metadata['placement']['availability-zone'][:-1],
+                    region,
                     profile_name=metadata['iam']['info'][u'InstanceProfileArn'])
             except KeyError:
                 logger.debug(
                     'Authenticating to CloudWatch using '
                     'env vars / boto configuration')
-                connection = cloudwatch.connect_to_region(
-                    get_global_option('region'))
+                region = get_global_option('region')
+                connection = cloudwatch.connect_to_region(region)
 
     except Exception as err:
         logger.error('Failed connecting to CloudWatch: {0}'.format(err))
@@ -42,8 +44,7 @@ def __get_connection_cloudwatch():
             'https://github.com/sebdah/dynamic-dynamodb/issues')
         raise
 
-    logger.debug('Connected to CloudWatch in {0}'.format(
-        get_global_option('region')))
+    logger.debug('Connected to CloudWatch in {0}'.format(region))
     return connection
 
 
