@@ -3,12 +3,11 @@
 from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb import calculators
-from dynamic_dynamodb.aws import dynamodb
+from dynamic_dynamodb.aws import dynamodb, sns
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import gsi as gsi_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_global_option, get_gsi_option
-from dynamic_dynamodb.aws import sns
 
 
 def ensure_provisioning(
@@ -30,6 +29,9 @@ def ensure_provisioning(
     :param num_consec_write_checks: How many consecutive checks have we had
     :returns: (int, int) -- num_consec_read_checks, num_consec_write_checks
     """
+    # Handle throughput alarm checks
+    __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key)
+
     if get_global_option('circuit_breaker_url'):
         if circuit_breaker.is_open():
             logger.warning('Circuit breaker is OPEN!')
@@ -601,7 +603,7 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
     # Send alert if needed
     if alert_triggered:
         logger.info(
-            '{0} - GSI: {1} - Will send provisioning alert'.format(table_name, gsi_name)
+            '{0} - GSI: {1} - Will send provisioning alert'.format(table_name, gsi_name))
         sns.publish_gsi_notification(
             table_key,
             gsi_key,

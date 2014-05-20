@@ -3,12 +3,11 @@
 from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb import calculators
-from dynamic_dynamodb.aws import dynamodb
+from dynamic_dynamodb.aws import dynamodb, sns
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import table as table_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option, get_global_option
-from dynamic_dynamodb.aws import sns
 
 def ensure_provisioning(
         table_name, key_name,
@@ -534,7 +533,7 @@ def __ensure_provisioning_alarm(table_name, key_name):
     # Send alert if needed
     if alert_triggered:
         logger.info(
-            '{0} - Will send provisioning alert'.format(table_name)
+            '{0} - Will send provisioning alert'.format(table_name))
         sns.publish_table_notification(
             key_name,
             ''.join(message),
