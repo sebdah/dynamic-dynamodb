@@ -417,7 +417,8 @@ def update_gsi_provisioning(
             return
 
         logger.info(
-            '{0} - GSI: {1} - Retrying to update provisioning, excluding any decreases. '
+            '{0} - GSI: {1} - Retrying to update provisioning, '
+            'excluding any decreases. '
             'Setting new reads to {2} and new writes to {3}'.format(
                 table_name, gsi_name, reads, writes))
 
@@ -552,16 +553,14 @@ def __get_connection_dynamodb(retries=3):
     """
     connected = False
     while not connected:
-        logger.debug('Connecting to DynamoDB in {0}'.format(
-            get_global_option('region')))
-
         if (get_global_option('aws_access_key_id') and
                 get_global_option('aws_secret_access_key')):
             logger.debug(
                 'Authenticating to DynamoDB using '
                 'credentials in configuration file')
+            region = get_global_option('region')
             connection = dynamodb2.connect_to_region(
-                get_global_option('region'),
+                region,
                 aws_access_key_id=get_global_option('aws_access_key_id'),
                 aws_secret_access_key=get_global_option(
                     'aws_secret_access_key'))
@@ -570,15 +569,16 @@ def __get_connection_dynamodb(retries=3):
                 logger.debug(
                     'Authenticating to DynamoDB using EC2 instance profile')
                 metadata = get_instance_metadata(timeout=1, num_retries=1)
+                region = metadata['placement']['availability-zone'][:-1]
                 connection = dynamodb2.connect_to_region(
-                    metadata['placement']['availability-zone'][:-1],
+                    region,
                     profile_name=metadata['iam']['info'][u'InstanceProfileArn'])
             except KeyError:
                 logger.debug(
                     'Authenticating to DynamoDB using '
                     'env vars / boto configuration')
-                connection = dynamodb2.connect_to_region(
-                    get_global_option('region'))
+                region = get_global_option('region')
+                connection = dynamodb2.connect_to_region(region)
 
         if not connection:
             if retries == 0:
@@ -591,8 +591,7 @@ def __get_connection_dynamodb(retries=3):
                 time.sleep(5)
         else:
             connected = True
-            logger.debug('Connected to DynamoDB in {0}'.format(
-                get_global_option('region')))
+            logger.debug('Connected to DynamoDB in {0}'.format(region))
 
     return connection
 

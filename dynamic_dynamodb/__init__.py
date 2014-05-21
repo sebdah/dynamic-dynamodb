@@ -62,8 +62,13 @@ def main():
                     get_global_option('instance')))
 
             if get_global_option('daemon') == 'start':
-                daemon.start()
-
+                logger.debug('Starting daemon')
+                try:
+                    daemon.start()
+                    logger.info('Daemon started')
+                except IOError as error:
+                    logger.error('Could not create pid file: {0}'.format(error))
+                    logger.error('Daemon not started')
             elif get_global_option('daemon') == 'stop':
                 logger.debug('Stopping daemon')
                 daemon.stop()
@@ -71,13 +76,19 @@ def main():
                 sys.exit(0)
 
             elif get_global_option('daemon') == 'restart':
+                logger.debug('Restarting daemon')
                 daemon.restart()
+                logger.info('Daemon restarted')
 
             elif get_global_option('daemon') in ['foreground', 'fg']:
+                logger.debug('Starting daemon in foreground')
                 daemon.run()
+                logger.info('Daemon started in foreground')
 
             else:
-                print('Valid options for --daemon are start, stop and restart')
+                print(
+                    'Valid options for --daemon are start, '
+                    'stop, restart, and foreground')
                 sys.exit(1)
         else:
             if get_global_option('run_once'):
@@ -189,9 +200,11 @@ def execute():
         except BotoServerError as error:
             if boto_server_error_retries > 0:
                 logger.error(
-                    'Unknown boto error. Status: "{0}". Reason: "{1}"'.format(
+                    'Unknown boto error. Status: "{0}". '
+                    'Reason: "{1}". Message: {2}'.format(
                         error.status,
-                        error.reason))
+                        error.reason,
+                        error.message))
                 logger.error(
                     'Please bug report if this error persists')
                 boto_server_error_retries -= 1

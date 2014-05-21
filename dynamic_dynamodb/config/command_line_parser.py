@@ -73,36 +73,39 @@ def parse():
         help='AWS region to operate in (default: us-east-1')
     dynamodb_ag.add_argument(
         '-t', '--table-name',
-        help='How many percent should we decrease the read units with?')
+        help=(
+            'Table(s) to target. '
+            'The name is treated as a regular expression. '
+            'E.g. "^my_table.*$" or "my_table"'))
     r_scaling_ag = parser.add_argument_group('Read units scaling properties')
     r_scaling_ag.add_argument(
         '--reads-upper-threshold',
         type=int,
-        help="""Scale up the reads with --increase-reads-with percent if
+        help="""Scale up the reads with --increase-reads-with if
                 the currently consumed read units reaches this many
                 percent (default: 90)""")
     r_scaling_ag.add_argument(
         '--throttled-reads-upper-threshold',
         type=int,
-        help="""Scale up the reads with --increase-reads-with percent if
+        help="""Scale up the reads with --increase-reads-with if
                 the count of throttled read events exceeds this
-                count (default: 100)""")
+                count (default: 0)""")
     r_scaling_ag.add_argument(
         '--reads-lower-threshold',
         type=int,
-        help="""Scale down the reads with --decrease-reads-with percent if the
+        help="""Scale down the reads with --decrease-reads-with if the
                 currently consumed read units is as low as this
                 percentage (default: 30)""")
     r_scaling_ag.add_argument(
         '--increase-reads-with',
         type=int,
-        help="""How many percent should we increase the read
-                units with? (default: 50, max: 100)""")
+        help="""How much should we increase the read units with?
+                (default: 50, max: 100 if --increase-reads-unit = percent)""")
     r_scaling_ag.add_argument(
         '--decrease-reads-with',
         type=int,
-        help="""How many percent should we decrease the
-                read units with? (default: 50)""")
+        help="""How much should we decrease the read units with?
+                (default: 50)""")
     r_scaling_ag.add_argument(
         '--increase-reads-unit',
         type=str,
@@ -133,31 +136,31 @@ def parse():
     w_scaling_ag.add_argument(
         '--writes-upper-threshold',
         type=int,
-        help="""Scale up the writes with --increase-writes-with percent
+        help="""Scale up the writes with --increase-writes-with
                 if the currently consumed write units reaches this
                 many percent (default: 90)""")
     w_scaling_ag.add_argument(
         '--throttled-writes-upper-threshold',
         type=int,
-        help="""Scale up the reads with --increase-writes-with percent if
+        help="""Scale up the reads with --increase-writes-with if
                 the count of throttled write events exceeds this
-                count (default: 100)""")
+                count (default: 0)""")
     w_scaling_ag.add_argument(
         '--writes-lower-threshold',
         type=int,
-        help="""Scale down the writes with --decrease-writes-with percent
+        help="""Scale down the writes with --decrease-writes-with
                 if the currently consumed write units is as low as this
                 percentage (default: 30)""")
     w_scaling_ag.add_argument(
         '--increase-writes-with',
         type=int,
-        help="""How many percent should we increase the write
-                units with? (default: 50, max: 100)""")
+        help="""How much should we increase the write units with?
+                (default: 50, max: 100 if --increase-writes-unit = 'percent'""")
     w_scaling_ag.add_argument(
         '--decrease-writes-with',
         type=int,
-        help="""How many percent should we decrease the write
-                units with? (default: 50)""")
+        help="""How much should we decrease the write units with?
+                (default: 50)""")
     w_scaling_ag.add_argument(
         '--increase-writes-unit',
         type=str,
