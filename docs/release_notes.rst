@@ -1,6 +1,25 @@
 Release notes
 =============
 
+1.14.0
+------
+
+**Release date:** 2014-05-21
+
+- Document SNS permission requirements (`#171 <https://github.com/sebdah/dynamic-dynamodb/issues/171>`__)
+- Wrong region in log message for instance profile authentication (`#170 <https://github.com/sebdah/dynamic-dynamodb/issues/170>`__)
+- Improved logging for daemon commands (`#165 <https://github.com/sebdah/dynamic-dynamodb/issues/165>`__). Pull request from `@ulsa <https://github.com/ulsa>`__
+- Removed inconsistent debug printout (`#164 <https://github.com/sebdah/dynamic-dynamodb/issues/164>`__). Pull request from `@ulsa <https://github.com/ulsa>`__
+- Fixed some minor doc issues (`#172 <https://github.com/sebdah/dynamic-dynamodb/issues/172>`__). Pull request from `@ulsa <https://github.com/ulsa>`__
+- Added column for default values (`#173 <https://github.com/sebdah/dynamic-dynamodb/issues/173>`__). Pull request from `@ulsa <https://github.com/ulsa>`__
+- Fixed issues with docs for command-line options (`#176 <https://github.com/sebdah/dynamic-dynamodb/issues/176>`__). Pull request from `@ulsa <https://github.com/ulsa>`__
+- Implement max retry count for CloudWatch metrics fetching (`#178 <https://github.com/sebdah/dynamic-dynamodb/issues/178>`__)
+- throttled-reads-upper-threshold is documented as being a percentage; actually a count (`#169 <https://github.com/sebdah/dynamic-dynamodb/issues/169>`__)
+- Catch permission denied when creating pid file (`#167 <https://github.com/sebdah/dynamic-dynamodb/issues/167>`__)
+- No error message when having insufficient IAM permissions (`#166 <https://github.com/sebdah/dynamic-dynamodb/issues/166>`__)
+- Docs for -t incorrect (`#161 <https://github.com/sebdah/dynamic-dynamodb/issues/161>`__)
+- Create example IAM policy (`#177 <https://github.com/sebdah/dynamic-dynamodb/issues/177>`__)
+
 1.13.1
 ------
 
