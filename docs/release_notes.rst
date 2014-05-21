@@ -6,6 +6,8 @@ Release notes
 
 **Release date:** 2014-05-21
 
+A special thanks to (`@ulsa <https://github.com/ulsa>`__) for his help with this release.
+
 - Document SNS permission requirements (`#171 <https://github.com/sebdah/dynamic-dynamodb/issues/171>`__)
 - Wrong region in log message for instance profile authentication (`#170 <https://github.com/sebdah/dynamic-dynamodb/issues/170>`__)
 - Improved logging for daemon commands (`#165 <https://github.com/sebdah/dynamic-dynamodb/issues/165>`__). Pull request from `@ulsa <https://github.com/ulsa>`__
