@@ -161,5 +161,11 @@ def __get_aws_metric(table_name, time_frame, metric_name):
             statistics=['Sum'],
             dimensions={'TableName': table_name},
             unit='Count')
-    except BotoServerError:
+    except BotoServerError as error:
+        logger.error(
+            'Unknown boto error. Status: "{0}". '
+            'Reason: "{1}". Message: {2}'.format(
+                error.status,
+                error.reason,
+                error.message))
         raise

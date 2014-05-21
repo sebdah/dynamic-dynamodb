@@ -200,9 +200,11 @@ def execute():
         except BotoServerError as error:
             if boto_server_error_retries > 0:
                 logger.error(
-                    'Unknown boto error. Status: "{0}". Reason: "{1}"'.format(
+                    'Unknown boto error. Status: "{0}". '
+                    'Reason: "{1}". Message: {2}'.format(
                         error.status,
-                        error.reason))
+                        error.reason,
+                        error.message))
                 logger.error(
                     'Please bug report if this error persists')
                 boto_server_error_retries -= 1
