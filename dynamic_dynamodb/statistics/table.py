@@ -134,7 +134,8 @@ def get_throttled_write_event_count(table_name, time_frame=300):
 @retry(
     wait='exponential_sleep',
     wait_exponential_multiplier=1000,
-    wait_exponential_max=5000)
+    wait_exponential_max=10000,
+    stop_max_attempt_number=10)
 def __get_aws_metric(table_name, time_frame, metric_name):
     """ Returns a  metric list from the AWS CloudWatch service, may return
     None if no metric exists
