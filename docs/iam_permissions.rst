@@ -19,21 +19,11 @@ Here's an example IAM policy. Please make sure you update the ARNs according to 
       "Version": "2012-10-17",
       "Statement": [
         {
-          "Sid": "Stmt1400661806000",
           "Effect": "Allow",
           "Action": [
             "dynamodb:DescribeTable",
             "dynamodb:ListTables",
-            "dynamodb:UpdateTable"
-          ],
-          "Resource": [
-            "arn:aws:dynamodb:us-east-1:123412341234:table/mytable"
-          ]
-        },
-        {
-          "Sid": "Stmt1400661929000",
-          "Effect": "Allow",
-          "Action": [
+            "dynamodb:UpdateTable",
             "cloudwatch:GetMetricStatistics"
           ],
           "Resource": [
@@ -41,13 +31,12 @@ Here's an example IAM policy. Please make sure you update the ARNs according to 
           ]
         },
         {
-          "Sid": "Stmt1400661943000",
           "Effect": "Allow",
           "Action": [
             "sns:Publish"
           ],
           "Resource": [
-            "arn:aws:sns:us-east-1:123412341234:my-topic"
+            "arn:aws:sns:*::dynamic-dynamodb"
           ]
         }
       ]
