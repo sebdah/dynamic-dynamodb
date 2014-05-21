@@ -41,6 +41,8 @@ Table configuration
 
 Important note: The table name is treated as a regular expression. That means that ``my_table`` also will match ``my_table2``, unless you express it as a valid regular expression; ``^my_table$``. This feature enables you to easily configure many tables or tables with dynamic names.
 
+Please note also that DynamoDB writes CloudWatch data every 5 minutes, thus ``reads/writes-upper/lower-threshold`` and ``throttled-reads/writes-upper-threshold`` is counted over 5 minute intervals.
+
 ========================================== ==== ============= ==========================================
 Option                                     Type Default       Comment
 ========================================== ==== ============= ==========================================
@@ -84,6 +86,8 @@ Global secondary index configuration
 Important note: Both the GSI name and the table name is treated as regular expressions. That means that ``my_gsi`` also will match ``my_gsi``, unless you express it as a valid regular expression; ``^my_gsi$``. This feature enables you to easily configure many GSIs with one configuration section.
 
 The ``table:`` section after ``gsi:`` **must** match with an existing ``table:`` section.
+
+Please note also that DynamoDB writes CloudWatch data every 5 minutes, thus ``reads/writes-upper/lower-threshold`` and ``throttled-reads/writes-upper-threshold`` is counted over 5 minute intervals.
 
 ========================================== ==== ============= ==========================================
 Option                                     Type Default       Comment
