@@ -334,9 +334,9 @@ def update_table_provisioning(
 
         # See if we should send notifications for scale-down, scale-up or both
         sns_message_types = []
-        if current_reads > reads or current_writes > current_writes:
+        if current_reads > reads or current_writes > writes:
             sns_message_types.append('scale-down')
-        if current_reads < reads or current_writes < current_writes:
+        if current_reads < reads or current_writes < writes:
             sns_message_types.append('scale-up')
 
         message = (
@@ -485,9 +485,9 @@ def update_gsi_provisioning(
 
         # See if we should send notifications for scale-down, scale-up or both
         sns_message_types = []
-        if current_reads > reads or current_writes > current_writes:
+        if current_reads > reads or current_writes > writes:
             sns_message_types.append('scale-down')
-        if current_reads < reads or current_writes < current_writes:
+        if current_reads < reads or current_writes < writes:
             sns_message_types.append('scale-up')
 
         sns.publish_gsi_notification(
