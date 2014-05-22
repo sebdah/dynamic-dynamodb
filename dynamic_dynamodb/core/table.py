@@ -510,39 +510,68 @@ def __ensure_provisioning_alarm(table_name, key_name):
     consumed_write_units_percent = \
         table_stats.get_consumed_write_units_percent(table_name)
 
-    reads_alarm_threshold = \
-        get_table_option(key_name, 'reads-alarm-threshold')
-    writes_alarm_threshold = \
-        get_table_option(key_name, 'writes-alarm-threshold')
+    reads_upper_alarm_threshold = \
+        get_table_option(key_name, 'reads-upper-alarm-threshold')
+    reads_lower_alarm_threshold = \
+        get_table_option(key_name, 'reads-lower-alarm-threshold')
+    writes_upper_alarm_threshold = \
+        get_table_option(key_name, 'writes-upper-alarm-threshold')
+    writes_lower_alarm_threshold = \
+        get_table_option(key_name, 'writes-lower-alarm-threshold')
 
-    # If throughput exceeds alarm threshold, send SNS notifications to alert user
-    alert_triggered = False
-    message = []
-    if reads_alarm_threshold > 0 and consumed_read_units_percent >= reads_alarm_threshold:
-        alert_triggered = True
-        message.append(
+    # Check upper alarm thresholds
+    upper_alert_triggered = False
+    upper_alert_message = []
+    if reads_upper_alarm_threshold > 0 and consumed_read_units_percent >= reads_upper_alarm_threshold:
+        upper_alert_triggered = True
+        upper_alert_message.append(
             '{0} - Consumed Read Capacity {1:d}% '
-            'was greater than or equal to the reads alarm threshold {2:d}%\n'.format(
-                table_name, consumed_read_units_percent, reads_alarm_threshold))
+            'was greater than or equal to the upper alarm threshold {2:d}%\n'.format(
+                table_name, consumed_read_units_percent, reads_upper_alarm_threshold))
 
-    if writes_alarm_threshold > 0 and consumed_write_units_percent >= writes_alarm_threshold:
-        alert_triggered = True
-        message.append(
+    if writes_upper_alarm_threshold > 0 and consumed_write_units_percent >= writes_upper_alarm_threshold:
+        upper_alert_triggered = True
+        upper_alert_message.append(
             '{0} - Consumed Write Capacity {1:d}% '
-            'was greater than or equal to the writes alarm threshold {2:d}%\n'.format(
-                table_name, consumed_write_units_percent, writes_alarm_threshold))
-        
+            'was greater than or equal to the upper alarm threshold {2:d}%\n'.format(
+                table_name, consumed_write_units_percent, writes_upper_alarm_threshold))
+    
+    # Check lower alarm thresholds
+    lower_alert_triggered = False
+    lower_alert_message = []
+    if reads_lower_alarm_threshold > 0 and consumed_read_units_percent < reads_lower_alarm_threshold:
+        lower_alert_triggered = True
+        lower_alert_message.append(
+            '{0} - Consumed Read Capacity {1:d}% '
+            'was below the lower alarm threshold {2:d}%\n'.format(
+                table_name, consumed_read_units_percent, reads_lower_alarm_threshold))
+
+    if writes_lower_alarm_threshold > 0 and consumed_write_units_percent < writes_lower_alarm_threshold:
+        lower_alert_triggered = True
+        lower_alert_message.append(
+            '{0} - Consumed Write Capacity {1:d}% '
+            'was below the lower alarm threshold {2:d}%\n'.format(
+                table_name, consumed_write_units_percent, writes_lower_alarm_threshold))
+
     # Send alert if needed
-    if alert_triggered:
+    if upper_alert_triggered:
         logger.info(
-            '{0} - Will send provisioning alert'.format(table_name))
+            '{0} - Will send high provisioning alert'.format(table_name))
         sns.publish_table_notification(
             key_name,
-            ''.join(message),
-            ['throughput-alarm'],
-            subject='ALARM: Throughput threshold crossed for table {0}'.format(table_name))
+            ''.join(upper_alert_message),
+            ['high-throughput-alarm'],
+            subject='ALARM: High Throughput for Table {0}'.format(table_name))
+    elif lower_alert_triggered:
+        logger.info(
+            '{0} - Will send low provisioning alert'.format(table_name))
+        sns.publish_table_notification(
+            key_name,
+            ''.join(lower_alert_message),
+            ['low-throughput-alarm'],
+            subject='ALARM: Low Throughput for Table {0}'.format(table_name))
     else:
-        logger.info('{0} - Throughput alarm threshold not exceeded'.format(
+        logger.info('{0} - Throughput alarm thresholds not crossed'.format(
             table_name))
 
     
