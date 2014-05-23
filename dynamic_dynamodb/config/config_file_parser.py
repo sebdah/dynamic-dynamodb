@@ -3,6 +3,190 @@
 import sys
 import os.path
 import ConfigParser
+from copy import deepcopy
+
+TABLE_CONFIG_OPTIONS = [
+    {
+        'key': 'enable_reads_autoscaling',
+        'option': 'enable-reads-autoscaling',
+        'required': False,
+        'type': 'bool'
+    },
+    {
+        'key': 'enable_writes_autoscaling',
+        'option': 'enable-writes-autoscaling',
+        'required': False,
+        'type': 'bool'
+    },
+    {
+        'key': 'reads_lower_threshold',
+        'option': 'reads-lower-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'reads_upper_threshold',
+        'option': 'reads-upper-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'throttled_reads_upper_threshold',
+        'option': 'throttled-reads-upper-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_reads_with',
+        'option': 'increase-reads-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'decrease_reads_with',
+        'option': 'decrease-reads-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_reads_unit',
+        'option': 'increase-reads-unit',
+        'required': True,
+        'type': 'str'
+    },
+    {
+        'key': 'decrease_reads_unit',
+        'option': 'decrease-reads-unit',
+        'required': True,
+        'type': 'str'
+    },
+    {
+        'key': 'writes_lower_threshold',
+        'option': 'writes-lower-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'writes_upper_threshold',
+        'option': 'writes-upper-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'throttled_writes_upper_threshold',
+        'option': 'throttled-writes-upper-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_writes_with',
+        'option': 'increase-writes-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'decrease_writes_with',
+        'option': 'decrease-writes-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_writes_unit',
+        'option': 'increase-writes-unit',
+        'required': True,
+        'type': 'str'
+    },
+    {
+        'key': 'decrease_writes_unit',
+        'option': 'decrease-writes-unit',
+        'required': True,
+        'type': 'str'
+    },
+    {
+        'key': 'min_provisioned_reads',
+        'option': 'min-provisioned-reads',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'max_provisioned_reads',
+        'option': 'max-provisioned-reads',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'min_provisioned_writes',
+        'option': 'min-provisioned-writes',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'max_provisioned_writes',
+        'option': 'max-provisioned-writes',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'maintenance_windows',
+        'option': 'maintenance-windows',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'allow_scaling_down_reads_on_0_percent',
+        'option': 'allow-scaling-down-reads-on-0-percent',
+        'required': False,
+        'type': 'bool'
+    },
+    {
+        'key': 'allow_scaling_down_writes_on_0_percent',
+        'option': 'allow-scaling-down-writes-on-0-percent',
+        'required': False,
+        'type': 'bool'
+    },
+    {
+        'key': 'always_decrease_rw_together',
+        'option': 'always-decrease-rw-together',
+        'required': False,
+        'type': 'bool'
+    },
+    {
+        'key': 'sns_topic_arn',
+        'option': 'sns-topic-arn',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'sns_message_types',
+        'option': 'sns-message-types',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'num_read_checks_before_scale_down',
+        'option': 'num-read-checks-before-scale-down',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'num_write_checks_before_scale_down',
+        'option': 'num-write-checks-before-scale-down',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'num_write_checks_reset_percent',
+        'option': 'num-write-checks-reset-percent',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'num_read_checks_reset_percent',
+        'option': 'num-read-checks-reset-percent',
+        'required': False,
+        'type': 'int'
+    }
+]
 
 
 def __parse_options(config_file, section, options):
@@ -152,6 +336,19 @@ def parse(config_path):
                 }
             ])
 
+    if 'tabledefaults' in config_file.sections():
+        # nothing is required in defaults, so we set required to False
+        default_config_options = deepcopy(TABLE_CONFIG_OPTIONS)
+        for item in default_config_options:
+            item['required'] = False
+        tabledefaults = __parse_options(config_file, 'tabledefaults', default_config_options)
+        # if we've got a default set required to be false for table parsing
+        for item in TABLE_CONFIG_OPTIONS:
+            if item['key'] in tabledefaults:
+                item['required'] = False
+    else:
+        tabledefaults = {}
+
     #
     # Handle [table: ]
     #
@@ -165,198 +362,17 @@ def parse(config_path):
 
         found_table = True
         current_table_name = current_section.rsplit(':', 1)[1].strip()
-        table_config['tables'][current_table_name] = __parse_options(
+        table_config['tables'][current_table_name] = dict(tabledefaults.items() + __parse_options(
             config_file,
-            current_section,
-            [
-                {
-                    'key': 'enable_reads_autoscaling',
-                    'option': 'enable-reads-autoscaling',
-                    'required': False,
-                    'type': 'bool'
-                },
-                {
-                    'key': 'enable_writes_autoscaling',
-                    'option': 'enable-writes-autoscaling',
-                    'required': False,
-                    'type': 'bool'
-                },
-                {
-                    'key': 'reads_lower_threshold',
-                    'option': 'reads-lower-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'reads_upper_threshold',
-                    'option': 'reads-upper-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'throttled_reads_upper_threshold',
-                    'option': 'throttled-reads-upper-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'increase_reads_with',
-                    'option': 'increase-reads-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'decrease_reads_with',
-                    'option': 'decrease-reads-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'increase_reads_unit',
-                    'option': 'increase-reads-unit',
-                    'required': True,
-                    'type': 'str'
-                },
-                {
-                    'key': 'decrease_reads_unit',
-                    'option': 'decrease-reads-unit',
-                    'required': True,
-                    'type': 'str'
-                },
-                {
-                    'key': 'writes_lower_threshold',
-                    'option': 'writes-lower-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'writes_upper_threshold',
-                    'option': 'writes-upper-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'throttled_writes_upper_threshold',
-                    'option': 'throttled-writes-upper-threshold',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'increase_writes_with',
-                    'option': 'increase-writes-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'decrease_writes_with',
-                    'option': 'decrease-writes-with',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'increase_writes_unit',
-                    'option': 'increase-writes-unit',
-                    'required': True,
-                    'type': 'str'
-                },
-                {
-                    'key': 'decrease_writes_unit',
-                    'option': 'decrease-writes-unit',
-                    'required': True,
-                    'type': 'str'
-                },
-                {
-                    'key': 'min_provisioned_reads',
-                    'option': 'min-provisioned-reads',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'max_provisioned_reads',
-                    'option': 'max-provisioned-reads',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'min_provisioned_writes',
-                    'option': 'min-provisioned-writes',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'max_provisioned_writes',
-                    'option': 'max-provisioned-writes',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'maintenance_windows',
-                    'option': 'maintenance-windows',
-                    'required': False,
-                    'type': 'str'
-                },
-                {
-                    'key': 'allow_scaling_down_reads_on_0_percent',
-                    'option': 'allow-scaling-down-reads-on-0-percent',
-                    'required': False,
-                    'type': 'bool'
-                },
-                {
-                    'key': 'allow_scaling_down_writes_on_0_percent',
-                    'option': 'allow-scaling-down-writes-on-0-percent',
-                    'required': False,
-                    'type': 'bool'
-                },
-                {
-                    'key': 'always_decrease_rw_together',
-                    'option': 'always-decrease-rw-together',
-                    'required': False,
-                    'type': 'bool'
-                },
-                {
-                    'key': 'sns_topic_arn',
-                    'option': 'sns-topic-arn',
-                    'required': False,
-                    'type': 'str'
-                },
-                {
-                    'key': 'sns_message_types',
-                    'option': 'sns-message-types',
-                    'required': False,
-                    'type': 'str'
-                },
-                {
-                    'key': 'num_read_checks_before_scale_down',
-                    'option': 'num-read-checks-before-scale-down',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'num_write_checks_before_scale_down',
-                    'option': 'num-write-checks-before-scale-down',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'num_write_checks_reset_percent',
-                    'option': 'num-write-checks-reset-percent',
-                    'required': False,
-                    'type': 'int'
-                },
-                {
-                    'key': 'num_read_checks_reset_percent',
-                    'option': 'num-read-checks-reset-percent',
-                    'required': False,
-                    'type': 'int'
-                }
-            ])
+            current_section, TABLE_CONFIG_OPTIONS).items())
 
     if not found_table:
         print('Could not find a [table: <table_name>] section in {0}'.format(
             config_path))
         sys.exit(1)
 
-    # Find the first table definition
+    # Find gsi definitions - this allows gsi's to be defined before the table definitions
+    # we don't worry about parsing everything twice here
     for current_section in config_file.sections():
         try:
             header1, gsi_key, header2, table_key = current_section.split(' ')
@@ -377,189 +393,7 @@ def parse(config_path):
         table_config['tables'][table_key]['gsis'][gsi_key] = \
             __parse_options(
                 config_file,
-                current_section,
-                [
-                    {
-                        'key': 'enable_reads_autoscaling',
-                        'option': 'enable-reads-autoscaling',
-                        'required': False,
-                        'type': 'bool'
-                    },
-                    {
-                        'key': 'enable_writes_autoscaling',
-                        'option': 'enable-writes-autoscaling',
-                        'required': False,
-                        'type': 'bool'
-                    },
-                    {
-                        'key': 'reads_lower_threshold',
-                        'option': 'reads-lower-threshold',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'reads_upper_threshold',
-                        'option': 'reads-upper-threshold',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'throttled_reads_upper_threshold',
-                        'option': 'throttled-reads-upper-threshold',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'increase_reads_with',
-                        'option': 'increase-reads-with',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'decrease_reads_with',
-                        'option': 'decrease-reads-with',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'increase_reads_unit',
-                        'option': 'increase-reads-unit',
-                        'required': True,
-                        'type': 'str'
-                    },
-                    {
-                        'key': 'decrease_reads_unit',
-                        'option': 'decrease-reads-unit',
-                        'required': True,
-                        'type': 'str'
-                    },
-                    {
-                        'key': 'writes_lower_threshold',
-                        'option': 'writes-lower-threshold',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'writes_upper_threshold',
-                        'option': 'writes-upper-threshold',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'throttled_writes_upper_threshold',
-                        'option': 'throttled-writes-upper-threshold',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'increase_writes_with',
-                        'option': 'increase-writes-with',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'decrease_writes_with',
-                        'option': 'decrease-writes-with',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'increase_writes_unit',
-                        'option': 'increase-writes-unit',
-                        'required': True,
-                        'type': 'str'
-                    },
-                    {
-                        'key': 'decrease_writes_unit',
-                        'option': 'decrease-writes-unit',
-                        'required': True,
-                        'type': 'str'
-                    },
-                    {
-                        'key': 'min_provisioned_reads',
-                        'option': 'min-provisioned-reads',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'max_provisioned_reads',
-                        'option': 'max-provisioned-reads',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'min_provisioned_writes',
-                        'option': 'min-provisioned-writes',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'max_provisioned_writes',
-                        'option': 'max-provisioned-writes',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'maintenance_windows',
-                        'option': 'maintenance-windows',
-                        'required': False,
-                        'type': 'str'
-                    },
-                    {
-                        'key': 'allow_scaling_down_reads_on_0_percent',
-                        'option': 'allow-scaling-down-reads-on-0-percent',
-                        'required': False,
-                        'type': 'bool'
-                    },
-                    {
-                        'key': 'allow_scaling_down_writes_on_0_percent',
-                        'option': 'allow-scaling-down-writes-on-0-percent',
-                        'required': False,
-                        'type': 'bool'
-                    },
-                    {
-                        'key': 'always_decrease_rw_together',
-                        'option': 'always-decrease-rw-together',
-                        'required': False,
-                        'type': 'bool'
-                    },
-                    {
-                        'key': 'sns_topic_arn',
-                        'option': 'sns-topic-arn',
-                        'required': False,
-                        'type': 'str'
-                    },
-                    {
-                        'key': 'sns_message_types',
-                        'option': 'sns-message-types',
-                        'required': False,
-                        'type': 'str'
-                    },
-                    {
-                        'key': 'num_read_checks_before_scale_down',
-                        'option': 'num-read-checks-before-scale-down',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'num_write_checks_before_scale_down',
-                        'option': 'num-write-checks-before-scale-down',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'num_write_checks_reset_percent',
-                        'option': 'num-write-checks-reset-percent',
-                        'required': False,
-                        'type': 'int'
-                    },
-                    {
-                        'key': 'num_read_checks_reset_percent',
-                        'option': 'num-read-checks-reset-percent',
-                        'required': False,
-                        'type': 'int'
-                    }
-                ])
+                current_section, TABLE_CONFIG_OPTIONS)
 
     return dict(
         global_config.items() +
