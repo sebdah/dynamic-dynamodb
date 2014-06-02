@@ -336,18 +336,18 @@ def parse(config_path):
                 }
             ])
 
-    if 'tabledefaults' in config_file.sections():
+    if 'table_defaults' in config_file.sections():
         # nothing is required in defaults, so we set required to False
         default_config_options = deepcopy(TABLE_CONFIG_OPTIONS)
         for item in default_config_options:
             item['required'] = False
-        tabledefaults = __parse_options(config_file, 'tabledefaults', default_config_options)
+        table_defaults = __parse_options(config_file, 'table_defaults', default_config_options)
         # if we've got a default set required to be false for table parsing
         for item in TABLE_CONFIG_OPTIONS:
-            if item['key'] in tabledefaults:
+            if item['key'] in table_defaults:
                 item['required'] = False
     else:
-        tabledefaults = {}
+        table_defaults = {}
 
     #
     # Handle [table: ]
@@ -362,7 +362,7 @@ def parse(config_path):
 
         found_table = True
         current_table_name = current_section.rsplit(':', 1)[1].strip()
-        table_config['tables'][current_table_name] = dict(tabledefaults.items() + __parse_options(
+        table_config['tables'][current_table_name] = dict(table_defaults.items() + __parse_options(
             config_file,
             current_section, TABLE_CONFIG_OPTIONS).items())
 
