@@ -392,9 +392,8 @@ def parse(config_path):
             table_config['tables'][table_key]['gsis'] = {}
 
         table_config['tables'][table_key]['gsis'][gsi_key] = \
-            __parse_options(
-                config_file,
-                current_section, TABLE_CONFIG_OPTIONS)
+            dict(table_defaults.items() + __parse_options(
+                config_file, current_section, TABLE_CONFIG_OPTIONS).items())
 
     return dict(
         global_config.items() +
