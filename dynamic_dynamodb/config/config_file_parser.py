@@ -341,7 +341,8 @@ def parse(config_path):
         default_config_options = deepcopy(TABLE_CONFIG_OPTIONS)
         for item in default_config_options:
             item['required'] = False
-        table_defaults = __parse_options(config_file, 'table_defaults', default_config_options)
+        table_defaults = __parse_options(
+            config_file, 'table_defaults', default_config_options)
         # if we've got a default set required to be false for table parsing
         for item in TABLE_CONFIG_OPTIONS:
             if item['key'] in table_defaults:
@@ -362,17 +363,17 @@ def parse(config_path):
 
         found_table = True
         current_table_name = current_section.rsplit(':', 1)[1].strip()
-        table_config['tables'][current_table_name] = dict(table_defaults.items() + __parse_options(
-            config_file,
-            current_section, TABLE_CONFIG_OPTIONS).items())
+        table_config['tables'][current_table_name] = \
+            dict(table_defaults.items() + __parse_options(
+                config_file, current_section, TABLE_CONFIG_OPTIONS).items())
 
     if not found_table:
         print('Could not find a [table: <table_name>] section in {0}'.format(
             config_path))
         sys.exit(1)
 
-    # Find gsi definitions - this allows gsi's to be defined before the table definitions
-    # we don't worry about parsing everything twice here
+    # Find gsi definitions - this allows gsi's to be defined before the table
+    # definitions we don't worry about parsing everything twice here
     for current_section in config_file.sections():
         try:
             header1, gsi_key, header2, table_key = current_section.split(' ')
