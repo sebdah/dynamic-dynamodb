@@ -1,10 +1,19 @@
 Release notes
 =============
 
+1.15.0
+------
+
+**Release date:** 2014-06-02
+
+- Default options for tables and GSIs is now supported using the `[default_options]` section (`#181 <https://github.com/sebdah/dynamic-dynamodb/issues/181>`__)
+
 1.14.0
 ------
 
 **Release date:** 2014-05-21
+
+A special thanks to (`@ulsa <https://github.com/ulsa>`__) for his help with this release.
 
 - Document SNS permission requirements (`#171 <https://github.com/sebdah/dynamic-dynamodb/issues/171>`__)
 - Wrong region in log message for instance profile authentication (`#170 <https://github.com/sebdah/dynamic-dynamodb/issues/170>`__)
