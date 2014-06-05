@@ -4,6 +4,13 @@ Release notes
 1.15.0
 ------
 
+**Release date:** 2014-06-05
+
+- Locked ``boto`` version to 2.28.0 (`#183 <https://github.com/sebdah/dynamic-dynamodb/issues/183>`__)
+
+1.15.0
+------
+
 **Release date:** 2014-06-02
 
 - Default options for tables and GSIs is now supported using the `[default_options]` section (`#181 <https://github.com/sebdah/dynamic-dynamodb/issues/181>`__)
