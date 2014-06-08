@@ -185,6 +185,30 @@ TABLE_CONFIG_OPTIONS = [
         'option': 'num-read-checks-reset-percent',
         'required': False,
         'type': 'int'
+    },
+    {
+        'key': 'reads-upper-alarm-threshold',
+        'option': 'reads-upper-alarm-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'reads-lower-alarm-threshold',
+        'option': 'reads-lower-alarm-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'writes-upper-alarm-threshold',
+        'option': 'writes-upper-alarm-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'writes-lower-alarm-threshold',
+        'option': 'writes-lower-alarm-threshold',
+        'required': False,
+        'type': 'int'
     }
 ]
 

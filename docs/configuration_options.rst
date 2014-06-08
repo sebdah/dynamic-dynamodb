@@ -76,11 +76,16 @@ num-read-checks-reset-percent              ``int``  0             Set a read con
 num-write-checks-reset-percent             ``int``  0             Set a write consumption percentage when the `num-write-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-write-checks-before-scale-down` feature
 maintenance-windows                        ``str``                Force Dynamic DynamoDB to operate within maintenance windows. E.g. ``22:00-23:59,00:00-06:00``
 sns-topic-arn                              ``str``                Full Topic ARN to use for sending SNS notifications
-sns-message-types                          ``str``                Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` and ``scale-down``
+sns-message-types                          ``str``                Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up``, ``scale-down``, ``high-throughput-alarm`` and ``low-throughput-alarm``
 allow-scaling-down-reads-on-0-percent      ``bool`` ``false``     Allow down-scaling of reads when 0% is used.
 allow-scaling-down-writes-on-0-percent     ``bool`` ``false``     Allow down-scaling of writes when 0% is used.
 always-decrease-rw-together                ``bool`` ``false``     Restrict scale down to only happen when both reads AND writes are in need of scaling down. Set this to ``true`` to minimize down-scaling.
+reads-upper-alarm-threshold                ``int``                How many percent of the reads capacity should be used before trigging the high throughput alarm?
+reads-lower-alarm-threshold                ``int``                How many percent of the reads capacity should be used before trigging the low throughput alarm?
+writes-upper-alarm-threshold               ``int``                How many percent of the writes capacity should be used before trigging the high throughput alarm?
+writes-lower-alarm-threshold               ``int``                How many percent of the writes capacity should be used before trigging the low throughput alarm?
 ========================================== ======== ============= ==========================================
+
 
 Global secondary index configuration
 ------------------------------------
@@ -126,8 +131,12 @@ num-read-checks-reset-percent              ``int``  0             Set a read con
 num-write-checks-reset-percent             ``int``  0             Set a write consumption percentage when the `num-write-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-write-checks-before-scale-down` feature
 maintenance-windows                        ``str``                Force Dynamic DynamoDB to operate within maintenance windows. E.g. ``22:00-23:59,00:00-06:00``
 sns-topic-arn                              ``str``                Full Topic ARN to use for sending SNS notifications
-sns-message-types                          ``str``                Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` and ``scale-down``
+sns-message-types                          ``str``                Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` , ``scale-down``, ``high-throughput-alarm`` and ``low-throughput-alarm``
 allow-scaling-down-reads-on-0-percent      ``bool`` ``false``     Allow down-scaling of reads when 0% is used.
 allow-scaling-down-writes-on-0-percent     ``bool`` ``false``     Allow down-scaling of writes when 0% is used.
 always-decrease-rw-together                ``bool`` ``false``     Restrict scale down to only happen when both reads AND writes are in need of scaling down. Set this to ``true`` to minimize down-scaling.
+reads-upper-alarm-threshold                ``int``                How many percent of the reads capacity should be used before trigging the high throughput alarm?
+reads-lower-alarm-threshold                ``int``                How many percent of the reads capacity should be used before trigging the low throughput alarm?
+writes-upper-alarm-threshold               ``int``                How many percent of the writes capacity should be used before trigging the high throughput alarm?
+writes-lower-alarm-threshold               ``int``                How many percent of the writes capacity should be used before trigging the low throughput alarm?
 ========================================== ======== ============= ==========================================

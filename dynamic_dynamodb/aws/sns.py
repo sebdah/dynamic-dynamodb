@@ -20,7 +20,7 @@ def publish_gsi_notification(
     :type message: str
     :param message: Message to send via SNS
     :type message_types: list
-    :param message_types: List with types: scale-up, scale-down, error-message
+    :param message_types: List with types: scale-up, scale-down, high-throughput-alarm, low-throughput-alarm
     :type subject: str
     :param subject: Subject to use for e-mail notifications
     :returns: None
@@ -44,7 +44,7 @@ def publish_table_notification(table_key, message, message_types, subject=None):
     :type message: str
     :param message: Message to send via SNS
     :type message_types: list
-    :param message_types: List with types: scale-up, scale-down, error-message
+    :param message_types: List with types: scale-up, scale-down, high-throughput-alarm, low-throughput-alarm
     :type subject: str
     :param subject: Subject to use for e-mail notifications
     :returns: None
