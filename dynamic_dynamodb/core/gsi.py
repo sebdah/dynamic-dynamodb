@@ -563,6 +563,7 @@ def __update_throughput(
         int(read_units),
         int(write_units))
 
+
 def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
     """ Ensure that provisioning alarm threshold is not exceeded
 
@@ -592,56 +593,79 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
     # Check upper alarm thresholds
     upper_alert_triggered = False
     upper_alert_message = []
-    if reads_upper_alarm_threshold > 0 and consumed_read_units_percent >= reads_upper_alarm_threshold:
+    if (reads_upper_alarm_threshold > 0 and
+            consumed_read_units_percent >= reads_upper_alarm_threshold):
         upper_alert_triggered = True
         upper_alert_message.append(
             '{0} - GSI: {1} - Consumed Read Capacity {2:d}% '
-            'was greater than or equal to the upper alarm threshold {3:d}%\n'.format(
-                table_name, gsi_name, consumed_read_units_percent, reads_upper_alarm_threshold))
+            'was greater than or equal to the upper alarm '
+            'threshold {3:d}%\n'.format(
+                table_name,
+                gsi_name,
+                consumed_read_units_percent,
+                reads_upper_alarm_threshold))
 
-    if writes_upper_alarm_threshold > 0 and consumed_write_units_percent >= writes_upper_alarm_threshold:
+    if (writes_upper_alarm_threshold > 0 and
+            consumed_write_units_percent >= writes_upper_alarm_threshold):
         upper_alert_triggered = True
         upper_alert_message.append(
             '{0} - GSI: {1} - Consumed Write Capacity {2:d}% '
-            'was greater than or equal to the upper alarm threshold {3:d}%\n'.format(
-                table_name, gsi_name, consumed_write_units_percent, writes_upper_alarm_threshold))
+            'was greater than or equal to the upper alarm '
+            'threshold {3:d}%\n'.format(
+                table_name,
+                gsi_name,
+                consumed_write_units_percent,
+                writes_upper_alarm_threshold))
 
     # Check lower alarm thresholds
     lower_alert_triggered = False
     lower_alert_message = []
-    if reads_lower_alarm_threshold > 0 and consumed_read_units_percent < reads_lower_alarm_threshold:
+    if (reads_lower_alarm_threshold > 0 and
+            consumed_read_units_percent < reads_lower_alarm_threshold):
         lower_alert_triggered = True
         lower_alert_message.append(
             '{0} - GSI: {1} - Consumed Read Capacity {2:d}% '
             'was below the lower alarm threshold {3:d}%\n'.format(
-                table_name, gsi_name, consumed_read_units_percent, reads_lower_alarm_threshold))
+                table_name,
+                gsi_name,
+                consumed_read_units_percent,
+                reads_lower_alarm_threshold))
 
-    if writes_lower_alarm_threshold > 0 and consumed_write_units_percent < writes_lower_alarm_threshold:
+    if (writes_lower_alarm_threshold > 0 and
+            consumed_write_units_percent < writes_lower_alarm_threshold):
         lower_alert_triggered = True
         lower_alert_message.append(
             '{0} - GSI: {1} - Consumed Write Capacity {2:d}% '
             'was below the lower alarm threshold {3:d}%\n'.format(
-                table_name, gsi_name, consumed_write_units_percent, writes_lower_alarm_threshold))
+                table_name,
+                gsi_name,
+                consumed_write_units_percent,
+                writes_lower_alarm_threshold))
 
     # Send alert if needed
     if upper_alert_triggered:
         logger.info(
-            '{0} - GSI: {1} - Will send high provisioning alert'.format(table_name, gsi_name))
+            '{0} - GSI: {1} - Will send high provisioning alert'.format(
+                table_name, gsi_name))
         sns.publish_gsi_notification(
             table_key,
             gsi_key,
             ''.join(upper_alert_message),
             ['high-throughput-alarm'],
-            subject='ALARM: High Throughput for Table {0} - GSI: {1}'.format(table_name, gsi_name))
+            subject='ALARM: High Throughput for Table {0} - GSI: {1}'.format(
+                table_name, gsi_name))
     elif lower_alert_triggered:
         logger.info(
-            '{0} - GSI: {1} - Will send low provisioning alert'.format(table_name, gsi_name))
+            '{0} - GSI: {1} - Will send low provisioning alert'.format(
+                table_name, gsi_name))
         sns.publish_gsi_notification(
             table_key,
             gsi_key,
             ''.join(lower_alert_message),
             ['low-throughput-alarm'],
-            subject='ALARM: Low Throughput for Table {0} - GSI: {1}'.format(table_name, gsi_name))
+            subject='ALARM: Low Throughput for Table {0} - GSI: {1}'.format(
+                table_name, gsi_name))
     else:
-        logger.debug('{0} - GSI: {1} - Throughput alarm thresholds not crossed'.format(
-            table_name, gsi_name))
+        logger.debug(
+            '{0} - GSI: {1} - Throughput alarm thresholds not crossed'.format(
+                table_name, gsi_name))

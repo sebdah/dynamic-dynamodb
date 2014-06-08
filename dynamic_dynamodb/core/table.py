@@ -9,6 +9,7 @@ from dynamic_dynamodb.statistics import table as table_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import get_table_option, get_global_option
 
+
 def ensure_provisioning(
         table_name, key_name,
         num_consec_read_checks,
@@ -497,6 +498,7 @@ def __update_throughput(table_name, key_name, read_units, write_units):
         int(read_units),
         int(write_units))
 
+
 def __ensure_provisioning_alarm(table_name, key_name):
     """ Ensure that provisioning alarm threshold is not exceeded
 
@@ -522,36 +524,50 @@ def __ensure_provisioning_alarm(table_name, key_name):
     # Check upper alarm thresholds
     upper_alert_triggered = False
     upper_alert_message = []
-    if reads_upper_alarm_threshold > 0 and consumed_read_units_percent >= reads_upper_alarm_threshold:
+    if (reads_upper_alarm_threshold > 0 and
+            consumed_read_units_percent >= reads_upper_alarm_threshold):
         upper_alert_triggered = True
         upper_alert_message.append(
             '{0} - Consumed Read Capacity {1:d}% '
-            'was greater than or equal to the upper alarm threshold {2:d}%\n'.format(
-                table_name, consumed_read_units_percent, reads_upper_alarm_threshold))
+            'was greater than or equal to the upper '
+            'alarm threshold {2:d}%\n'.format(
+                table_name,
+                consumed_read_units_percent,
+                reads_upper_alarm_threshold))
 
-    if writes_upper_alarm_threshold > 0 and consumed_write_units_percent >= writes_upper_alarm_threshold:
+    if (writes_upper_alarm_threshold > 0 and
+            consumed_write_units_percent >= writes_upper_alarm_threshold):
         upper_alert_triggered = True
         upper_alert_message.append(
             '{0} - Consumed Write Capacity {1:d}% '
-            'was greater than or equal to the upper alarm threshold {2:d}%\n'.format(
-                table_name, consumed_write_units_percent, writes_upper_alarm_threshold))
+            'was greater than or equal to the upper alarm '
+            'threshold {2:d}%\n'.format(
+                table_name,
+                consumed_write_units_percent,
+                writes_upper_alarm_threshold))
 
     # Check lower alarm thresholds
     lower_alert_triggered = False
     lower_alert_message = []
-    if reads_lower_alarm_threshold > 0 and consumed_read_units_percent < reads_lower_alarm_threshold:
+    if (reads_lower_alarm_threshold > 0 and
+            consumed_read_units_percent < reads_lower_alarm_threshold):
         lower_alert_triggered = True
         lower_alert_message.append(
             '{0} - Consumed Read Capacity {1:d}% '
             'was below the lower alarm threshold {2:d}%\n'.format(
-                table_name, consumed_read_units_percent, reads_lower_alarm_threshold))
+                table_name,
+                consumed_read_units_percent,
+                reads_lower_alarm_threshold))
 
-    if writes_lower_alarm_threshold > 0 and consumed_write_units_percent < writes_lower_alarm_threshold:
+    if (writes_lower_alarm_threshold > 0 and
+            consumed_write_units_percent < writes_lower_alarm_threshold):
         lower_alert_triggered = True
         lower_alert_message.append(
             '{0} - Consumed Write Capacity {1:d}% '
             'was below the lower alarm threshold {2:d}%\n'.format(
-                table_name, consumed_write_units_percent, writes_lower_alarm_threshold))
+                table_name,
+                consumed_write_units_percent,
+                writes_lower_alarm_threshold))
 
     # Send alert if needed
     if upper_alert_triggered:
