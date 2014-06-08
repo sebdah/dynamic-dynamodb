@@ -643,5 +643,5 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
             ['low-throughput-alarm'],
             subject='ALARM: Low Throughput for Table {0} - GSI: {1}'.format(table_name, gsi_name))
     else:
-        logger.info('{0} - GSI: {1} - Throughput alarm thresholds not crossed'.format(
+        logger.debug('{0} - GSI: {1} - Throughput alarm thresholds not crossed'.format(
             table_name, gsi_name))

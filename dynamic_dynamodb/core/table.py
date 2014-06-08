@@ -535,7 +535,7 @@ def __ensure_provisioning_alarm(table_name, key_name):
             '{0} - Consumed Write Capacity {1:d}% '
             'was greater than or equal to the upper alarm threshold {2:d}%\n'.format(
                 table_name, consumed_write_units_percent, writes_upper_alarm_threshold))
-    
+
     # Check lower alarm thresholds
     lower_alert_triggered = False
     lower_alert_message = []
@@ -571,7 +571,6 @@ def __ensure_provisioning_alarm(table_name, key_name):
             ['low-throughput-alarm'],
             subject='ALARM: Low Throughput for Table {0}'.format(table_name))
     else:
-        logger.info('{0} - Throughput alarm thresholds not crossed'.format(
+        logger.debug('{0} - Throughput alarm thresholds not crossed'.format(
             table_name))
 
-    
