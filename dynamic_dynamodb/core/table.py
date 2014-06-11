@@ -589,4 +589,3 @@ def __ensure_provisioning_alarm(table_name, key_name):
     else:
         logger.debug('{0} - Throughput alarm thresholds not crossed'.format(
             table_name))
-
