@@ -29,9 +29,6 @@ def ensure_provisioning(
     :param num_consec_write_checks: How many consecutive checks have we had
     :returns: (int, int) -- num_consec_read_checks, num_consec_write_checks
     """
-    # Handle throughput alarm checks
-    __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key)
-
     if get_global_option('circuit_breaker_url'):
         if circuit_breaker.is_open():
             logger.warning('Circuit breaker is OPEN!')
@@ -40,6 +37,9 @@ def ensure_provisioning(
     logger.info(
         '{0} - Will ensure provisioning for global secondary index {1}'.format(
             table_name, gsi_name))
+
+    # Handle throughput alarm checks
+    __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key)
 
     try:
         read_update_needed, updated_read_units, num_consec_read_checks = \

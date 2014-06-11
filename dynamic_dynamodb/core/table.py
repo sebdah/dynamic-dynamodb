@@ -27,13 +27,13 @@ def ensure_provisioning(
     :returns: (int, int) -- num_consec_read_checks, num_consec_write_checks
     """
 
-    # Handle throughput alarm checks
-    __ensure_provisioning_alarm(table_name, key_name)
-
     if get_global_option('circuit_breaker_url'):
         if circuit_breaker.is_open():
             logger.warning('Circuit breaker is OPEN!')
             return (0, 0)
+
+    # Handle throughput alarm checks
+    __ensure_provisioning_alarm(table_name, key_name)
 
     try:
         read_update_needed, updated_read_units, num_consec_read_checks = \
