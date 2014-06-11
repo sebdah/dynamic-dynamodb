@@ -1,7 +1,14 @@
 Release notes
 =============
 
-1.15.0
+1.16.0
+------
+
+**Release date:** 2014-06-11
+
+- SNS notifications when throughput thresholds are exeeded. (`#174 <https://github.com/sebdah/dynamic-dynamodb/issues/174>`__). Thanks (`@Jofen <https://github.com/Jofen>`__) for the pull request!
+
+1.15.1
 ------
 
 **Release date:** 2014-06-05
