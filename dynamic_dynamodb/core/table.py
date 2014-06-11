@@ -165,6 +165,8 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
             get_table_option(key_name, 'num_read_checks_before_scale_down')
         num_read_checks_reset_percent = \
             get_table_option(key_name, 'num_read_checks_reset_percent')
+        prevent_scaling_down_reads_if_throttled_minutes = \
+            get_table_option(key_name, 'prevent_scaling_down_reads_if_throttled_minutes')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -194,6 +196,14 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         logger.info(
             '{0} - Scaling down reads is not done when usage is at 0%'.format(
                 table_name))
+
+    elif (prevent_scaling_down_reads_if_throttled_minutes > 0 and
+          table_stats.get_throttled_read_event_count(table_name, prevent_scaling_down_reads_if_throttled_minutes * 60) > 0):
+
+        logger.info(
+            '{0} - Not scaling down reads due to throttled requests in the past {1} minutes.'.format(
+                table_name,
+                prevent_scaling_down_reads_if_throttled_minutes))
 
     elif consumed_read_units_percent >= reads_upper_threshold:
 
@@ -328,6 +338,8 @@ def __ensure_provisioning_writes(
             get_table_option(key_name, 'num_write_checks_before_scale_down')
         num_write_checks_reset_percent = \
             get_table_option(key_name, 'num_write_checks_reset_percent')
+        prevent_scaling_down_writes_if_throttled_minutes = \
+            get_table_option(key_name, 'prevent_scaling_down_writes_if_throttled_minutes')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -359,6 +371,14 @@ def __ensure_provisioning_writes(
         logger.info(
             '{0} - Scaling down writes is not done when usage is at 0%'.format(
                 table_name))
+
+    elif (prevent_scaling_down_writes_if_throttled_minutes > 0 and
+          table_stats.get_throttled_write_event_count(table_name, prevent_scaling_down_writes_if_throttled_minutes * 60) > 0):
+
+        logger.info(
+            '{0} - Not scaling down writes due to throttled requests in the past {1} minutes.'.format(
+                table_name,
+                prevent_scaling_down_writes_if_throttled_minutes))
 
     elif consumed_write_units_percent >= writes_upper_threshold:
 

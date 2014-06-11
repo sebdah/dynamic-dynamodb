@@ -59,6 +59,8 @@ DEFAULT_OPTIONS = {
         'num_write_checks_reset_percent': 0,
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
+        'prevent_scaling_down_reads_if_throttled_minutes': 0,
+        'prevent_scaling_down_writes_if_throttled_minutes': 0,
         'always_decrease_rw_together': False,
         'maintenance_windows': None,
         'sns_topic_arn': None,
@@ -467,6 +469,17 @@ def __check_table_rules(configuration):
         for option in options:
             if table[option] < 1:
                 print('{0} may not be lower than 1 for table {1}'.format(
+                    option, table_name))
+                sys.exit(1)
+
+        # Ensure non-negative values for throttled requests limits
+        options = [
+            'prevent_scaling_down_reads_if_throttled_minutes',
+            'prevent_scaling_down_writes_if_throttled_minutes'
+        ]
+        for option in options:
+            if table[option] < 0:
+                print('{0} may not be negative for table {1}'.format(
                     option, table_name))
                 sys.exit(1)
 

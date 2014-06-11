@@ -145,6 +145,18 @@ TABLE_CONFIG_OPTIONS = [
         'type': 'bool'
     },
     {
+        'key': 'prevent_scaling_down_reads_if_throttled_minutes',
+        'option': 'prevent-scaling-down-reads-if-throttled-minutes',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'prevent_scaling_down_writes_if_throttled_minutes',
+        'option': 'prevent-scaling-down-writes-if-throttled-minutes',
+        'required': False,
+        'type': 'int'
+    },
+    {
         'key': 'always_decrease_rw_together',
         'option': 'always-decrease-rw-together',
         'required': False,
