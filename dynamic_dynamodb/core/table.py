@@ -3,7 +3,7 @@
 from boto.exception import JSONResponseError, BotoServerError
 
 from dynamic_dynamodb import calculators
-from dynamic_dynamodb.aws import dynamodb
+from dynamic_dynamodb.aws import dynamodb, sns
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import table as table_stats
 from dynamic_dynamodb.log_handler import LOGGER as logger
@@ -26,10 +26,14 @@ def ensure_provisioning(
     :param num_consec_write_checks: How many consecutive checks have we had
     :returns: (int, int) -- num_consec_read_checks, num_consec_write_checks
     """
+
     if get_global_option('circuit_breaker_url'):
         if circuit_breaker.is_open():
             logger.warning('Circuit breaker is OPEN!')
             return (0, 0)
+
+    # Handle throughput alarm checks
+    __ensure_provisioning_alarm(table_name, key_name)
 
     try:
         read_update_needed, updated_read_units, num_consec_read_checks = \
@@ -493,3 +497,95 @@ def __update_throughput(table_name, key_name, read_units, write_units):
         key_name,
         int(read_units),
         int(write_units))
+
+
+def __ensure_provisioning_alarm(table_name, key_name):
+    """ Ensure that provisioning alarm threshold is not exceeded
+
+    :type table_name: str
+    :param table_name: Name of the DynamoDB table
+    :type key_name: str
+    :param key_name: Configuration option key name
+    """
+    consumed_read_units_percent = \
+        table_stats.get_consumed_read_units_percent(table_name)
+    consumed_write_units_percent = \
+        table_stats.get_consumed_write_units_percent(table_name)
+
+    reads_upper_alarm_threshold = \
+        get_table_option(key_name, 'reads-upper-alarm-threshold')
+    reads_lower_alarm_threshold = \
+        get_table_option(key_name, 'reads-lower-alarm-threshold')
+    writes_upper_alarm_threshold = \
+        get_table_option(key_name, 'writes-upper-alarm-threshold')
+    writes_lower_alarm_threshold = \
+        get_table_option(key_name, 'writes-lower-alarm-threshold')
+
+    # Check upper alarm thresholds
+    upper_alert_triggered = False
+    upper_alert_message = []
+    if (reads_upper_alarm_threshold > 0 and
+            consumed_read_units_percent >= reads_upper_alarm_threshold):
+        upper_alert_triggered = True
+        upper_alert_message.append(
+            '{0} - Consumed Read Capacity {1:d}% '
+            'was greater than or equal to the upper '
+            'alarm threshold {2:d}%\n'.format(
+                table_name,
+                consumed_read_units_percent,
+                reads_upper_alarm_threshold))
+
+    if (writes_upper_alarm_threshold > 0 and
+            consumed_write_units_percent >= writes_upper_alarm_threshold):
+        upper_alert_triggered = True
+        upper_alert_message.append(
+            '{0} - Consumed Write Capacity {1:d}% '
+            'was greater than or equal to the upper alarm '
+            'threshold {2:d}%\n'.format(
+                table_name,
+                consumed_write_units_percent,
+                writes_upper_alarm_threshold))
+
+    # Check lower alarm thresholds
+    lower_alert_triggered = False
+    lower_alert_message = []
+    if (reads_lower_alarm_threshold > 0 and
+            consumed_read_units_percent < reads_lower_alarm_threshold):
+        lower_alert_triggered = True
+        lower_alert_message.append(
+            '{0} - Consumed Read Capacity {1:d}% '
+            'was below the lower alarm threshold {2:d}%\n'.format(
+                table_name,
+                consumed_read_units_percent,
+                reads_lower_alarm_threshold))
+
+    if (writes_lower_alarm_threshold > 0 and
+            consumed_write_units_percent < writes_lower_alarm_threshold):
+        lower_alert_triggered = True
+        lower_alert_message.append(
+            '{0} - Consumed Write Capacity {1:d}% '
+            'was below the lower alarm threshold {2:d}%\n'.format(
+                table_name,
+                consumed_write_units_percent,
+                writes_lower_alarm_threshold))
+
+    # Send alert if needed
+    if upper_alert_triggered:
+        logger.info(
+            '{0} - Will send high provisioning alert'.format(table_name))
+        sns.publish_table_notification(
+            key_name,
+            ''.join(upper_alert_message),
+            ['high-throughput-alarm'],
+            subject='ALARM: High Throughput for Table {0}'.format(table_name))
+    elif lower_alert_triggered:
+        logger.info(
+            '{0} - Will send low provisioning alert'.format(table_name))
+        sns.publish_table_notification(
+            key_name,
+            ''.join(lower_alert_message),
+            ['low-throughput-alarm'],
+            subject='ALARM: Low Throughput for Table {0}'.format(table_name))
+    else:
+        logger.debug('{0} - Throughput alarm thresholds not crossed'.format(
+            table_name))

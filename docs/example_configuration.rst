@@ -41,6 +41,10 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Read provisioning configuration
     #
+    
+    # Thresholds for trigging throughput alarm to send notification (%)
+    # reads-upper-alarm-threshold: 0
+    # reads-lower-alarm-threshold: 0
 
     # Enable or disable reads autoscaling
     enable-reads-autoscaling = true
@@ -65,6 +69,10 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Write provisioning configuration
     #
+
+    # Threshold for trigging throughput alarm to send notification (%)
+    # writes-upper-alarm-threshold: 0
+    # writes-lower-alarm-threshold: 0
 
     # Enable or disable writes autoscaling
     enable-writes-autoscaling = true
@@ -103,11 +111,13 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # Message types to send as SNS notifications
     #
     # Comma separated list. Currently supported values:
-    # - scale-up                Get notifications when the table is scaled up
-    # - scale-down              Get notifications when the table is scaled down
+    # - scale-up                    Get notifications when the table is scaled up
+    # - scale-down                  Get notifications when the table is scaled down
+    # - high-throughput-alarm       Get notifications when exceed high throughput threshold
+    # - low-throughput-alarm        Get notifications when below low throughput threshold
     #
     # Example:
-    # sns-message-types: scale-up, scale-down
+    # sns-message-types: scale-up, scale-down, high-throughput-alarm, low-throughput-alarm
 
     #
     # Other settings
@@ -125,6 +135,10 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Read provisioning configuration
     #
+
+    # Thresholds for trigging throughput alarm to send notification (%)
+    # reads-upper-alarm-threshold: 0
+    # reads-lower-alarm-threshold: 0
 
     # Enable or disable reads autoscaling
     enable-reads-autoscaling = true
@@ -149,6 +163,10 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Write provisioning configuration
     #
+
+    # Threshold for trigging throughput alarm to send notification (%)
+    # writes-upper-alarm-threshold: 0
+    # writes-lower-alarm-threshold: 0
 
     # Enable or disable writes autoscaling
     enable-writes-autoscaling = true
@@ -187,11 +205,13 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # Message types to send as SNS notifications
     #
     # Comma separated list. Currently supported values:
-    # - scale-up                Get notifications when the table is scaled up
-    # - scale-down              Get notifications when the table is scaled down
+    # - scale-up                    Get notifications when the table is scaled up
+    # - scale-down                  Get notifications when the table is scaled 
+    # - high-throughput-alarm       Get notifications when exceed high throughput threshold
+    # - low-throughput-alarm        Get notifications when below low throughput threshold
     #
     # Example:
-    # sns-message-types: scale-up, scale-down
+    # sns-message-types: scale-up, scale-down, high-throughput-alarm, low-throughput-alarm
 
     #
     # Other settings
