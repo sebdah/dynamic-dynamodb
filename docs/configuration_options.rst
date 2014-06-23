@@ -50,8 +50,6 @@ Please note also that DynamoDB writes CloudWatch data every 5 minutes, thus ``re
 ========================================== ======== ============= ==========================================
 Option                                     Type     Default       Comment
 ========================================== ======== ============= ==========================================
-enable-reads-autoscaling                   ``bool`` ``true``      Turn on or off autoscaling of read capacity
-enable-writes-autoscaling                  ``bool`` ``true``      Turn on or off autoscaling of write capacity
 reads-upper-threshold                      ``int``  90            Scale up the reads with ``--increase-reads-with`` if the currently consumed reads reaches this many percent
 reads-lower-threshold                      ``int``  30            Scale down the reads with ``--decrease-reads-with`` if the currently consumed reads is as low as this percentage
 throttled-reads-upper-threshold            ``int``  0             Scale up the reads with ``--increase-reads-with`` if the count of throttled read events exceeds this count
@@ -75,6 +73,12 @@ num-write-checks-before-scale-down         ``int``  1             Force Dynamic 
 num-read-checks-reset-percent              ``int``  0             Set a read consumption percentage when the `num-read-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-read-checks-before-scale-down` feature
 num-write-checks-reset-percent             ``int``  0             Set a write consumption percentage when the `num-write-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-write-checks-before-scale-down` feature
 maintenance-windows                        ``str``                Force Dynamic DynamoDB to operate within maintenance windows. E.g. ``22:00-23:59,00:00-06:00``
+enable-reads-up-scaling                    ``bool`` ``true``      Turn on or off of up scaling of read capacity
+enable-reads-down-scaling                  ``bool`` ``true``      Turn on or off of down scaling of read capacity
+enable-writes-up-scaling                   ``bool`` ``true``      Turn on or off of up scaling of write capacity
+enable-writes-down-scaling                 ``bool`` ``true``      Turn on or off of down scaling of write capacity
+enable-reads-autoscaling                   ``bool`` ``true``      Turn on or off autoscaling of read capacity. Deprecated! Please use ``enable-reads-up-scaling`` and ``enable-reads-down-scaling``
+enable-writes-autoscaling                  ``bool`` ``true``      Turn on or off autoscaling of write capacity. Deprecated! Please use ``enable-writes-up-scaling`` and ``enable-writes-down-scaling``
 sns-topic-arn                              ``str``                Full Topic ARN to use for sending SNS notifications
 sns-message-types                          ``str``                Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up``, ``scale-down``, ``high-throughput-alarm`` and ``low-throughput-alarm``
 allow-scaling-down-reads-on-0-percent      ``bool`` ``false``     Allow down-scaling of reads when 0% is used.
@@ -105,8 +109,6 @@ Please note also that DynamoDB writes CloudWatch data every 5 minutes, thus ``re
 ========================================== ======== ============= ==========================================
 Option                                     Type     Default       Comment
 ========================================== ======== ============= ==========================================
-enable-reads-autoscaling                   ``bool`` ``true``      Turn on or off autoscaling of read capacity
-enable-writes-autoscaling                  ``bool`` ``true``      Turn on or off autoscaling of write capacity
 reads-upper-threshold                      ``int``  90            Scale up the reads with ``--increase-reads-with`` if the currently consumed reads reaches this many percent
 reads-lower-threshold                      ``int``  30            Scale down the reads with ``--decrease-reads-with`` if the currently consumed reads is as low as this percentage
 throttled-reads-upper-threshold            ``int``  0             Scale up the reads with ``--increase-reads-with`` if the count of throttled read events exceeds this count
@@ -130,6 +132,12 @@ num-write-checks-before-scale-down         ``int``  1             Force Dynamic 
 num-read-checks-reset-percent              ``int``  0             Set a read consumption percentage when the `num-read-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-read-checks-before-scale-down` feature
 num-write-checks-reset-percent             ``int``  0             Set a write consumption percentage when the `num-write-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-write-checks-before-scale-down` feature
 maintenance-windows                        ``str``                Force Dynamic DynamoDB to operate within maintenance windows. E.g. ``22:00-23:59,00:00-06:00``
+enable-reads-up-scaling                    ``bool`` ``true``      Turn on or off of up scaling of read capacity
+enable-reads-down-scaling                  ``bool`` ``true``      Turn on or off of down scaling of read capacity
+enable-writes-up-scaling                   ``bool`` ``true``      Turn on or off of up scaling of write capacity
+enable-writes-down-scaling                 ``bool`` ``true``      Turn on or off of down scaling of write capacity
+enable-reads-autoscaling                   ``bool`` ``true``      Turn on or off autoscaling of read capacity. Deprecated! Please use ``enable-reads-up-scaling`` and ``enable-reads-down-scaling``
+enable-writes-autoscaling                  ``bool`` ``true``      Turn on or off autoscaling of write capacity. Deprecated! Please use ``enable-writes-up-scaling`` and ``enable-writes-down-scaling``
 sns-topic-arn                              ``str``                Full Topic ARN to use for sending SNS notifications
 sns-message-types                          ``str``                Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` , ``scale-down``, ``high-throughput-alarm`` and ``low-throughput-alarm``
 allow-scaling-down-reads-on-0-percent      ``bool`` ``false``     Allow down-scaling of reads when 0% is used.
