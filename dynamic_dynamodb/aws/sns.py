@@ -2,7 +2,6 @@
 """ Handles SNS connection and communication """
 from boto import sns
 from boto.exception import BotoServerError
-from boto.utils import get_instance_metadata
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import (
@@ -92,13 +91,14 @@ def __publish(topic, message, subject=None):
 
 def __get_connection_SNS():
     """ Ensure connection to SNS """
+    region = get_global_option('region')
+
     try:
         if (get_global_option('aws_access_key_id') and
                 get_global_option('aws_secret_access_key')):
             logger.debug(
                 'Authenticating to SNS using '
                 'credentials in configuration file')
-            region = get_global_option('region')
             connection = sns.connect_to_region(
                 region,
                 aws_access_key_id=get_global_option(
@@ -106,20 +106,9 @@ def __get_connection_SNS():
                 aws_secret_access_key=get_global_option(
                     'aws_secret_access_key'))
         else:
-            try:
-                logger.debug(
-                    'Authenticating to SNS using EC2 instance profile')
-                metadata = get_instance_metadata(timeout=1, num_retries=1)
-                region = metadata['placement']['availability-zone'][:-1]
-                connection = sns.connect_to_region(
-                    region,
-                    profile_name=metadata['iam']['info'][u'InstanceProfileArn'])
-            except KeyError:
-                logger.debug(
-                    'Authenticating to SNS using '
-                    'env vars / boto configuration')
-                region = get_global_option('region')
-                connection = sns.connect_to_region(region)
+            logger.debug(
+                'Authenticating using boto\'s authentication handler')
+            connection = sns.connect_to_region(region)
 
     except Exception as err:
         logger.error('Failed connecting to SNS: {0}'.format(err))
