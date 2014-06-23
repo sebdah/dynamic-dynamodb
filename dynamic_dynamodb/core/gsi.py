@@ -231,7 +231,7 @@ def __ensure_provisioning_reads(
     elif consumed_read_units_percent >= reads_upper_threshold:
 
         # Exit if up scaling has been disabled
-        if get_gsi_option(table_key, gsi_key, 'disable_reads_up_scaling'):
+        if not get_gsi_option(table_key, gsi_key, 'enable_reads_up_scaling'):
             logger.debug(
                 '{0} - GSI: {1} - Up scaling event detected. '
                 'No action taken as scaling '
@@ -264,7 +264,7 @@ def __ensure_provisioning_reads(
     elif consumed_read_units_percent <= reads_lower_threshold:
 
         # Exit if down scaling has been disabled
-        if get_gsi_option(table_key, gsi_key, 'disable_reads_down_scaling'):
+        if not get_gsi_option(table_key, gsi_key, 'enable_reads_down_scaling'):
             logger.debug(
                 '{0} - GSI: {1} - Down scaling event detected. '
                 'No action taken as scaling '
@@ -430,7 +430,7 @@ def __ensure_provisioning_writes(
     elif consumed_write_units_percent >= writes_upper_threshold:
 
         # Exit if up scaling has been disabled
-        if get_gsi_option(table_key, gsi_key, 'disable_writes_up_scaling'):
+        if not get_gsi_option(table_key, gsi_key, 'enable_writes_up_scaling'):
             logger.debug(
                 '{0} - GSI: {1} - Up scaling event detected. '
                 'No action taken as scaling '
@@ -465,7 +465,7 @@ def __ensure_provisioning_writes(
     elif consumed_write_units_percent <= writes_lower_threshold:
 
         # Exit if down scaling has been disabled
-        if get_gsi_option(table_key, gsi_key, 'disable_writes_down_scaling'):
+        if not get_gsi_option(table_key, gsi_key, 'enable_writes_down_scaling'):
             logger.debug(
                 '{0} - GSI: {1} - Down scaling event detected. '
                 'No action taken as scaling '

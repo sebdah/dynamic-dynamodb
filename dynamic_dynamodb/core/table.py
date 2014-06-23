@@ -199,7 +199,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
     elif consumed_read_units_percent >= reads_upper_threshold:
 
         # Exit if up scaling has been disabled
-        if get_table_option(key_name, 'disable_reads_up_scaling'):
+        if not get_table_option(key_name, 'enable_reads_up_scaling'):
             logger.debug(
                 '{0} - Up scaling event detected. No action taken as scaling '
                 'up reads has been disabled in the configuration'.format(
@@ -231,7 +231,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
     elif consumed_read_units_percent <= reads_lower_threshold:
 
         # Exit if down scaling has been disabled
-        if get_table_option(key_name, 'disable_reads_down_scaling'):
+        if not get_table_option(key_name, 'enable_reads_down_scaling'):
             logger.debug(
                 '{0} - Down scaling event detected. No action taken as scaling'
                 'down reads has been disabled in the configuration'.format(
@@ -382,7 +382,7 @@ def __ensure_provisioning_writes(
     elif consumed_write_units_percent >= writes_upper_threshold:
 
         # Exit if up scaling has been disabled
-        if get_table_option(key_name, 'disable_writes_up_scaling'):
+        if not get_table_option(key_name, 'enable_writes_up_scaling'):
             logger.debug(
                 '{0} - Up scaling event detected. No action taken as scaling '
                 'up writes has been disabled in the configuration'.format(
@@ -415,7 +415,7 @@ def __ensure_provisioning_writes(
     elif consumed_write_units_percent <= writes_lower_threshold:
 
         # Exit if up scaling has been disabled
-        if get_table_option(key_name, 'disable_writes_down_scaling'):
+        if not get_table_option(key_name, 'enable_writes_down_scaling'):
             logger.debug(
                 '{0} - Down scaling event detected. No action taken as scaling '
                 'down writes has been disabled in the configuration'.format(
