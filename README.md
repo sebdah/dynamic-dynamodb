@@ -77,6 +77,35 @@ If you want to set up a separate IAM user for Dynamic DynamoDB, then you need to
 * `dynamodb:UpdateTable`
 * `sns:Publish` (used by the SNS notifications feature)
 
+An example policy could look like this:
+
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:DescribeTable",
+            "dynamodb:ListTables",
+            "dynamodb:UpdateTable",
+            "cloudwatch:GetMetricStatistics"
+          ],
+          "Resource": [
+            "*"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "sns:Publish"
+          ],
+          "Resource": [
+            "arn:aws:sns:*::dynamic-dynamodb"
+          ]
+        }
+      ]
+    }
+
 Reporting bugs
 --------------
 
