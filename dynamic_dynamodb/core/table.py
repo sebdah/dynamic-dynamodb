@@ -269,6 +269,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                 update_needed = True
                 updated_read_units = calculated_provisioning
 
+    # Never go over the configured max provisioning
     if max_provisioned_reads:
         if int(updated_read_units) > int(max_provisioned_reads):
             update_needed = True
@@ -438,6 +439,7 @@ def __ensure_provisioning_writes(
                 update_needed = True
                 updated_write_units = calculated_provisioning
 
+    # Never go over the configured max provisioning
     if max_provisioned_writes:
         if int(updated_write_units) > int(max_provisioned_writes):
             update_needed = True
