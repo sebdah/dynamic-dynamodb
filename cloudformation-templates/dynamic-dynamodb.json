@@ -292,6 +292,7 @@
                       "generate_new_config_file(){\n",
                       "   log \"Loading an example config file to $CONFIG_FILE_LOCAL_LOCATION\"\n",
                       "   cp /etc/dynamic-dynamodb/example-dynamic-dynamodb.conf $CONFIG_FILE_LOCAL_LOCATION\n",
+                      "   sed -i 's/region:\\ us-east-1/region:\\ ", { "Ref" : "AWS::Region" },"/g' /etc/dynamic-dynamodb/example-dynamic-dynamodb.conf\n",
                       "   log \"Loaded example configuration to $CONFIG_FILE_LOCAL_LOCATION\"\n",
                       "}\n\n",
 
