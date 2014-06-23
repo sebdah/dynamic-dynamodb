@@ -4,24 +4,16 @@
   "Description": "This is a sample CloudFormation template for deploying Dynamic DynamoDB. This package will be installed from the Python Package Index repository. For more information, see http://dynamic-dynamodb.readthedocs.org.",
 
   "Parameters": {
-    "AWSAccessKey": {
-      "Type": "String",
-      "Default": "access-key",
-      "NoEcho": "true",
-      "Description": "Remove this default value and enter your Access key"
-    },
-
-    "AWSSecretKey": {
-      "Type": "String",
-      "Default": "secret-key",
-      "NoEcho": "true",
-      "Description": "Remove this default value and enter your Secret key"
-    },
-
     "S3Bucket": {
       "Type": "String",
       "Default": "s3://bucket-name/folder-path-if-applicable/",
       "Description": "Remove this default value and enter your pre-created S3 Bucket url upto folder name. (Please include the trailing /. Example: https://s3.amazonaws.com/my-bucket/ should be input as s3://my-bucket/). It will be used for storing a copy of Dynamic DynamoDB configuration file."
+    },
+
+    "S3BucketRegion": {
+      "Type": "String",
+      "Default": "us-east-1",
+      "Description": "Region the S3 bucket is located in. This is needed due to a limitation in the AWS CLI (https://github.com/aws/aws-cli/issues/564)"
     },
 
     "KeyPair": {
@@ -38,48 +30,41 @@
   "Mappings": {
     "Region2AMI": {
       "us-east-1": {
-        "32": "ami-d7a18dbe",
-        "64": "ami-bba18dd2"
+        "64": "ami-fb8e9292"
       },
       "us-west-1": {
-        "32": "ami-923909d7",
-        "64": "ami-a43909e1"
+        "64": "ami-7aba833f"
       },
       "us-west-2": {
-        "32": "ami-def297ee",
-        "64": "ami-ccf297fc"
+        "64": "ami-043a5034"
       },
       "eu-west-1": {
-        "32": "ami-6a56b81d",
-        "64": "ami-5256b825"
+        "64": "ami-2918e35e"
       },
       "sa-east-1": {
-        "32": "ami-bf9130a2",
-        "64": "ami-c99130d4"
+        "64": "ami-215dff3c"
       },
       "ap-southeast-1": {
-        "32": "ami-b6baeee4",
-        "64": "ami-b4baeee6"
+        "64": "ami-b40d5ee6"
       },
       "ap-southeast-2": {
-        "32": "ami-65a8375f",
-        "64": "ami-5ba83761"
+        "64": "ami-3b4bd301"
       },
       "ap-northeast-1": {
-        "32": "ami-0b13700a",
-        "64": "ami-0d13700c"
+        "64": "ami-c9562fc8"
       }
     }
   },
 
   "Resources": {
-    "DynamicDynamoDBLaunchConfig": {
+    "LaunchConfig": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": { "Fn::FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "32" ] },
+        "ImageId": { "Fn::FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "64" ] },
         "InstanceType": "t1.micro",
         "KeyName": { "Ref": "KeyPair" },
-        "SecurityGroups": [ { "Ref": "DynamicDynamoDBSG" } ],
+        "SecurityGroups": [ { "Ref": "SecurityGroup" } ],
+        "IamInstanceProfile"  : { "Ref" : "IamInstanceProfile" },
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [ "\n", [
@@ -115,7 +100,7 @@
                 "Fn::Join": [ " ", [
                     "/opt/aws/bin/cfn-init ",
                     "  --stack ", { "Ref": "AWS::StackId" },
-                    "  --resource DynamicDynamoDBLaunchConfig ",
+                    "  --resource LaunchConfig ",
                     "  --region ", { "Ref": "AWS::Region" },
                     " || error_exit 'Failed in AWS::CloudFormation::Init. Check logs at /var/log/cfn-init.log'"
                   ]
@@ -136,26 +121,16 @@
               "cp /home/ec2-user/.aws/config ~/.aws/config",
               {
                 "Fn::Join": [ "", [
-                  "echo \"aws s3 cp /etc/dynamic-dynamodb/dynamic-dynamodb.conf ", { "Ref": "S3Bucket" }, "dynamic-dynamodb.conf ",
-                  " || (echo 'Failed to /etc/dynamic-dynamodb/dynamic-dynamodb.conf to ",
+                  "echo \"aws s3 cp /etc/dynamic-dynamodb/dynamic-dynamodb.conf ", { "Ref": "S3Bucket" }, "dynamic-dynamodb.conf --region ", { "Ref" : "S3BucketRegion" },
+                  " || (echo 'Failed to upload /etc/dynamic-dynamodb/dynamic-dynamodb.conf to ",
                   { "Ref": "S3Bucket" }, "' ; exit 1)\">/etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh",
                   " || error_exit 'Failed to create /etc/dynamic-dynamodb/scripts/upload-config-to-s3.sh'"
-                ]]
-              },
-              {
-                "Fn::Join": [ "", [
-                  "_r1=\"", { "Ref": "AWSSecretKey" }, "\"\n",
-                  "_r1=\"${_r1//\\//\\\\/}\"\n",
-                  "sed -i -e \"s/AWS_ACCESS_KEY/", { "Ref": "AWSAccessKey" }, "/g\" /etc/dynamic-dynamodb/example-dynamic-dynamodb.conf\n",
-                  "sed -i -e \"s/AWS_SECRET_KEY/${_r1}/g\" /etc/dynamic-dynamodb/example-dynamic-dynamodb.conf"
                 ]]
               },
               {
                 "Fn::Join": [ " ", [
                   "sh /etc/dynamic-dynamodb/scripts/init_config_file.sh /etc/dynamic-dynamodb/dynamic-dynamodb.conf",
                   { "Ref": "S3Bucket" },
-                  { "Ref": "AWSAccessKey" },
-                  { "Ref": "AWSSecretKey" },
                   " $INSTALLER_LOG_FILE_LOCATION",
                   " || error_exit 'Failed to initialize config file'"
                 ]]
@@ -179,9 +154,7 @@
               "/home/ec2-user/.aws/config": {
                 "content" : { "Fn::Join" : ["", [
                   "[default]\n",
-                  "region=", { "Ref": "AWS::Region" }, "\n",
-                  "aws_access_key_id=", { "Ref": "AWSAccessKey" }, "\n",
-                  "aws_secret_access_key=", { "Ref": "AWSSecretKey" }, "\n"
+                  "region=", { "Ref": "AWS::Region" }, "\n"
                 ]]},
                 "mode": "000755",
                 "owner": "root",
@@ -289,66 +262,64 @@
               "/etc/dynamic-dynamodb/scripts/init_config_file.sh": {
                 "content": {
                   "Fn::Join": [
-                    "\n",
+                    "",
                     [
-                      "#!/usr/bin/env bash",
-                      "CONFIG_FILE_LOCAL_LOCATION=$1",
-                      "S3_BUCKET=$2",
-                      "AWS_ACCESS_KEY=$3",
-                      "AWS_SECRET_KEY=$4",
-                      "INSTALLER_LOG_FILE_LOCATION=$5",
-                      "CONFIG_FILE_S3_LOCATION=\"$S3_BUCKET\"dynamic-dynamodb.conf",
-                      "DOES_CONFIG_FILE_EXIST_ON_S3=0",
-                      "DOES_CONFIG_FILE_EXIST_ON_LOCALLY=0",
-                      "",
-                      "log(){",
-                      "    timenow=`date +%Y-%m-%dT%H:%M:%S.%N`",
-                      "    echo \"$timenow: $1\" >> $INSTALLER_LOG_FILE_LOCATION",
-                      "}",
-                      "",
-                      "error_exit(){",
-                      "  log \"$1\"",
-                      "  exit 1",
-                      "}",
-                      "",
-                      "backup_file_locally(){",
-                      "  FILE=$1",
-                      "  BACKUP_FILE_NAME=$FILE.`date +\\\"%Y.%m.%d.%H.%M.%S.%N\\\".backup`",
-                      "  mv $FILE \"$FILE.`date +\\\"%Y.%m.%d.%H.%M.%S.%N\\\".backup`\" || error_exit \"Failed in creating backup file $BACKUP_FILE_NAME\"",
-                      "  log \"Backed up $FILE to $BACKUP_FILE_NAME\"",
-                      "}",
-                      "",
-                      "generate_new_config_file(){",
-                      "   log \"Loading an example config file to $CONFIG_FILE_LOCAL_LOCATION\"",
-                      "   cp /etc/dynamic-dynamodb/example-dynamic-dynamodb.conf $CONFIG_FILE_LOCAL_LOCATION",
-                      "   log \"Loaded example configuration to $CONFIG_FILE_LOCAL_LOCATION\"",
-                      "}",
-                      "",
-                      "download_from_s3(){",
-                      "  aws s3 cp $CONFIG_FILE_S3_LOCATION $CONFIG_FILE_LOCAL_LOCATION || error_exit \"Failed to download config file from $CONFIG_FILE_S3_LOCATION to $CONFIG_FILE_S3_LOCATION  even though it existed on S3\"",
-                      "  log \"Downloaded config file from $CONFIG_FILE_S3_LOCATION to $CONFIG_FILE_S3_LOCATION\"",
-                      "}",
-                      "",
-                      "",
-                      "aws s3 cp $CONFIG_FILE_S3_LOCATION . >/dev/null 2>&1",
-                      "if [[ \"$?\" -eq 0 ]]; then",
-                      "   DOES_CONFIG_FILE_EXIST_ON_S3=1",
-                      "fi",
-                      "",
-                      "if [[ -f $CONFIG_FILE_LOCAL_LOCATION ]]; then",
-                      "   DOES_CONFIG_FILE_EXIST_ON_LOCALLY=1",
-                      "fi",
-                      "",
-                      "if [ $DOES_CONFIG_FILE_EXIST_ON_S3 -eq 0 ] && [ $DOES_CONFIG_FILE_EXIST_ON_LOCALLY -eq 0 ]; then",
-                      "  generate_new_config_file",
-                      "elif [ $DOES_CONFIG_FILE_EXIST_ON_S3 -eq 0 ] && [ $DOES_CONFIG_FILE_EXIST_ON_LOCALLY -eq 1 ]; then",
-                      "  log \"Config file exists locally and not on $CONFIG_FILE_S3_LOCATION, continuing to use the file\";",
-                      "elif [ $DOES_CONFIG_FILE_EXIST_ON_S3 -eq 1 ] && [ $DOES_CONFIG_FILE_EXIST_ON_LOCALLY -eq 0 ]; then",
-                      "  download_from_s3",
-                      "elif [ $DOES_CONFIG_FILE_EXIST_ON_S3 -eq 1 ] && [ $DOES_CONFIG_FILE_EXIST_ON_LOCALLY -eq 1 ]; then",
-                      "  backup_file_locally $CONFIG_FILE_LOCAL_LOCATION",
-                      "  download_from_s3",
-                      "fi"
+                      "#!/usr/bin/env bash\n",
+                      "CONFIG_FILE_LOCAL_LOCATION=$1\n",
+                      "S3_BUCKET=$2\n",
+                      "INSTALLER_LOG_FILE_LOCATION=$3\n",
+                      "CONFIG_FILE_S3_LOCATION=\"$S3_BUCKET\"dynamic-dynamodb.conf\n",
+                      "DOES_CONFIG_FILE_EXIST_ON_S3=0\n",
+                      "DOES_CONFIG_FILE_EXIST_ON_LOCALLY=0\n\n",
+
+                      "log(){\n",
+                      "    timenow=`date +%Y-%m-%dT%H:%M:%S.%N`\n",
+                      "    echo \"$timenow: $1\" >> $INSTALLER_LOG_FILE_LOCATION\n",
+                      "}\n\n",
+
+                      "error_exit(){\n",
+                      "  log \"$1\"\n",
+                      "  exit 1\n",
+                      "}\n\n",
+
+                      "backup_file_locally(){\n",
+                      "  FILE=$1\n",
+                      "  BACKUP_FILE_NAME=$FILE.`date +\\\"%Y.%m.%d.%H.%M.%S.%N\\\".backup`\n",
+                      "  mv $FILE \"$FILE.`date +\\\"%Y.%m.%d.%H.%M.%S.%N\\\".backup`\" || error_exit \"Failed in creating backup file $BACKUP_FILE_NAME\"\n",
+                      "  log \"Backed up $FILE to $BACKUP_FILE_NAME\"\n",
+                      "}\n\n",
+
+                      "generate_new_config_file(){\n",
+                      "   log \"Loading an example config file to $CONFIG_FILE_LOCAL_LOCATION\"\n",
+                      "   cp /etc/dynamic-dynamodb/example-dynamic-dynamodb.conf $CONFIG_FILE_LOCAL_LOCATION\n",
+                      "   sed -i 's/region:\\ us-east-1/region:\\ ", { "Ref" : "AWS::Region" },"/g' /etc/dynamic-dynamodb/example-dynamic-dynamodb.conf\n",
+                      "   log \"Loaded example configuration to $CONFIG_FILE_LOCAL_LOCATION\"\n",
+                      "}\n\n",
+
+                      "download_from_s3(){\n",
+                      "  aws s3 cp $CONFIG_FILE_S3_LOCATION $CONFIG_FILE_LOCAL_LOCATION --region ", { "Ref" : "S3BucketRegion" } ," || error_exit \"Failed to download config file from $CONFIG_FILE_S3_LOCATION to $CONFIG_FILE_S3_LOCATION  even though it existed on S3\"\n",
+                      "  log \"Downloaded config file from $CONFIG_FILE_S3_LOCATION to $CONFIG_FILE_LOCAL_LOCATION\"\n",
+                      "}\n\n",
+
+                      "aws s3 cp $CONFIG_FILE_S3_LOCATION . --region ", { "Ref" : "S3BucketRegion" } ," >/dev/null 2>&1\n",
+                      "if [[ \"$?\" -eq 0 ]]; then\n",
+                      "   DOES_CONFIG_FILE_EXIST_ON_S3=1\n",
+                      "fi\n\n",
+
+                      "if [[ -f $CONFIG_FILE_LOCAL_LOCATION ]]; then\n",
+                      "   DOES_CONFIG_FILE_EXIST_ON_LOCALLY=1\n",
+                      "fi\n\n",
+
+                      "if [ $DOES_CONFIG_FILE_EXIST_ON_S3 -eq 0 ] && [ $DOES_CONFIG_FILE_EXIST_ON_LOCALLY -eq 0 ]; then\n",
+                      "  generate_new_config_file\n",
+                      "elif [ $DOES_CONFIG_FILE_EXIST_ON_S3 -eq 0 ] && [ $DOES_CONFIG_FILE_EXIST_ON_LOCALLY -eq 1 ]; then\n",
+                      "  log \"Config file exists locally and not on $CONFIG_FILE_S3_LOCATION, continuing to use the file\";\n",
+                      "elif [ $DOES_CONFIG_FILE_EXIST_ON_S3 -eq 1 ] && [ $DOES_CONFIG_FILE_EXIST_ON_LOCALLY -eq 0 ]; then\n",
+                      "  download_from_s3\n",
+                      "elif [ $DOES_CONFIG_FILE_EXIST_ON_S3 -eq 1 ] && [ $DOES_CONFIG_FILE_EXIST_ON_LOCALLY -eq 1 ]; then\n",
+                      "  backup_file_locally $CONFIG_FILE_LOCAL_LOCATION\n",
+                      "  download_from_s3\n",
+                      "fi\n"
                     ]
                   ]
                 },
@@ -368,12 +339,12 @@
       }
     },
 
-    "DynamicDynamoDBASG": {
+    "AutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "AvailabilityZones": { "Fn::GetAZs": "" },
         "Cooldown": 300,
-        "LaunchConfigurationName": { "Ref": "DynamicDynamoDBLaunchConfig" },
+        "LaunchConfigurationName": { "Ref": "LaunchConfig" },
         "MaxSize": 1,
         "MinSize": 1,
         "Tags" : [
@@ -386,7 +357,61 @@
       }
     },
 
-    "DynamicDynamoDBSG": {
+    "IamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [ {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [ "ec2.amazonaws.com" ]
+            },
+            "Action": [ "sts:AssumeRole" ]
+          }]
+        },
+        "Path": "/",
+        "Policies": [ {
+          "PolicyName": "root",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:DescribeTable",
+                  "dynamodb:ListTables",
+                  "dynamodb:UpdateTable",
+                  "cloudwatch:GetMetricStatistics",
+                  "s3:PutObject",
+                  "s3:GetObject"
+                ],
+                "Resource": ["*"]
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "sns:Publish"
+                ],
+                "Resource": [
+                  "arn:aws:sns:*::dynamic-dynamodb"
+                ]
+              }
+            ]
+          }
+        }]
+      }
+    },
+
+    "IamInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [ { "Ref": "IamRole" } ]
+      }
+    },
+
+    "SecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Allow access to MyInstance",
@@ -407,7 +432,7 @@
 
     "WaitCondition" : {
       "Type": "AWS::CloudFormation::WaitCondition",
-      "DependsOn": "DynamicDynamoDBASG",
+      "DependsOn": "AutoScalingGroup",
       "Properties": {
         "Handle": { "Ref" : "WaitHandle" },
         "Timeout": "600"
