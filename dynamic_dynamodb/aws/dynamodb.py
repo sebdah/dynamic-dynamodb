@@ -8,7 +8,6 @@ import datetime
 from boto import dynamodb2
 from boto.dynamodb2.table import Table
 from boto.exception import DynamoDBResponseError, JSONResponseError
-from boto.utils import get_instance_metadata
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import (
@@ -341,13 +340,17 @@ def update_table_provisioning(
 
         message = []
         if current_reads > reads:
-            message.append('{0} - Reads: DOWN from {1} to {2}\n'.format(table_name, current_reads, reads))
+            message.append('{0} - Reads: DOWN from {1} to {2}\n'.format(
+                table_name, current_reads, reads))
         elif current_reads < reads:
-            message.append('{0} - Reads: UP from {1} to {2}\n'.format(table_name, current_reads, reads))
+            message.append('{0} - Reads: UP from {1} to {2}\n'.format(
+                table_name, current_reads, reads))
         if current_writes > writes:
-         message.append('{0} - Writes: DOWN from {1} to {2}\n'.format(table_name, current_writes, writes))
+            message.append('{0} - Writes: DOWN from {1} to {2}\n'.format(
+                table_name, current_writes, writes))
         elif current_writes < writes:
-         message.append('{0} - Writes: UP from {1} to {2}\n'.format(table_name, current_writes, writes))
+            message.append('{0} - Writes: UP from {1} to {2}\n'.format(
+                table_name, current_writes, writes))
 
         sns.publish_table_notification(
             key_name,
@@ -486,13 +489,21 @@ def update_gsi_provisioning(
 
         message = []
         if current_reads > reads:
-            message.append('{0} - GSI: {1} - Reads: DOWN from {2} to {3}\n'.format(table_name, gsi_name, current_reads, reads))
+            message.append(
+                '{0} - GSI: {1} - Reads: DOWN from {2} to {3}\n'.format(
+                    table_name, gsi_name, current_reads, reads))
         elif current_reads < reads:
-            message.append('{0} - GSI: {1} - Reads: UP from {2} to {3}\n'.format(table_name, gsi_name, current_reads, reads))
+            message.append(
+                '{0} - GSI: {1} - Reads: UP from {2} to {3}\n'.format(
+                    table_name, gsi_name, current_reads, reads))
         if current_writes > writes:
-         message.append('{0} - GSI: {1} - Writes: DOWN from {2} to {3}\n'.format(table_name, gsi_name, current_writes, writes))
+            message.append(
+                '{0} - GSI: {1} - Writes: DOWN from {2} to {3}\n'.format(
+                    table_name, gsi_name, current_writes, writes))
         elif current_writes < writes:
-         message.append('{0} - GSI: {1} - Writes: UP from {2} to {3}\n'.format(table_name, gsi_name, current_writes, writes))
+            message.append(
+                '{0} - GSI: {1} - Writes: UP from {2} to {3}\n'.format(
+                    table_name, gsi_name, current_writes, writes))
 
         # See if we should send notifications for scale-down, scale-up or both
         sns_message_types = []
@@ -563,33 +574,23 @@ def __get_connection_dynamodb(retries=3):
     :param retries: Number of times to retry to connect to DynamoDB
     """
     connected = False
+    region = get_global_option('region')
+
     while not connected:
         if (get_global_option('aws_access_key_id') and
                 get_global_option('aws_secret_access_key')):
             logger.debug(
                 'Authenticating to DynamoDB using '
                 'credentials in configuration file')
-            region = get_global_option('region')
             connection = dynamodb2.connect_to_region(
                 region,
                 aws_access_key_id=get_global_option('aws_access_key_id'),
                 aws_secret_access_key=get_global_option(
                     'aws_secret_access_key'))
         else:
-            try:
-                logger.debug(
-                    'Authenticating to DynamoDB using EC2 instance profile')
-                metadata = get_instance_metadata(timeout=1, num_retries=1)
-                region = metadata['placement']['availability-zone'][:-1]
-                connection = dynamodb2.connect_to_region(
-                    region,
-                    profile_name=metadata['iam']['info'][u'InstanceProfileArn'])
-            except KeyError:
-                logger.debug(
-                    'Authenticating to DynamoDB using '
-                    'env vars / boto configuration')
-                region = get_global_option('region')
-                connection = dynamodb2.connect_to_region(region)
+            logger.debug(
+                'Authenticating using boto\'s authentication handler')
+            connection = dynamodb2.connect_to_region(region)
 
         if not connection:
             if retries == 0:

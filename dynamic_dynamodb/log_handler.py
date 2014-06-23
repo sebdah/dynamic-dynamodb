@@ -17,8 +17,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-import os.path
 import logging
+import os.path
+import sys
 
 from logutils import dictconfig
 
@@ -94,6 +95,12 @@ else:
         if 'file' in LOG_CONFIG['handlers']:
             LOG_CONFIG['handlers']['file']['formatter'] = 'dry-run'
 
-    dictconfig.dictConfig(LOG_CONFIG)
+    try:
+        dictconfig.dictConfig(LOG_CONFIG)
+    except ValueError as error:
+        print('Error configuring logger: {0}'.format(error))
+        sys.exit(1)
+    except:
+        raise
 
 LOGGER = logging.getLogger('dynamic-dynamodb')
