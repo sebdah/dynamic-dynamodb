@@ -1,6 +1,14 @@
 Release notes
 =============
 
+1.17.0
+------
+
+**Release date:** 2014-06-23
+
+- Fallback to use boto authentication (`#188 <https://github.com/sebdah/dynamic-dynamodb/issues/188>`__)
+- Handle logging configuration exceptions (`#189 <https://github.com/sebdah/dynamic-dynamodb/issues/189>`__)
+
 1.16.0
 ------
 
