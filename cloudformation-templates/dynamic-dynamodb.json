@@ -10,7 +10,7 @@
       "Description": "Remove this default value and enter your IAM role",
       "ConstraintDescription" : "Must be a valid IAM role"
     },
-    
+
     "S3Bucket": {
       "Type": "String",
       "Default": "s3://bucket-name/folder-path-if-applicable/",
@@ -66,13 +66,13 @@
   },
 
   "Resources": {
-    "DynamicDynamoDBLaunchConfig": {
+    "LaunchConfig": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": { "Fn::FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "32" ] },
         "InstanceType": "t1.micro",
         "KeyName": { "Ref": "KeyPair" },
-        "SecurityGroups": [ { "Ref": "DynamicDynamoDBSG" } ],
+        "SecurityGroups": [ { "Ref": "SecurityGroup" } ],
         "IamInstanceProfile"  : { "Ref" : "RoleName" },
         "UserData": {
           "Fn::Base64": {
@@ -109,7 +109,7 @@
                 "Fn::Join": [ " ", [
                     "/opt/aws/bin/cfn-init ",
                     "  --stack ", { "Ref": "AWS::StackId" },
-                    "  --resource DynamicDynamoDBLaunchConfig ",
+                    "  --resource LaunchConfig ",
                     "  --region ", { "Ref": "AWS::Region" },
                     " || error_exit 'Failed in AWS::CloudFormation::Init. Check logs at /var/log/cfn-init.log'"
                   ]
@@ -348,12 +348,12 @@
       }
     },
 
-    "DynamicDynamoDBASG": {
+    "AutoScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "AvailabilityZones": { "Fn::GetAZs": "" },
         "Cooldown": 300,
-        "LaunchConfigurationName": { "Ref": "DynamicDynamoDBLaunchConfig" },
+        "LaunchConfigurationName": { "Ref": "LaunchConfig" },
         "MaxSize": 1,
         "MinSize": 1,
         "Tags" : [
@@ -366,7 +366,7 @@
       }
     },
 
-    "DynamicDynamoDBSG": {
+    "SecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Allow access to MyInstance",
@@ -387,7 +387,7 @@
 
     "WaitCondition" : {
       "Type": "AWS::CloudFormation::WaitCondition",
-      "DependsOn": "DynamicDynamoDBASG",
+      "DependsOn": "AutoScalingGroup",
       "Properties": {
         "Handle": { "Ref" : "WaitHandle" },
         "Timeout": "600"
