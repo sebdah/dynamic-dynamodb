@@ -73,7 +73,7 @@
         "InstanceType": "t1.micro",
         "KeyName": { "Ref": "KeyPair" },
         "SecurityGroups": [ { "Ref": "SecurityGroup" } ],
-        "IamInstanceProfile"  : { "Ref" : "RoleName" },
+        "IamInstanceProfile"  : { "Ref" : "InstanceProfile" },
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [ "\n", [
@@ -363,6 +363,60 @@
             "PropagateAtLaunch" : "true"
           }
         ]
+      }
+    },
+
+    "Role": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [ {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [ "ec2.amazonaws.com" ]
+            },
+            "Action": [ "sts:AssumeRole" ]
+          }]
+        },
+        "Path": "/",
+        "Policies": [ {
+          "PolicyName": "root",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:DescribeTable",
+                  "dynamodb:ListTables",
+                  "dynamodb:UpdateTable",
+                  "cloudwatch:GetMetricStatistics",
+                  "s3:PutObject",
+                  "s3:GetObject"
+                ],
+                "Resource": ["*"]
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "sns:Publish"
+                ],
+                "Resource": [
+                  "arn:aws:sns:*::dynamic-dynamodb"
+                ]
+              }
+            ]
+          }
+        }]
+      }
+    },
+
+    "InstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [ { "Ref": "RootRole" } ]
       }
     },
 
