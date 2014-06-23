@@ -4,13 +4,6 @@
   "Description": "This is a sample CloudFormation template for deploying Dynamic DynamoDB. This package will be installed from the Python Package Index repository. For more information, see http://dynamic-dynamodb.readthedocs.org.",
 
   "Parameters": {
-    "RoleName": {
-      "Type": "String",
-      "Default": "default-role",
-      "Description": "Remove this default value and enter your IAM role",
-      "ConstraintDescription" : "Must be a valid IAM role"
-    },
-
     "S3Bucket": {
       "Type": "String",
       "Default": "s3://bucket-name/folder-path-if-applicable/",
