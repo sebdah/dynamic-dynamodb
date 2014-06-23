@@ -6,6 +6,9 @@ Release notes
 
 **Release date:** 2014-06-23
 
+- No credentials needed in the CloudFormation template, an IAM Instance Profile will be automatically created
+- The CloudFormation template will now launch Amazon Linux 2014.03.1 AMIs
+- Minor fixes to make the CloudFormation template work smoother
 - Fallback to use boto authentication (`#188 <https://github.com/sebdah/dynamic-dynamodb/issues/188>`__)
 - Handle logging configuration exceptions (`#189 <https://github.com/sebdah/dynamic-dynamodb/issues/189>`__)
 
