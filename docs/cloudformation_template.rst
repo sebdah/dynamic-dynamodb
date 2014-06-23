@@ -6,7 +6,7 @@ Overview
 
 To make it as easy as possible to get Dynamic DynamoDB up and running we provide a `CloudFormation <http://aws.amazon.com/cloudformation/>`__ template. This template will launch an t1.micro instance with Dynamic DynamoDB pre-installed. All you need to do is to provide a Dynamic DynamoDB configuration file to use.
 
-Please note that this will be charged towards your AWS account. The cost for a t1.micro server in us-east-1 is less than 15 USD / month.
+Please note that this will be charged towards your AWS account. The cost for a t1.micro server in ``us-east-1`` is less than 15 USD / month.
 
 Setup instructions
 ------------------
@@ -32,15 +32,11 @@ The following will create a new CloudFormation stack. This will launch a new EC2
 
 5. On the **Parameters page**:
 
-    a. In the **AWSAccessKey** text box, enter your AWS access key ID.
+    a. In the **S3bucket** text box, enter a URI for your Amazon S3 bucket. For example: ``s3://bucket-name/dynamic-dynamodb/``.  The URI **must** have a trailing slash (``/``). This should be the same bucket and path as you used in step 2. If you did not upload a template in step 2, choose any S3 bucket and path.
 
-    b. In the **AWSSecretKey** text box, enter your secret access key.
+    b. In the **KeyPair** text box, enter the name of your `Amazon EC2 key pair <https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:>`__
 
-    c. In the **S3bucket** text box, enter a URI for your Amazon S3 bucket. For example: ``s3://bucket-name/dynamic-dynamodb/``.  The URI **must** have a trailing slash (``/``). This should be the same bucket and path as you used in step 2. If you did not upload a template in step 2, choose any S3 bucket and path.
-
-    d. In the **KeyPair** text box, enter the name of your `Amazon EC2 key pair <https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:>`__
-
-    e. Click **Next Step**.
+    c. Click **Next Step**.
 
 6. On the **Options page**, click **Next Step**. There are no tasks to perform on this page.
 
