@@ -32,11 +32,13 @@ The following will create a new CloudFormation stack. This will launch a new EC2
 
 5. On the **Parameters page**:
 
-    a. In the **S3bucket** text box, enter a URI for your Amazon S3 bucket. For example: ``s3://bucket-name/dynamic-dynamodb/``.  The URI **must** have a trailing slash (``/``). This should be the same bucket and path as you used in step 2. If you did not upload a template in step 2, choose any S3 bucket and path.
+    a. In the **S3Bucket** text box, enter a URI for your Amazon S3 bucket. For example: ``s3://bucket-name/dynamic-dynamodb/``.  The URI **must** have a trailing slash (``/``). This should be the same bucket and path as you used in step 2. If you did not upload a template in step 2, choose any S3 bucket and path.
 
-    b. In the **KeyPair** text box, enter the name of your `Amazon EC2 key pair <https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:>`__
+    b. Define the region for the S3 bucket in the **S3BucketRegion** text box. This is needed due to a limitation in the AWS CLI (https://github.com/aws/aws-cli/issues/564).
 
-    c. Click **Next Step**.
+    c. In the **KeyPair** text box, enter the name of your `Amazon EC2 key pair <https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:>`__
+
+    d. Click **Next Step**.
 
 6. On the **Options page**, click **Next Step**. There are no tasks to perform on this page.
 
