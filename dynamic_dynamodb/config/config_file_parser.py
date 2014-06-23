@@ -19,6 +19,18 @@ TABLE_CONFIG_OPTIONS = [
         'type': 'bool'
     },
     {
+        'key': 'disable_reads_up_scaling',
+        'option': 'disable-reads-up-scaling',
+        'required': False,
+        'type': 'bool'
+    },
+    {
+        'key': 'disable_reads_down_scaling',
+        'option': 'disable-reads-down-scaling',
+        'required': False,
+        'type': 'bool'
+    },
+    {
         'key': 'reads_lower_threshold',
         'option': 'reads-lower-threshold',
         'required': False,
