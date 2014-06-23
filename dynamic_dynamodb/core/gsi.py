@@ -227,6 +227,7 @@ def __ensure_provisioning_reads(
             'Scaling down reads is not done when usage is at 0%'.format(
                 table_name, gsi_name))
 
+    # Increase needed due to high CU consumption
     elif consumed_read_units_percent >= reads_upper_threshold:
 
         if increase_reads_unit == 'percent':
@@ -251,6 +252,32 @@ def __ensure_provisioning_reads(
             update_needed = True
             updated_read_units = calculated_provisioning
 
+    # Decrease needed due to low CU consumption
+    elif consumed_read_units_percent <= reads_lower_threshold:
+
+        if decrease_reads_unit == 'percent':
+            calculated_provisioning = calculators.decrease_reads_in_percent(
+                current_read_units,
+                decrease_reads_with,
+                get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
+                '{0} - GSI: {1}'.format(table_name, gsi_name))
+        else:
+            calculated_provisioning = calculators.decrease_reads_in_units(
+                current_read_units,
+                decrease_reads_with,
+                get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
+                '{0} - GSI: {1}'.format(table_name, gsi_name))
+
+        if current_read_units != calculated_provisioning:
+            # We need to look at how many times the num_consec_read_checks
+            # integer has incremented and Compare to config file value
+            num_consec_read_checks = num_consec_read_checks + 1
+
+            if num_consec_read_checks >= num_read_checks_before_scale_down:
+                update_needed = True
+                updated_read_units = calculated_provisioning
+
+    # Increase needed due to high throttling
     elif throttled_read_count > throttled_reads_upper_threshold:
 
         if throttled_reads_upper_threshold > 0:
@@ -274,30 +301,6 @@ def __ensure_provisioning_reads(
                     'read checks. Reason: scale up event detected'.format(
                         table_name, gsi_name))
                 num_consec_read_checks = 0
-                update_needed = True
-                updated_read_units = calculated_provisioning
-
-    elif consumed_read_units_percent <= reads_lower_threshold:
-
-        if decrease_reads_unit == 'percent':
-            calculated_provisioning = calculators.decrease_reads_in_percent(
-                current_read_units,
-                decrease_reads_with,
-                get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
-                '{0} - GSI: {1}'.format(table_name, gsi_name))
-        else:
-            calculated_provisioning = calculators.decrease_reads_in_units(
-                current_read_units,
-                decrease_reads_with,
-                get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
-                '{0} - GSI: {1}'.format(table_name, gsi_name))
-
-        if current_read_units != calculated_provisioning:
-            # We need to look at how many times the num_consec_read_checks
-            # integer has incremented and Compare to config file value
-            num_consec_read_checks = num_consec_read_checks + 1
-
-            if num_consec_read_checks >= num_read_checks_before_scale_down:
                 update_needed = True
                 updated_read_units = calculated_provisioning
 
@@ -406,6 +409,7 @@ def __ensure_provisioning_writes(
             'Scaling down writes is not done when usage is at 0%'.format(
                 table_name, gsi_name))
 
+    # Increase needed due to high CU consumption
     elif consumed_write_units_percent >= writes_upper_threshold:
 
         if increase_writes_unit == 'percent':
@@ -430,6 +434,30 @@ def __ensure_provisioning_writes(
             update_needed = True
             updated_write_units = calculated_provisioning
 
+    # Decrease needed due to low CU consumption
+    elif consumed_write_units_percent <= writes_lower_threshold:
+
+        if decrease_writes_unit == 'percent':
+            calculated_provisioning = calculators.decrease_writes_in_percent(
+                current_write_units,
+                decrease_writes_with,
+                get_gsi_option(table_key, gsi_key, 'min_provisioned_writes'),
+                '{0} - GSI: {1}'.format(table_name, gsi_name))
+        else:
+            calculated_provisioning = calculators.decrease_writes_in_units(
+                current_write_units,
+                decrease_writes_with,
+                get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
+                '{0} - GSI: {1}'.format(table_name, gsi_name))
+
+        if current_write_units != calculated_provisioning:
+            num_consec_write_checks = num_consec_write_checks + 1
+
+            if num_consec_write_checks >= num_write_checks_before_scale_down:
+                update_needed = True
+                updated_write_units = calculated_provisioning
+
+    # Increase needed due to high throttling
     elif throttled_write_count > throttled_writes_upper_threshold:
 
         if throttled_writes_upper_threshold > 0:
@@ -454,28 +482,6 @@ def __ensure_provisioning_writes(
                     'write checks. Reason: scale up event detected'.format(
                         table_name, gsi_name))
                 num_consec_write_checks = 0
-                update_needed = True
-                updated_write_units = calculated_provisioning
-
-    elif consumed_write_units_percent <= writes_lower_threshold:
-
-        if decrease_writes_unit == 'percent':
-            calculated_provisioning = calculators.decrease_writes_in_percent(
-                current_write_units,
-                decrease_writes_with,
-                get_gsi_option(table_key, gsi_key, 'min_provisioned_writes'),
-                '{0} - GSI: {1}'.format(table_name, gsi_name))
-        else:
-            calculated_provisioning = calculators.decrease_writes_in_units(
-                current_write_units,
-                decrease_writes_with,
-                get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
-                '{0} - GSI: {1}'.format(table_name, gsi_name))
-
-        if current_write_units != calculated_provisioning:
-            num_consec_write_checks = num_consec_write_checks + 1
-
-            if num_consec_write_checks >= num_write_checks_before_scale_down:
                 update_needed = True
                 updated_write_units = calculated_provisioning
 
