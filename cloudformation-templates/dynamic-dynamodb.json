@@ -31,35 +31,27 @@
   "Mappings": {
     "Region2AMI": {
       "us-east-1": {
-        "32": "ami-d7a18dbe",
         "64": "ami-bba18dd2"
       },
       "us-west-1": {
-        "32": "ami-923909d7",
         "64": "ami-a43909e1"
       },
       "us-west-2": {
-        "32": "ami-def297ee",
         "64": "ami-ccf297fc"
       },
       "eu-west-1": {
-        "32": "ami-6a56b81d",
         "64": "ami-5256b825"
       },
       "sa-east-1": {
-        "32": "ami-bf9130a2",
         "64": "ami-c99130d4"
       },
       "ap-southeast-1": {
-        "32": "ami-b6baeee4",
         "64": "ami-b4baeee6"
       },
       "ap-southeast-2": {
-        "32": "ami-65a8375f",
         "64": "ami-5ba83761"
       },
       "ap-northeast-1": {
-        "32": "ami-0b13700a",
         "64": "ami-0d13700c"
       }
     }
@@ -69,7 +61,7 @@
     "LaunchConfig": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": { "Fn::FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "32" ] },
+        "ImageId": { "Fn::FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "64" ] },
         "InstanceType": "t1.micro",
         "KeyName": { "Ref": "KeyPair" },
         "SecurityGroups": [ { "Ref": "SecurityGroup" } ],
