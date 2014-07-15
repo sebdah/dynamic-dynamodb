@@ -12,7 +12,7 @@ from dynamic_dynamodb.aws.cloudwatch import (
     CLOUDWATCH_CONNECTION as cloudwatch_connection)
 
 
-def get_consumed_read_units_percent(table_name, lookback_window_start=300):
+def get_consumed_read_units_percent(table_name, lookback_window_start=15):
     """ Returns the number of consumed read units in percent
 
     :type table_name: str
@@ -47,7 +47,7 @@ def get_consumed_read_units_percent(table_name, lookback_window_start=300):
     return consumed_read_units_percent
 
 
-def get_throttled_read_event_count(table_name, lookback_window_start=300):
+def get_throttled_read_event_count(table_name, lookback_window_start=15):
     """ Returns the number of throttled read events during a given time frame
 
     :type table_name: str
@@ -72,7 +72,7 @@ def get_throttled_read_event_count(table_name, lookback_window_start=300):
     return throttled_read_count
 
 
-def get_consumed_write_units_percent(table_name, lookback_window_start=300):
+def get_consumed_write_units_percent(table_name, lookback_window_start=15):
     """ Returns the number of consumed write units in percent
 
     :type table_name: str
