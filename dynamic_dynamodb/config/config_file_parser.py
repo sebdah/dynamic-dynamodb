@@ -221,6 +221,12 @@ TABLE_CONFIG_OPTIONS = [
         'option': 'writes-lower-alarm-threshold',
         'required': False,
         'type': 'int'
+    },
+    {
+        'key': 'lookback_window_start',
+        'option': 'lookback-window-start',
+        'required': False,
+        'type': 'int'
     }
 ]
 

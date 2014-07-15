@@ -164,12 +164,16 @@ def __ensure_provisioning_reads(
 
     update_needed = False
     try:
+        lookback_window_start = get_gsi_option(
+            table_key, gsi_key, 'lookback-window-start')
         current_read_units = dynamodb.get_provisioned_gsi_read_units(
             table_name, gsi_name)
         consumed_read_units_percent = \
-            gsi_stats.get_consumed_read_units_percent(table_name, gsi_name)
+            gsi_stats.get_consumed_read_units_percent(
+                table_name, gsi_name, lookback_window_start)
         throttled_read_count = \
-            gsi_stats.get_throttled_read_event_count(table_name, gsi_name)
+            gsi_stats.get_throttled_read_event_count(
+                table_name, gsi_name, lookback_window_start)
         reads_upper_threshold = \
             get_gsi_option(table_key, gsi_key, 'reads_upper_threshold')
         reads_lower_threshold = \
@@ -365,12 +369,16 @@ def __ensure_provisioning_writes(
 
     update_needed = False
     try:
+        lookback_window_start = get_gsi_option(
+            table_key, gsi_key, 'lookback-window-start')
         current_write_units = dynamodb.get_provisioned_gsi_write_units(
             table_name, gsi_name)
         consumed_write_units_percent = \
-            gsi_stats.get_consumed_write_units_percent(table_name, gsi_name)
+            gsi_stats.get_consumed_write_units_percent(
+                table_name, gsi_name, lookback_window_start)
         throttled_write_count = \
-            gsi_stats.get_throttled_write_event_count(table_name, gsi_name)
+            gsi_stats.get_throttled_write_event_count(
+                table_name, gsi_name, lookback_window_start)
         writes_upper_threshold = \
             get_gsi_option(table_key, gsi_key, 'writes_upper_threshold')
         writes_lower_threshold = \

@@ -72,6 +72,7 @@ num-read-checks-before-scale-down          ``int``  1             Force Dynamic 
 num-write-checks-before-scale-down         ``int``  1             Force Dynamic DynamoDB to have `x` consecutive positive results before scaling writes down (`1` means scale down immediately)
 num-read-checks-reset-percent              ``int``  0             Set a read consumption percentage when the `num-read-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-read-checks-before-scale-down` feature
 num-write-checks-reset-percent             ``int``  0             Set a write consumption percentage when the `num-write-checks-before-scale-down` count should be reset. This option is optional, even if you use the `num-write-checks-before-scale-down` feature
+lookback-window-start                      ``int``  15            Dynamic DynamoDB fetches data from CloudWatch in a window that streches between ``now()-15`` and ``now()-10`` minutes. If you want to look at slightly newer data, change this value. Please note that it might not be set to less than 5 minutes (as CloudWatch data for DynamoDB is updated every 5 minutes).
 maintenance-windows                        ``str``                Force Dynamic DynamoDB to operate within maintenance windows. E.g. ``22:00-23:59,00:00-06:00``
 enable-reads-up-scaling                    ``bool`` ``true``      Turn on or off of up scaling of read capacity
 enable-reads-down-scaling                  ``bool`` ``true``      Turn on or off of down scaling of read capacity

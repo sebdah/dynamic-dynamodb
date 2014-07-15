@@ -64,6 +64,7 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
+        'lookback-window-start': 15,
         'maintenance_windows': None,
         'sns_topic_arn': None,
         'sns_message_types': []
@@ -104,6 +105,7 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
+        'lookback-window-start': 15,
         'maintenance_windows': None,
         'sns_topic_arn': None,
         'sns_message_types': []
