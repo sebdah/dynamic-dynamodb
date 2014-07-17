@@ -171,12 +171,6 @@ def __get_aws_metric(table_name, gsi_name, lookback_window_start, metric_name):
         A list of time series data for the given metric, may be None if
         there was no data
     """
-    if lookback_window_start < 5:
-        lookback_window_start = 5
-        logger.warning(
-            '{0} - {1} - Lookback window cannot be less than 5 minutes. '
-            'Setting it to 5 minutes.'.format(table_name, gsi_name))
-
     try:
         now = datetime.utcnow()
         start_time = now-timedelta(minutes=lookback_window_start)

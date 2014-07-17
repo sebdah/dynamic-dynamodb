@@ -346,6 +346,13 @@ def __check_gsi_rules(configuration):
                     'Setting --increase-reads-with to 100.')
                 gsi['increase_reads_with'] = 100
 
+            # Check lookback-window start
+            if gsi['lookback_window_start'] < 5:
+                print(
+                    'lookback-window-start must be a value higher than 5, '
+                    'as DynamoDB sends CloudWatch data every 5 minutes')
+                sys.exit(1)
+
             # Check sns-message-types
             valid_sns_message_types = [
                 'scale-up',
@@ -434,6 +441,13 @@ def __check_table_rules(configuration):
         if table['decrease_writes_unit'] not in valid_units:
             print(
                 'decrease-writes-with must be set to either percent or units')
+            sys.exit(1)
+
+        # Check lookback-window start
+        if table['lookback_window_start'] < 5:
+            print(
+                'lookback-window-start must be a value higher than 5, '
+                'as DynamoDB sends CloudWatch data every 5 minutes')
             sys.exit(1)
 
         # Check sns-message-types
