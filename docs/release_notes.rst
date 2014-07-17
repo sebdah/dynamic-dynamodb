@@ -1,6 +1,16 @@
 Release notes
 =============
 
+1.18.0
+------
+
+**Release date:** 2014-07-17
+
+- Make the CloudWatch lookback window start point configurable (`#192 <https://github.com/sebdah/dynamic-dynamodb/issues/192>`__)
+- Make it possible to turn on and off up-scaling or down-scaling (`#147 <https://github.com/sebdah/dynamic-dynamodb/issues/147>`__)
+- Enhance boto logging for GSI errors (`#194 <https://github.com/sebdah/dynamic-dynamodb/issues/194>`__)
+- Automatically bump the doc version (`#191 <https://github.com/sebdah/dynamic-dynamodb/issues/191>`__)
+
 1.17.0
 ------
 
