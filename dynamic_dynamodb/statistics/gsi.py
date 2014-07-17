@@ -35,7 +35,7 @@ def get_consumed_read_units_percent(
 
     if metrics:
         consumed_read_units = int(
-            math.ceil(float(metrics[0]['Sum'])/float(lookback_window_start)))
+            math.ceil(float(metrics[0]['Sum'])/float(lookback_window_start*60)))
     else:
         consumed_read_units = 0
 
@@ -104,7 +104,7 @@ def get_consumed_write_units_percent(
 
     if metrics:
         consumed_write_units = int(
-            math.ceil(float(metrics[0]['Sum'])/float(lookback_window_start)))
+            math.ceil(float(metrics[0]['Sum'])/float(lookback_window_start*60)))
     else:
         consumed_write_units = 0
 
