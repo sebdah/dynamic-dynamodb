@@ -174,7 +174,7 @@ def __get_aws_metric(table_name, gsi_name, lookback_window_start, metric_name):
     if lookback_window_start < 5:
         lookback_window_start = 5
         logger.warning(
-            '{0} - {1} - Look back window cannot be less than 5 minutes. '
+            '{0} - {1} - Lookback window cannot be less than 5 minutes. '
             'Setting it to 5 minutes.'.format(table_name, gsi_name))
 
     try:

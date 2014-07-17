@@ -140,7 +140,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
     update_needed = False
     try:
         lookback_window_start = get_table_option(
-            table_name, 'lookback-window-start')
+            key_name, 'lookback_window_start')
         current_read_units = dynamodb.get_provisioned_table_read_units(
             table_name)
         consumed_read_units_percent = \
@@ -325,7 +325,7 @@ def __ensure_provisioning_writes(
     update_needed = False
     try:
         lookback_window_start = get_table_option(
-            table_name, 'lookback-window-start')
+            key_name, 'lookback_window_start')
         current_write_units = dynamodb.get_provisioned_table_write_units(
             table_name)
         consumed_write_units_percent = \

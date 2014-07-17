@@ -165,7 +165,7 @@ def __ensure_provisioning_reads(
     update_needed = False
     try:
         lookback_window_start = get_gsi_option(
-            table_key, gsi_key, 'lookback-window-start')
+            table_key, gsi_key, 'lookback_window_start')
         current_read_units = dynamodb.get_provisioned_gsi_read_units(
             table_name, gsi_name)
         consumed_read_units_percent = \
@@ -370,7 +370,7 @@ def __ensure_provisioning_writes(
     update_needed = False
     try:
         lookback_window_start = get_gsi_option(
-            table_key, gsi_key, 'lookback-window-start')
+            table_key, gsi_key, 'lookback_window_start')
         current_write_units = dynamodb.get_provisioned_gsi_write_units(
             table_name, gsi_name)
         consumed_write_units_percent = \

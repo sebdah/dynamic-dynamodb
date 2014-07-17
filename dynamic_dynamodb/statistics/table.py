@@ -153,7 +153,7 @@ def __get_aws_metric(table_name, lookback_window_start, metric_name):
     if lookback_window_start < 5:
         lookback_window_start = 5
         logger.warning(
-            '{0} - Look back window cannot be less than 5 minutes. '
+            '{0} - Lookback window cannot be less than 5 minutes. '
             'Setting it to 5 minutes.'.format(table_name))
 
     try:
@@ -162,7 +162,7 @@ def __get_aws_metric(table_name, lookback_window_start, metric_name):
         end_time = now-timedelta(minutes=lookback_window_start-5)
 
         return cloudwatch_connection.get_metric_statistics(
-            period=500,                 # Always look at 5 minutes windows
+            period=300,                 # Always look at 5 minutes windows
             start_time=start_time,
             end_time=end_time,
             metric_name=metric_name,
