@@ -35,6 +35,10 @@ DEFAULT_OPTIONS = {
         'writes-lower-alarm-threshold': 0,
         'enable_reads_autoscaling': True,
         'enable_writes_autoscaling': True,
+        'enable_reads_up_scaling': True,
+        'enable_reads_down_scaling': True,
+        'enable_writes_up_scaling': True,
+        'enable_writes_down_scaling': True,
         'reads_lower_threshold': 30,
         'reads_upper_threshold': 90,
         'throttled_reads_upper_threshold': 0,
@@ -60,6 +64,7 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
+        'lookback_window_start': 15,
         'maintenance_windows': None,
         'sns_topic_arn': None,
         'sns_message_types': []
@@ -71,6 +76,10 @@ DEFAULT_OPTIONS = {
         'writes-lower-alarm-threshold': 0,
         'enable_reads_autoscaling': True,
         'enable_writes_autoscaling': True,
+        'enable_reads_up_scaling': True,
+        'enable_reads_down_scaling': True,
+        'enable_writes_up_scaling': True,
+        'enable_writes_down_scaling': True,
         'reads_lower_threshold': 30,
         'reads_upper_threshold': 90,
         'throttled_reads_upper_threshold': 0,
@@ -96,6 +105,7 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_reads_on_0_percent': False,
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
+        'lookback_window_start': 15,
         'maintenance_windows': None,
         'sns_topic_arn': None,
         'sns_message_types': []
@@ -336,8 +346,20 @@ def __check_gsi_rules(configuration):
                     'Setting --increase-reads-with to 100.')
                 gsi['increase_reads_with'] = 100
 
+            # Check lookback-window start
+            if gsi['lookback_window_start'] < 5:
+                print(
+                    'lookback-window-start must be a value higher than 5, '
+                    'as DynamoDB sends CloudWatch data every 5 minutes')
+                sys.exit(1)
+
             # Check sns-message-types
-            valid_sns_message_types = ['scale-up', 'scale-down', 'high-throughput-alarm', 'low-throughput-alarm']
+            valid_sns_message_types = [
+                'scale-up',
+                'scale-down',
+                'high-throughput-alarm',
+                'low-throughput-alarm']
+
             if gsi['sns_message_types']:
                 for sns_type in gsi['sns_message_types']:
                     if sns_type not in valid_sns_message_types:
@@ -421,8 +443,20 @@ def __check_table_rules(configuration):
                 'decrease-writes-with must be set to either percent or units')
             sys.exit(1)
 
+        # Check lookback-window start
+        if table['lookback_window_start'] < 5:
+            print(
+                'lookback-window-start must be a value higher than 5, '
+                'as DynamoDB sends CloudWatch data every 5 minutes')
+            sys.exit(1)
+
         # Check sns-message-types
-        valid_sns_message_types = ['scale-up', 'scale-down', 'high-throughput-alarm', 'low-throughput-alarm']
+        valid_sns_message_types = [
+            'scale-up',
+            'scale-down',
+            'high-throughput-alarm',
+            'low-throughput-alarm']
+
         if table['sns_message_types']:
             for sns_type in table['sns_message_types']:
                 if sns_type not in valid_sns_message_types:
