@@ -183,7 +183,7 @@ def __get_aws_metric(table_name, gsi_name, lookback_window_start, metric_name):
         end_time = now-timedelta(minutes=lookback_window_start-5)
 
         return cloudwatch_connection.get_metric_statistics(
-            period=500,                 # Always look at 5 minutes windows
+            period=300,                 # Always look at 5 minutes windows
             start_time=start_time,
             end_time=end_time,
             metric_name=metric_name,
