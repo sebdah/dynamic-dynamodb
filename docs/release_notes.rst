@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.18.1
+------
+
+**Release date:** 2014-07-18
+
+- Incorrect division in consumption calculation (`#195 <https://github.com/sebdah/dynamic-dynamodb/issues/195>`__)
+
 1.18.0
 ------
 
