@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.18.2
+------
+
+**Release date:** 2014-07-23
+
+- Throughput alarms does not honor lookback windows (`#197 <https://github.com/sebdah/dynamic-dynamodb/issues/197>`__)
+
 1.18.1
 ------
 
