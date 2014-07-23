@@ -554,10 +554,12 @@ def __ensure_provisioning_alarm(table_name, key_name):
     :type key_name: str
     :param key_name: Configuration option key name
     """
-    consumed_read_units_percent = \
-        table_stats.get_consumed_read_units_percent(table_name)
-    consumed_write_units_percent = \
-        table_stats.get_consumed_write_units_percent(table_name)
+    lookback_window_start = get_table_option(
+        key_name, 'lookback_window_start')
+    consumed_read_units_percent = table_stats.get_consumed_read_units_percent(
+        table_name, lookback_window_start)
+    consumed_write_units_percent = table_stats.get_consumed_write_units_percent(
+        table_name, lookback_window_start)
 
     reads_upper_alarm_threshold = \
         get_table_option(key_name, 'reads-upper-alarm-threshold')

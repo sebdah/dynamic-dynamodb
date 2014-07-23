@@ -629,10 +629,12 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
     :type gsi_key: str
     :param gsi_key: Configuration option key name
     """
-    consumed_read_units_percent = \
-        gsi_stats.get_consumed_read_units_percent(table_name, gsi_name)
-    consumed_write_units_percent = \
-        gsi_stats.get_consumed_write_units_percent(table_name, gsi_name)
+    lookback_window_start = get_gsi_option(
+        table_key, gsi_key, 'lookback_window_start')
+    consumed_read_units_percent = gsi_stats.get_consumed_read_units_percent(
+        table_name, gsi_name, lookback_window_start)
+    consumed_write_units_percent = gsi_stats.get_consumed_write_units_percent(
+        table_name, gsi_name, lookback_window_start)
 
     reads_upper_alarm_threshold = \
         get_gsi_option(table_key, gsi_key, 'reads-upper-alarm-threshold')
