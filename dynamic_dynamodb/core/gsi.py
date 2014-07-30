@@ -451,13 +451,14 @@ def __ensure_provisioning_writes(
                         current_write_units,
                         increase_writes_with,
                         get_gsi_option(
-                            table_key, gsi_key, 'max_provisioned_reads'),
+                            table_key, gsi_key, 'max_provisioned_writes'),
                         '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
                     current_write_units,
                     increase_writes_with,
-                    get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    get_gsi_option(
+                        table_key, gsi_key, 'max_provisioned_writes'),
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_write_units != calculated_provisioning:
@@ -492,7 +493,8 @@ def __ensure_provisioning_writes(
                 calculated_provisioning = calculators.decrease_writes_in_units(
                     current_write_units,
                     decrease_writes_with,
-                    get_gsi_option(table_key, gsi_key, 'min_provisioned_reads'),
+                    get_gsi_option(
+                        table_key, gsi_key, 'min_provisioned_writes'),
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_write_units != calculated_provisioning:
@@ -513,13 +515,14 @@ def __ensure_provisioning_writes(
                         current_write_units,
                         increase_writes_with,
                         get_gsi_option(
-                            table_key, gsi_key, 'max_provisioned_reads'),
+                            table_key, gsi_key, 'max_provisioned_writes'),
                         '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
                     current_write_units,
                     increase_writes_with,
-                    get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    get_gsi_option(
+                        table_key, gsi_key, 'max_provisioned_writes'),
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_write_units != calculated_provisioning:
