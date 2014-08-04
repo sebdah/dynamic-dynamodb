@@ -1,6 +1,14 @@
 Release notes
 =============
 
+1.18.3
+------
+
+**Release date:** 2014-08-04
+
+- Throttling up scaling was ignored if a regular down scale occurred (`#198 <https://github.com/sebdah/dynamic-dynamodb/issues/198>`__)
+- Read config setting used in wrong situation for GSIs (`#199 <https://github.com/sebdah/dynamic-dynamodb/issues/199>`__)
+
 1.18.2
 ------
 
