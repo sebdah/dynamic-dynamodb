@@ -16,7 +16,7 @@ import os
 from ConfigParser import SafeConfigParser
 
 settings = SafeConfigParser()
-settings.read(os.path.realpath('dynamic_dynamodb/dynamic-dynamodb.conf'))
+settings.read(os.path.realpath('../dynamic_dynamodb/dynamic-dynamodb.conf'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

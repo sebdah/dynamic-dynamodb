@@ -2,7 +2,7 @@ License
 -------
 
 APACHE LICENSE 2.0
-Copyright 2013 Sebastian Dahlgren
+Copyright 2013-2014 Sebastian Dahlgren
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
