@@ -23,3 +23,8 @@ Then install the ``dynamic-dynamodb`` command locally.
 
     cd dynamic-dynamodb
     make install
+
+Using the CloudFormation template
+---------------------------------
+
+Dynamic DynamoDB provides a CloudFormation template to make it easy to get started. You can read more about that in the :ref:`cloudformation-template`.
