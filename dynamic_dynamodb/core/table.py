@@ -163,6 +163,8 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
             get_table_option(key_name, 'decrease_reads_with')
         decrease_reads_unit = \
             get_table_option(key_name, 'decrease_reads_unit')
+        min_provisioned_reads = \
+            get_table_option(key_name, 'min_provisioned_reads')
         max_provisioned_reads = \
             get_table_option(key_name, 'max_provisioned_reads')
         num_read_checks_before_scale_down = \
@@ -296,6 +298,15 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                 'Will not increase writes over max-provisioned-reads '
                 'limit ({0} writes)'.format(updated_read_units))
 
+    # Ensure that we have met the min-provisioning
+    if min_provisioned_reads:
+        if int(min_provisioned_reads) > int(updated_read_units):
+            update_needed = True
+            updated_read_units = int(min_provisioned_reads)
+            logger.info(
+                '{0} - Increasing reads to meet min-provisioned-reads '
+                'limit ({1} reads)'.format(table_name, updated_read_units))
+
     logger.info('{0} - Consecutive read checks {1}/{2}'.format(
         table_name,
         num_consec_read_checks,
@@ -348,6 +359,8 @@ def __ensure_provisioning_writes(
             get_table_option(key_name, 'decrease_writes_unit')
         decrease_writes_with = \
             get_table_option(key_name, 'decrease_writes_with')
+        min_provisioned_writes = \
+            get_table_option(key_name, 'min_provisioned_writes')
         max_provisioned_writes = \
             get_table_option(key_name, 'max_provisioned_writes')
         num_write_checks_before_scale_down = \
@@ -486,6 +499,15 @@ def __ensure_provisioning_writes(
             logger.info(
                 'Will not increase writes over max-provisioned-writes '
                 'limit ({0} writes)'.format(updated_write_units))
+
+    # Ensure that we have met the min-provisioning
+    if min_provisioned_writes:
+        if int(min_provisioned_writes) > int(updated_write_units):
+            update_needed = True
+            updated_write_units = int(min_provisioned_writes)
+            logger.info(
+                '{0} - Increasing writes to meet min-provisioned-writes '
+                'limit ({1} writes)'.format(table_name, updated_write_units))
 
     logger.info('{0} - Consecutive write checks {1}/{2}'.format(
         table_name,
