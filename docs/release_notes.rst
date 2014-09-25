@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.18.4
+------
+
+**Release date:** 2014-09-25
+
+- Tables should automatically scale up if below their minimums (`#202 <https://github.com/sebdah/dynamic-dynamodb/issues/202>`__)
+
 1.18.3
 ------
 
