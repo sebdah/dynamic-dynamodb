@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.18.5
+------
+
+**Release date:** 2014-09-26
+
+- Weird behavior when a single table is matched by multiple regexes (`#203 <https://github.com/sebdah/dynamic-dynamodb/issues/203>`__)
+
 1.18.4
 ------
 

@@ -34,6 +34,15 @@ def get_tables_and_gsis():
                 if re.match(key_name, table_instance.table_name):
                     logger.debug("Table {0} match with config key {1}".format(
                         table_instance.table_name, key_name))
+
+                    # Notify users about regexps that match multiple tables
+                    for key, value in table_names:
+                        if key == table_instance.table_name:
+                            logger.warning(
+                                'Table {0} matches multiple regexps in '
+                                'the configuration'.format(
+                                    table_instance.table_name))
+
                     table_names.add(
                         (
                             table_instance.table_name,
