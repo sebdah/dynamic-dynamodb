@@ -164,13 +164,13 @@ def execute():
             for gsi_name, gsi_key in sorted(gsi_names):
                 try:
                     gsi_num_consec_read_checks = \
-                        CHECK_STATUS['tables'][table_name]['reads']
+                        CHECK_STATUS['gsis'][gsi_name]['reads']
                 except KeyError:
                     gsi_num_consec_read_checks = 0
 
                 try:
                     gsi_num_consec_write_checks = \
-                        CHECK_STATUS['tables'][table_name]['writes']
+                        CHECK_STATUS['gsis'][gsi_name]['writes']
                 except KeyError:
                     gsi_num_consec_write_checks = 0
 
