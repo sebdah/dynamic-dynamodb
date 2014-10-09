@@ -198,10 +198,7 @@ def increase_reads_in_units(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
-    if int(units) > int(current_provisioning):
-        updated_provisioning = 2 * int(current_provisioning)
-    else:
-        updated_provisioning = int(current_provisioning) + int(units)
+    updated_provisioning = int(current_provisioning) + int(units)
 
     if max_provisioned_reads > 0:
         if updated_provisioning > max_provisioned_reads:
@@ -269,10 +266,7 @@ def increase_writes_in_units(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
-    if int(units) > int(current_provisioning):
-        updated_provisioning = 2 * int(current_provisioning)
-    else:
-        updated_provisioning = int(current_provisioning) + int(units)
+    updated_provisioning = int(current_provisioning) + int(units)
 
     if max_provisioned_writes > 0:
         if updated_provisioning > max_provisioned_writes:
