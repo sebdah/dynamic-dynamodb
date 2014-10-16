@@ -330,7 +330,7 @@ def __ensure_provisioning_writes(
     """
     if not get_table_option(key_name, 'enable_writes_autoscaling'):
         logger.info(
-            '{0} - Autoscaling of reads has been disabled'.format(table_name))
+            '{0} - Autoscaling of writes has been disabled'.format(table_name))
         return False, dynamodb.get_provisioned_table_write_units(table_name), 0
 
     update_needed = False

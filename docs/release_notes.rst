@@ -1,6 +1,15 @@
 Release notes
 =============
 
+1.19.0
+------
+
+**Release date:** 2014-10-16
+
+- Support for DynamoDBs new flexible scaling (`#207 <https://github.com/sebdah/dynamic-dynamodb/issues/207>`__)
+- Fixed a bug with consecutive checks for GSIs (`#206 <https://github.com/sebdah/dynamic-dynamodb/issues/206>`__)
+- Typo in log message when auto scaling of table writes was disabled (`#209 <https://github.com/sebdah/dynamic-dynamodb/issues/209>`__)
+
 1.18.5
 ------
 
