@@ -112,9 +112,9 @@ Community applications
 
 There are a few community applications for managing Dynamic DynamoDB.
 
-- [chef-dynamic-dynamodb](https://github.com/spaceapegames/chef-dynamic-dynamodb) (Chef cookbook)
 - [puppet-dynamicdynamodb](https://github.com/mindcandy/puppet-dynamicdynamodb) (Puppet module)
 - [elasticDynamoDB](https://github.com/innovia/ElasticDynamoDb) (Wrapper for handling larger planned spikes)
+- [chef-dynamic-dynamodb](https://github.com/spaceapegames/chef-dynamic-dynamodb) (Chef cookbook - DEPRECATED)
 
 Reporting bugs
 --------------
