@@ -328,7 +328,7 @@
                 "group": "root"
               },
               "/etc/dynamic-dynamodb/example-dynamic-dynamodb.conf": {
-                "source": "https://raw2.github.com/sebdah/dynamic-dynamodb/master/example-dynamic-dynamodb.conf",
+                "source": "https://raw.github.com/sebdah/dynamic-dynamodb/master/example-dynamic-dynamodb.conf",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
