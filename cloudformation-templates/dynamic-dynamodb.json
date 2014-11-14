@@ -24,6 +24,12 @@
       "MaxLength": "64",
       "AllowedPattern": "[-_ a-zA-Z0-9]*",
       "ConstraintDescription": "can contain only alphanumeric characters, spaces, dashes and underscores."
+    },
+
+    "InstanceType" : {
+      "Default" : "t1.micro",
+      "Description" : "AWS EC2 instance type",
+      "Type" : "String"
     }
   },
 
@@ -61,7 +67,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": { "Fn::FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "64" ] },
-        "InstanceType": "t1.micro",
+        "InstanceType": { "Ref" : "InstanceType" },
         "KeyName": { "Ref": "KeyPair" },
         "SecurityGroups": [ { "Ref": "SecurityGroup" } ],
         "IamInstanceProfile"  : { "Ref" : "IamInstanceProfile" },

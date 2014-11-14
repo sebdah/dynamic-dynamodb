@@ -13,10 +13,10 @@ Option                                Type      Default       Comment
 ===================================== ========= ============= ==========================================
 aws-access-key-id                     ``str``                  AWS access API key
 aws-secret-access-key-id              ``str``                  AWS secret API key
-check-interval                        ``int``    300           How many seconds to wait between the checks
-circuit-breaker-timeout               ``float``  10000.00      Timeout for the circuit breaker, in ms
+check-interval                        ``int``   300           How many seconds to wait between the checks
+circuit-breaker-timeout               ``float`` 10000.00      Timeout for the circuit breaker, in ms
 circuit-breaker-url                   ``str``                  URL to poll for circuit breaking. Dynamic DynamoDB will only run if the circuit breaker returns ``HTTP/200``
-region                                ``str``    ``us-east-1`` AWS region to use
+region                                ``str``   ``us-east-1`` AWS region to use
 ===================================== ========= ============= ==========================================
 
 Logging configuration
