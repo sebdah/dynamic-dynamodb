@@ -39,7 +39,9 @@ The following will create a new CloudFormation stack. This will launch a new EC2
 
     c. In the **KeyPair** text box, enter the name of your `Amazon EC2 key pair <https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:>`__
 
-    d. Click **Next Step**.
+    d. (Optional) Change the instance type. Default is t1.micro.
+
+    e. Click **Next Step**.
 
 6. On the **Options page**, click **Next Step**. There are no tasks to perform on this page.
 
