@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.19.1
+------
+
+**Release date:** 2014-11-19
+
+- Fixed bug when disabling read and writes up/down scaling separately (`#221 <https://github.com/sebdah/dynamic-dynamodb/issues/221>`__)
+
 1.19.0
 ------
 
