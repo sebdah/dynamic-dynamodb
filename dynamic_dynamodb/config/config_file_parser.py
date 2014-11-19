@@ -19,14 +19,26 @@ TABLE_CONFIG_OPTIONS = [
         'type': 'bool'
     },
     {
-        'key': 'disable_reads_up_scaling',
-        'option': 'disable-reads-up-scaling',
+        'key': 'enable_reads_up_scaling',
+        'option': 'enable-reads-up-scaling',
         'required': False,
         'type': 'bool'
     },
     {
-        'key': 'disable_reads_down_scaling',
-        'option': 'disable-reads-down-scaling',
+        'key': 'enable_reads_down_scaling',
+        'option': 'enable-reads-down-scaling',
+        'required': False,
+        'type': 'bool'
+    },
+    {
+        'key': 'enable_writes_up_scaling',
+        'option': 'enable-writes-up-scaling',
+        'required': False,
+        'type': 'bool'
+    },
+    {
+        'key': 'enable_writes_down_scaling',
+        'option': 'enable-writes-down-scaling',
         'required': False,
         'type': 'bool'
     },
