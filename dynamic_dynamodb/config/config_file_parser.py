@@ -31,6 +31,18 @@ TABLE_CONFIG_OPTIONS = [
         'type': 'bool'
     },
     {
+        'key': 'enable_writes_up_scaling',
+        'option': 'enable-writes-up-scaling',
+        'required': False,
+        'type': 'bool'
+    },
+    {
+        'key': 'enable_writes_down_scaling',
+        'option': 'enable-writes-down-scaling',
+        'required': False,
+        'type': 'bool'
+    },
+    {
         'key': 'reads_lower_threshold',
         'option': 'reads-lower-threshold',
         'required': False,
