@@ -327,25 +327,6 @@ def __check_gsi_rules(configuration):
                     'either percent or units')
                 sys.exit(1)
 
-            # Check that increase_writes_with is not > 100
-            if (gsi['increase_writes_unit'] == 'percent' and
-                    gsi['increase_writes_with'] > 100):
-
-                print(
-                    'You can not increase the GSI throughput with more '
-                    'than 100% at a time. '
-                    'Setting --increase-writes-with to 100.')
-                gsi['increase_writes_with'] = 100
-
-            # Check that increase_reads_with is not > 100
-            if (gsi['increase_reads_unit'] == 'percent' and
-                    gsi['increase_reads_with'] > 100):
-                print(
-                    'You can not increase the GSI throughput with more '
-                    'than 100% at a time. '
-                    'Setting --increase-reads-with to 100.')
-                gsi['increase_reads_with'] = 100
-
             # Check lookback-window start
             if gsi['lookback_window_start'] < 5:
                 print(
@@ -463,23 +444,6 @@ def __check_table_rules(configuration):
                     print('Warning: Invalid sns-message-type: {0}'.format(
                         sns_type))
                     table['sns_message_types'].remove(sns_type)
-
-        # Check that increase_writes_with is not > 100
-        if (table['increase_writes_unit'] == 'percent' and
-                table['increase_writes_with'] > 100):
-
-            print(
-                'You can not increase the table throughput with more '
-                'than 100% at a time. Setting --increase-writes-with to 100.')
-            table['increase_writes_with'] = 100
-
-        # Check that increase_reads_with is not > 100
-        if (table['increase_reads_unit'] == 'percent' and
-                table['increase_reads_with'] > 100):
-            print(
-                'You can not increase the table throughput with more '
-                'than 100% at a time. Setting --increase-reads-with to 100.')
-            table['increase_reads_with'] = 100
 
         # Ensure values > 0 for some important configuration options
         options = [

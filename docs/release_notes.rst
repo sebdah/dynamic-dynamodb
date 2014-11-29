@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.19.2
+------
+
+**Release date:** 2014-11-29
+
+- Remove 100% increase limit in configuration validation (`#225 <https://github.com/sebdah/dynamic-dynamodb/issues/225>`__)
+
 1.19.1
 ------
 
