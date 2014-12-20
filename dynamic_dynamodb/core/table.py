@@ -419,15 +419,15 @@ def __ensure_provisioning_writes(
                         current_write_units,
                         increase_writes_with,
                         get_table_option(key_name, 'max_provisioned_writes'),
-                        table_name,
-                        consumed_write_units_percent)
+                        consumed_write_units_percent,
+                        table_name)
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
                     current_write_units,
                     increase_writes_with,
                     get_table_option(key_name, 'max_provisioned_writes'),
-                    table_name,
-                    consumed_write_units_percent)
+                    consumed_write_units_percent,
+                    table_name)
 
             if current_write_units != calculated_provisioning:
                 logger.info(
@@ -448,15 +448,15 @@ def __ensure_provisioning_writes(
                         current_write_units,
                         increase_writes_with,
                         get_table_option(key_name, 'max_provisioned_writes'),
-                        table_name,
-                        consumed_write_units_percent)
+                        consumed_write_units_percent,
+                        table_name)
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
                     current_write_units,
                     increase_writes_with,
                     get_table_option(key_name, 'max_provisioned_writes'),
-                    table_name,
-                    consumed_write_units_percent)
+                    consumed_write_units_percent,
+                    table_name)
 
             if current_write_units != calculated_provisioning:
                 logger.info(
