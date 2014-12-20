@@ -249,12 +249,14 @@ def __ensure_provisioning_reads(
                     current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_reads_in_units(
                     current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_read_units != calculated_provisioning:
@@ -276,12 +278,14 @@ def __ensure_provisioning_reads(
                     current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_reads_in_units(
                     current_read_units,
                     increase_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_read_units != calculated_provisioning:
@@ -473,6 +477,7 @@ def __ensure_provisioning_writes(
                         increase_writes_with,
                         get_gsi_option(
                             table_key, gsi_key, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
                         '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
@@ -480,6 +485,7 @@ def __ensure_provisioning_writes(
                     increase_writes_with,
                     get_gsi_option(
                         table_key, gsi_key, 'max_provisioned_writes'),
+                    consumed_write_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_write_units != calculated_provisioning:
@@ -502,6 +508,7 @@ def __ensure_provisioning_writes(
                         increase_writes_with,
                         get_gsi_option(
                             table_key, gsi_key, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
                         '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
@@ -509,6 +516,7 @@ def __ensure_provisioning_writes(
                     increase_writes_with,
                     get_gsi_option(
                         table_key, gsi_key, 'max_provisioned_writes'),
+                    consumed_write_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
             if current_write_units != calculated_provisioning:
