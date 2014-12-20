@@ -151,7 +151,7 @@ def decrease_writes_in_units(
 
 def increase_reads_in_percent(
         current_provisioning, percent, max_provisioned_reads,
-        log_tag, consumed_read_units_percent):
+        consumed_read_units_percent, log_tag):
     """ Increase the current_provisioning with percent %
 
     :type current_provisioning: int
@@ -161,10 +161,10 @@ def increase_reads_in_percent(
     :type max_provisioned_reads: int
     :param max_provisioned_reads: Configured max provisioned reads
     :returns: int -- New provisioning value
-    :type log_tag: str
-    :param log_tag: Prefix for the log
     :type consumed_read_units_percent: float
     :param consumed_read_units_percent: Number of consumed read units
+    :type log_tag: str
+    :param log_tag: Prefix for the log
     """
     current_provisioning = float(current_provisioning)
     consumed_read_units_percent = float(consumed_read_units_percent)
@@ -198,7 +198,7 @@ def increase_reads_in_percent(
 
 def increase_reads_in_units(
         current_provisioning, units, max_provisioned_reads,
-        log_tag, consumed_read_units_percent):
+        consumed_read_units_percent, log_tag):
     """ Increase the current_provisioning with units units
 
     :type current_provisioning: int
@@ -209,10 +209,10 @@ def increase_reads_in_units(
     :type max_provisioned_reads: int
     :param max_provisioned_reads: Configured max provisioned reads
     :returns: int -- New provisioning value
-    :type log_tag: str
-    :param log_tag: Prefix for the log
     :type consumed_read_units_percent: float
     :param consumed_read_units_percent: Number of consumed read units
+    :type log_tag: str
+    :param log_tag: Prefix for the log
     """
     units = int(units)
     current_provisioning = float(current_provisioning)
@@ -244,7 +244,7 @@ def increase_reads_in_units(
 
 def increase_writes_in_percent(
         current_provisioning, percent, max_provisioned_writes,
-        log_tag, consumed_write_units_percent):
+        consumed_write_units_percent, log_tag):
     """ Increase the current_provisioning with percent %
 
     :type current_provisioning: int
@@ -254,10 +254,10 @@ def increase_writes_in_percent(
     :returns: int -- New provisioning value
     :type max_provisioned_writes: int
     :param max_provisioned_writes: Configured max provisioned writes
-    :type log_tag: str
-    :param log_tag: Prefix for the log
     :type consumed_write_units_percent: float
     :param consumed_write_units_percent: Number of consumed write units
+    :type log_tag: str
+    :param log_tag: Prefix for the log
     """
     current_provisioning = float(current_provisioning)
     consumed_write_units_percent = float(consumed_write_units_percent)
@@ -292,7 +292,7 @@ def increase_writes_in_percent(
 
 def increase_writes_in_units(
         current_provisioning, units, max_provisioned_writes,
-        log_tag, consumed_write_units_percent):
+        consumed_write_units_percent, log_tag):
     """ Increase the current_provisioning with units units
 
     :type current_provisioning: int
@@ -302,10 +302,10 @@ def increase_writes_in_units(
     :returns: int -- New provisioning value
     :type max_provisioned_writes: int
     :param max_provisioned_writes: Configured max provisioned writes
-    :type log_tag: str
-    :param log_tag: Prefix for the log
     :type consumed_write_units_percent: float
     :param consumed_write_units_percent: Number of consumed write units
+    :type log_tag: str
+    :param log_tag: Prefix for the log
     """
     units = int(units)
     current_provisioning = float(current_provisioning)
