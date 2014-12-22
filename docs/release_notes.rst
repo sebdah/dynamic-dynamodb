@@ -1,6 +1,15 @@
 Release notes
 =============
 
+1.20.0
+------
+
+**Release date:** 2014-12-22
+
+- Faster Up-scaling Based on Consumed Read/Write (`#227 <https://github.com/sebdah/dynamic-dynamodb/issues/227>`__)
+
+Thanks `@pragnesh <https://github.com/pragnesh>`__ for the help with this release
+
 1.19.2
 ------
 

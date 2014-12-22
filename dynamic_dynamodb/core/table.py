@@ -216,12 +216,14 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                     current_read_units,
                     increase_reads_with,
                     get_table_option(key_name, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     table_name)
             else:
                 calculated_provisioning = calculators.increase_reads_in_units(
                     current_read_units,
                     increase_reads_with,
                     get_table_option(key_name, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     table_name)
 
             if current_read_units != calculated_provisioning:
@@ -242,12 +244,14 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                     updated_read_units,
                     increase_reads_with,
                     get_table_option(key_name, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     table_name)
             else:
                 calculated_provisioning = calculators.increase_reads_in_units(
                     updated_read_units,
                     increase_reads_with,
                     get_table_option(key_name, 'max_provisioned_reads'),
+                    consumed_read_units_percent,
                     table_name)
 
             if current_read_units != calculated_provisioning:
@@ -415,12 +419,14 @@ def __ensure_provisioning_writes(
                         current_write_units,
                         increase_writes_with,
                         get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
                         table_name)
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
                     current_write_units,
                     increase_writes_with,
                     get_table_option(key_name, 'max_provisioned_writes'),
+                    consumed_write_units_percent,
                     table_name)
 
             if current_write_units != calculated_provisioning:
@@ -442,12 +448,14 @@ def __ensure_provisioning_writes(
                         current_write_units,
                         increase_writes_with,
                         get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
                         table_name)
             else:
                 calculated_provisioning = calculators.increase_writes_in_units(
                     current_write_units,
                     increase_writes_with,
                     get_table_option(key_name, 'max_provisioned_writes'),
+                    consumed_write_units_percent,
                     table_name)
 
             if current_write_units != calculated_provisioning:
