@@ -25,7 +25,7 @@ setup(
         'boto >= 2.29.1',
         'requests >= 0.14.1',
         'logutils >= 0.3.3',
-        'retrying >= 1.1.0'
+        'retrying >= 1.3.3'
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
