@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.20.1
+------
+
+**Release date:** 2014-12-22
+
+- Updated retrying version to 1.3.3 (`#218 <https://github.com/sebdah/dynamic-dynamodb/issues/218>`__)
+
 1.20.0
 ------
 
