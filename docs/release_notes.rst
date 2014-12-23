@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.20.2
+------
+
+**Release date:** 2014-12-23
+
+- Output failed to show floats and crashed the daemon (`#229 <https://github.com/sebdah/dynamic-dynamodb/issues/229>`__). Thanks `@nickveenhof <https://github.com/nickveenhof>`__ for the pull request.
+
 1.20.1
 ------
 
