@@ -29,13 +29,13 @@ def decrease_reads_in_percent(
     if updated_provisioning < min_provisioned_reads:
         logger.info(
             '{0} - Reached provisioned reads min limit: {1:d}'.format(
-                log_tag, min_provisioned_reads))
+                log_tag, int(min_provisioned_reads)))
 
         return min_provisioned_reads
 
     logger.debug(
         '{0} - Read provisioning will be decreased to {1:d} units'.format(
-            log_tag, updated_provisioning))
+            log_tag, int(updated_provisioning)))
 
     return updated_provisioning
 
@@ -64,14 +64,14 @@ def decrease_reads_in_units(
         logger.info(
             '{0} - Reached provisioned reads min limit: {1:d}'.format(
                 log_tag,
-                min_provisioned_reads))
+                int(min_provisioned_reads)))
 
         return min_provisioned_reads
 
     logger.debug(
         '{0} - Read provisioning will be decreased to {1:d} units'.format(
             log_tag,
-            updated_provisioning))
+            int(updated_provisioning)))
 
     return updated_provisioning
 
@@ -101,14 +101,14 @@ def decrease_writes_in_percent(
         logger.info(
             '{0} - Reached provisioned writes min limit: {1:d}'.format(
                 log_tag,
-                min_provisioned_writes))
+                int(min_provisioned_writes)))
 
         return min_provisioned_writes
 
     logger.debug(
         '{0} - Write provisioning will be decreased to {1:d} units'.format(
             log_tag,
-            updated_provisioning))
+            int(updated_provisioning)))
 
     return updated_provisioning
 
@@ -137,14 +137,14 @@ def decrease_writes_in_units(
         logger.info(
             '{0} - Reached provisioned writes min limit: {1:d}'.format(
                 log_tag,
-                min_provisioned_writes))
+                int(min_provisioned_writes)))
 
         return min_provisioned_writes
 
     logger.debug(
         '{0} - Write provisioning will be decreased to {1:d} units'.format(
             log_tag,
-            updated_provisioning))
+            int(updated_provisioning)))
 
     return updated_provisioning
 
@@ -237,7 +237,7 @@ def increase_reads_in_units(
     logger.debug(
         '{0} - Read provisioning will be increased to {1:d} units'.format(
             log_tag,
-            updated_provisioning))
+            int(updated_provisioning)))
 
     return updated_provisioning
 
@@ -285,7 +285,7 @@ def increase_writes_in_percent(
     logger.debug(
         '{0} - Write provisioning will be increased to {1:d} units'.format(
             log_tag,
-            updated_provisioning))
+            int(updated_provisioning)))
 
     return updated_provisioning
 
@@ -330,7 +330,7 @@ def increase_writes_in_units(
     logger.debug(
         '{0} - Write provisioning will be increased to {1:d} units'.format(
             log_tag,
-            updated_provisioning))
+            int(updated_provisioning)))
 
     return updated_provisioning
 
