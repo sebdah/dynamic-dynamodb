@@ -79,8 +79,9 @@ reads-upper-alarm-threshold                ``int``                How many perce
 reads-upper-threshold                      ``int``  90            Scale up the reads with ``--increase-reads-with`` if the currently consumed reads reaches this many percent
 sns-message-types                          ``str``                Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up``, ``scale-down``, ``high-throughput-alarm`` and ``low-throughput-alarm``
 sns-topic-arn                              ``str``                Full Topic ARN to use for sending SNS notifications
-throttled-reads-upper-threshold            ``int``  0             Scale up the reads with ``--increase-reads-with`` if the count of throttled read events exceeds this count
-throttled-writes-upper-threshold           ``int``  0             Scale up the writes with ``--increase-writes-with`` if the count of throttled write events exceeds this count
+throttled-reads-upper-threshold            ``int``  0             Scale up the reads with ``--increase-reads-with`` if the count of throttled read events exceeds this count. Set to ``0`` (default) to turn off scaling based on throttled reads.
+throttled-writes-upper-threshold           ``int``  0             Scale up the writes with ``--increase-writes-with`` if the count of throttled write events exceeds this count. Set to ``0`` (default) to turn off scaling based on throttled reads.
+
 writes-lower-alarm-threshold               ``int``                How many percent of the writes capacity should be used before trigging the low throughput alarm?
 writes-lower-threshold                     ``int``  30            Scale down the writes with ``--decrease-writes-with`` if the currently consumed writes is as low as this many percent
 writes-upper-alarm-threshold               ``int``                How many percent of the writes capacity should be used before trigging the high throughput alarm?
@@ -134,8 +135,10 @@ reads-upper-alarm-threshold                ``int``                How many perce
 reads-upper-threshold                      ``int``  90            Scale up the reads with ``--increase-reads-with`` if the currently consumed reads reaches this many percent
 sns-message-types                          ``str``                Comma separated list of message types to receive SNS notifications for. Supported types are ``scale-up`` , ``scale-down``, ``high-throughput-alarm`` and ``low-throughput-alarm``
 sns-topic-arn                              ``str``                Full Topic ARN to use for sending SNS notifications
-throttled-reads-upper-threshold            ``int``  0             Scale up the reads with ``--increase-reads-with`` if the count of throttled read events exceeds this count
-throttled-writes-upper-threshold           ``int``  0             Scale up the writes with ``--increase-writes-with`` if the count of throttled write events exceeds this count
+throttled-reads-upper-threshold            ``int``  0             Scale up the reads with ``--increase-reads-with`` if the count of throttled read events exceeds this count. Set to ``0`` (default) to turn off scaling based on throttled reads.
+
+throttled-writes-upper-threshold           ``int``  0             Scale up the writes with ``--increase-writes-with`` if the count of throttled write events exceeds this count. Set to ``0`` (default) to turn off scaling based on throttled reads.
+
 writes-lower-alarm-threshold               ``int``                How many percent of the writes capacity should be used before trigging the low throughput alarm?
 writes-lower-threshold                     ``int``  30            Scale down the writes with ``--decrease-writes-with`` if the currently consumed writes is as low as this many percent
 writes-upper-alarm-threshold               ``int``                How many percent of the writes capacity should be used before trigging the high throughput alarm?
