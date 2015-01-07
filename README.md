@@ -114,6 +114,7 @@ There are a few community applications for managing Dynamic DynamoDB.
 
 - [puppet-dynamicdynamodb](https://github.com/mindcandy/puppet-dynamicdynamodb) (Puppet module)
 - [elasticDynamoDB](https://github.com/innovia/ElasticDynamoDb) (Wrapper for handling larger planned spikes)
+- [Dynamic DynamoDB manager](https://github.com/Mollom/dynamic-dynamodb-manager) (This tool will create your tables, rotate them and update dynamic-dynamodb config file so they are monitored)
 - [chef-dynamic-dynamodb](https://github.com/spaceapegames/chef-dynamic-dynamodb) (Chef cookbook - DEPRECATED)
 
 Reporting bugs
