@@ -185,7 +185,7 @@ This is a full example of a Dynamic DynamoDB configuration file.
 
     # Maximum and minimum write provisioning
     # Dynamic DynamoDB will not provision any more or less writes than this
-    min-provisioned-writes: 100
+    min-provisioned-writes: 1
     max-provisioned-writes: 500
 
     #
