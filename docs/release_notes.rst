@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.20.3
+------
+
+**Release date:** 2015-02-17
+
+- Bug in percent calculation for CUs (`#235 <https://github.com/sebdah/dynamic-dynamodb/issues/235>`__)
+
 1.20.2
 ------
 

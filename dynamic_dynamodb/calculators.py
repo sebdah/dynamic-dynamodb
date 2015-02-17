@@ -19,6 +19,7 @@ def decrease_reads_in_percent(
     :param log_tag: Prefix for the log
     :returns: int -- New provisioning value
     """
+    percent = float(percent)
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
     min_provisioned_reads = __get_min_reads(
@@ -90,6 +91,7 @@ def decrease_writes_in_percent(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
+    percent = float(percent)
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
     min_provisioned_writes = __get_min_writes(
@@ -168,6 +170,7 @@ def increase_reads_in_percent(
     """
     current_provisioning = float(current_provisioning)
     consumed_read_units_percent = float(consumed_read_units_percent)
+    percent = float(percent)
     consumption_based_current_provisioning = \
         float(math.ceil(current_provisioning*(consumed_read_units_percent/100)))
 
@@ -261,6 +264,7 @@ def increase_writes_in_percent(
     """
     current_provisioning = float(current_provisioning)
     consumed_write_units_percent = float(consumed_write_units_percent)
+    percent = float(percent)
     consumption_based_current_provisioning = \
         int(math.ceil(current_provisioning*(consumed_write_units_percent/100)))
 
