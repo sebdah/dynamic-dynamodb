@@ -98,7 +98,7 @@ def __calculate_always_decrease_rw_values(
     :param provisioned_writes: Currently provisioned writes
     :returns: (int, int) -- (reads, writes)
     """
-    if read_units < provisioned_reads and write_units < provisioned_writes:
+    if read_units <= provisioned_reads and write_units <= provisioned_writes:
         return (read_units, write_units)
 
     if read_units < provisioned_reads:

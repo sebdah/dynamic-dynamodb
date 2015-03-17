@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.20.4
+------
+
+**Release date:** 2015-03-17
+
+- Does not scale down when one of the provisoned values is already at the lowest limit (`#237 <https://github.com/sebdah/dynamic-dynamodb/pull/237>`__). Thanks for the pull request `@lcabral37 <https://github.com/lcabral37>`__
+
 1.20.3
 ------
 
