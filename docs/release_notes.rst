@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.20.5
+------
+
+**Release date:** 2015-04-25
+
+- Update cloudformation template to work around pip permissions issue (`#238 <https://github.com/sebdah/dynamic-dynamodb/issues/238>`__). Thanks for the pull request `@jasonrdsouza <https://github.com/jasonrdsouza>`__
+
 1.20.4
 ------
 
