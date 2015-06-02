@@ -1,6 +1,13 @@
 Release notes
 =============
 
+1.20.6
+------
+
+**Release date:** 2015-06-02
+
+- Logging an AccessDeniedException in dynamodb.update_table_provisioning causing a KeyError (`#247 <https://github.com/sebdah/dynamic-dynamodb/issues/247>`__)
+
 1.20.5
 ------
 
