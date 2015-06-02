@@ -377,12 +377,17 @@ def update_table_provisioning(
             logger.warning('{0} - {1}: {2}'.format(
                 table_name, exception, error.body['message']))
         else:
+            if 'message' in error.body:
+                msg = error.body['message']
+            else:
+                msg = error
+
             logger.error(
                 (
                     '{0} - Unhandled exception: {1}: {2}. '
                     'Please file a bug report at '
                     'https://github.com/sebdah/dynamic-dynamodb/issues'
-                ).format(table_name, exception, error.body['message']))
+                ).format(table_name, exception, msg))
 
         if (not retry_with_only_increase and
                 exception == 'LimitExceededException'):
