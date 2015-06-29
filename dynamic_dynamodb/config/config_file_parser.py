@@ -239,6 +239,138 @@ TABLE_CONFIG_OPTIONS = [
         'option': 'lookback-window-start',
         'required': False,
         'type': 'int'
+    },
+    {
+        'key': 'throttled_by_provisioned_reads_upper_threshold',
+        'option': 'throttled-by-provisioned-reads-upper-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'throttled_by_provisioned_writes_upper_threshold',
+        'option': 'throttled-by-provisioned-writes-upper-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'throttled_by_consumed_reads_upper_threshold',
+        'option': 'throttled-by-consumed-reads-upper-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'throttled_by_consumed_writes_upper_threshold',
+        'option': 'throttled-by-consumed-writes-upper-threshold',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_reads_unit',
+        'option': 'increase-throttled-by-provisioned-reads-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_reads_with',
+        'option': 'increase-throttled-by-provisioned-reads-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_reads_scale',
+        'option': 'increase-throttled-by-provisioned-reads-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_writes_unit',
+        'option': 'increase-throttled-by-provisioned-writes-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_writes_with',
+        'option': 'increase-throttled-by-provisioned-writes-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_writes_scale',
+        'option': 'increase-throttled-by-provisioned-writes-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_reads_unit',
+        'option': 'increase-throttled-by-consumed-reads-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_reads_with',
+        'option': 'increase-throttled-by-consumed-reads-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_reads_scale',
+        'option': 'increase-throttled-by-consumed-reads-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_writes_unit',
+        'option': 'increase-throttled-by-consumed-writes-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_writes_with',
+        'option': 'increase-throttled-by-consumed-writes-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_writes_scale',
+        'option': 'increase-throttled-by-consumed-writes-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_consumed_reads_unit',
+        'option': 'increase-consumed-reads-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_consumed_reads_with',
+        'option': 'increase-consumed-reads-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_consumed_reads_scale',
+        'option': 'increase-consumed-reads-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_consumed_writes_unit',
+        'option': 'increase-consumed-writes-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_consumed_writes_with',
+        'option': 'increase-consumed-writes-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_consumed_writes_scale',
+        'option': 'increase-consumed-writes-scale',
+        'required': False,
+        'type': 'dict'
     }
 ]
 
