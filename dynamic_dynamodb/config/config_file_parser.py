@@ -5,6 +5,11 @@ import os.path
 import ConfigParser
 from copy import deepcopy
 
+try:
+    from collections import OrderedDict as ordereddict
+except ImportError:
+    import ordereddict
+
 TABLE_CONFIG_OPTIONS = [
     {
         'key': 'enable_reads_autoscaling',
@@ -407,7 +412,7 @@ def parse(config_path):
     #
     # Handle [table: ]
     #
-    table_config = {'tables': {}}
+    table_config = {'tables': ordereddict()}
 
     # Find the first table definition
     found_table = False
@@ -446,10 +451,10 @@ def parse(config_path):
             table_config['tables'][table_key]['gsis'] = {}
 
         table_config['tables'][table_key]['gsis'][gsi_key] = \
-            dict(default_options.items() + __parse_options(
+            ordereddict(default_options.items() + __parse_options(
                 config_file, current_section, TABLE_CONFIG_OPTIONS).items())
 
-    return dict(
+    return ordereddict(
         global_config.items() +
         logging_config.items() +
         table_config.items())

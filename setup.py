@@ -1,11 +1,24 @@
 """ Setup script for PyPI """
 import os
+import sys
 from setuptools import setup
 from ConfigParser import SafeConfigParser
 
 settings = SafeConfigParser()
 settings.read(os.path.realpath('dynamic_dynamodb/dynamic-dynamodb.conf'))
 
+
+def return_requires():
+    install_requires = [
+        'boto >= 2.29.1',
+        'requests >= 0.14.1',
+        'logutils >= 0.3.3',
+        'retrying >= 1.3.3',
+        'ordereddict >= 1.1'
+    ],
+    if sys.version_info < (2, 7):
+        install_requires.append('ordereddict >= 1.1')
+    return install_requires
 
 setup(
     name='dynamic-dynamodb',
@@ -21,12 +34,7 @@ setup(
     scripts=['dynamic-dynamodb'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=[
-        'boto >= 2.29.1',
-        'requests >= 0.14.1',
-        'logutils >= 0.3.3',
-        'retrying >= 1.3.3'
-    ],
+    install_requires=return_requires(),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
