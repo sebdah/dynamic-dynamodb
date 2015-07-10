@@ -13,8 +13,7 @@ def return_requires():
         'boto >= 2.29.1',
         'requests >= 0.14.1',
         'logutils >= 0.3.3',
-        'retrying >= 1.3.3',
-        'ordereddict >= 1.1'
+        'retrying >= 1.3.3'
     ],
     if sys.version_info < (2, 7):
         install_requires.append('ordereddict >= 1.1')
