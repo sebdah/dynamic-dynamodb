@@ -52,7 +52,7 @@ TABLE_CONFIG_OPTIONS = [
         'key': 'reads_upper_threshold',
         'option': 'reads-upper-threshold',
         'required': False,
-        'type': 'int'
+        'type': 'float'
     },
     {
         'key': 'throttled_reads_upper_threshold',
@@ -94,7 +94,7 @@ TABLE_CONFIG_OPTIONS = [
         'key': 'writes_upper_threshold',
         'option': 'writes-upper-threshold',
         'required': False,
-        'type': 'int'
+        'type': 'float'
     },
     {
         'key': 'throttled_writes_upper_threshold',
@@ -244,25 +244,25 @@ TABLE_CONFIG_OPTIONS = [
         'key': 'throttled_by_provisioned_reads_upper_threshold',
         'option': 'throttled-by-provisioned-reads-upper-threshold',
         'required': False,
-        'type': 'int'
+        'type': 'float'
     },
     {
         'key': 'throttled_by_provisioned_writes_upper_threshold',
         'option': 'throttled-by-provisioned-writes-upper-threshold',
         'required': False,
-        'type': 'int'
+        'type': 'float'
     },
     {
         'key': 'throttled_by_consumed_reads_upper_threshold',
         'option': 'throttled-by-consumed-reads-upper-threshold',
         'required': False,
-        'type': 'int'
+        'type': 'float'
     },
     {
         'key': 'throttled_by_consumed_writes_upper_threshold',
         'option': 'throttled-by-consumed-writes-upper-threshold',
         'required': False,
-        'type': 'int'
+        'type': 'float'
     },
     {
         'key': 'increase_throttled_by_provisioned_reads_unit',
