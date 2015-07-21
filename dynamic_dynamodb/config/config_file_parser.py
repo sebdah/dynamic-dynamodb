@@ -241,40 +241,10 @@ TABLE_CONFIG_OPTIONS = [
         'type': 'int'
     },
     {
-        'key': 'throttled_by_provisioned_reads_upper_threshold',
-        'option': 'throttled-by-provisioned-reads-upper-threshold',
-        'required': False,
-        'type': 'float'
-    },
-    {
-        'key': 'throttled_by_provisioned_writes_upper_threshold',
-        'option': 'throttled-by-provisioned-writes-upper-threshold',
-        'required': False,
-        'type': 'float'
-    },
-    {
-        'key': 'throttled_by_consumed_reads_upper_threshold',
-        'option': 'throttled-by-consumed-reads-upper-threshold',
-        'required': False,
-        'type': 'float'
-    },
-    {
-        'key': 'throttled_by_consumed_writes_upper_threshold',
-        'option': 'throttled-by-consumed-writes-upper-threshold',
-        'required': False,
-        'type': 'float'
-    },
-    {
         'key': 'increase_throttled_by_provisioned_reads_unit',
         'option': 'increase-throttled-by-provisioned-reads-unit',
         'required': False,
         'type': 'str'
-    },
-    {
-        'key': 'increase_throttled_by_provisioned_reads_with',
-        'option': 'increase-throttled-by-provisioned-reads-with',
-        'required': False,
-        'type': 'int'
     },
     {
         'key': 'increase_throttled_by_provisioned_reads_scale',
@@ -289,12 +259,6 @@ TABLE_CONFIG_OPTIONS = [
         'type': 'str'
     },
     {
-        'key': 'increase_throttled_by_provisioned_writes_with',
-        'option': 'increase-throttled-by-provisioned-writes-with',
-        'required': False,
-        'type': 'int'
-    },
-    {
         'key': 'increase_throttled_by_provisioned_writes_scale',
         'option': 'increase-throttled-by-provisioned-writes-scale',
         'required': False,
@@ -307,12 +271,6 @@ TABLE_CONFIG_OPTIONS = [
         'type': 'str'
     },
     {
-        'key': 'increase_throttled_by_consumed_reads_with',
-        'option': 'increase-throttled-by-consumed-reads-with',
-        'required': False,
-        'type': 'int'
-    },
-    {
         'key': 'increase_throttled_by_consumed_reads_scale',
         'option': 'increase-throttled-by-consumed-reads-scale',
         'required': False,
@@ -323,12 +281,6 @@ TABLE_CONFIG_OPTIONS = [
         'option': 'increase-throttled-by-consumed-writes-unit',
         'required': False,
         'type': 'str'
-    },
-    {
-        'key': 'increase_throttled_by_consumed_writes_with',
-        'option': 'increase-throttled-by-consumed-writes-with',
-        'required': False,
-        'type': 'int'
     },
     {
         'key': 'increase_throttled_by_consumed_writes_scale',

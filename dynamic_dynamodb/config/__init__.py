@@ -67,11 +67,7 @@ DEFAULT_OPTIONS = {
         'lookback_window_start': 15,
         'maintenance_windows': None,
         'sns_topic_arn': None,
-        'sns_message_types': [],
-        'throttled_by_consumed_reads_upper_threshold': 0,
-        'throttled_by_consumed_writes_upper_threshold': 0,
-        'throttled_by_provisioned_reads_upper_threshold': 0,
-        'throttled_by_provisioned_writes_upper_threshold': 0
+        'sns_message_types': []
     },
     'gsi': {
         'reads-upper-alarm-threshold': 0,
@@ -112,11 +108,7 @@ DEFAULT_OPTIONS = {
         'lookback_window_start': 15,
         'maintenance_windows': None,
         'sns_topic_arn': None,
-        'sns_message_types': [],
-        'throttled_by_consumed_reads_upper_threshold': 0,
-        'throttled_by_consumed_writes_upper_threshold': 0,
-        'throttled_by_provisioned_reads_upper_threshold': 0,
-        'throttled_by_provisioned_writes_upper_threshold': 0
+        'sns_message_types': []
     }
 }
 
@@ -407,11 +399,7 @@ def __check_gsi_rules(configuration):
                 'min_provisioned_writes',
                 'max_provisioned_writes',
                 'increase_consumed_reads_with',
-                'increase_consumed_writes_with',
-                'increase_throttled_by_consumed_reads_with',
-                'increase_throttled_by_consumed_writes_with',
-                'increase_throttled_by_provisioned_reads_with',
-                'increase_throttled_by_provisioned_writes_with'
+                'increase_consumed_writes_with'
             ]
             for option in options:
                 if option in gsi and gsi[option] < 1:
@@ -548,11 +536,7 @@ def __check_table_rules(configuration):
             'num_read_checks_before_scale_down',
             'num_write_checks_before_scale_down',
             'increase_consumed_reads_with',
-            'increase_consumed_writes_with',
-            'increase_throttled_by_consumed_reads_with',
-            'increase_throttled_by_consumed_writes_with',
-            'increase_throttled_by_provisioned_reads_with',
-            'increase_throttled_by_provisioned_writes_with'
+            'increase_consumed_writes_with'
         ]
         for option in options:
             if option in table and table[option] < 1:
