@@ -9,7 +9,8 @@ whichever metric is being evaluated (in percent) and the values are scaling amou
 depending on the config specified for the associated ``...-unit`` config option.
 
 If this new ``...-scale`` config option is not specified then the scaling amount will come from the associated
-``...-with`` config option.
+``...-with`` config option (NOTE: This only applies to the ``increase-consumed-reads-...`` options. For the
+``increase-throttled-by-...`` options, if the scale isn't specified then scaling based on these metrics will not occur).
 
 If this option is specified then it will work as follows:
 
