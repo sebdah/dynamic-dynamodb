@@ -22,7 +22,7 @@ def get_consumed_read_units_percent(
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: How many seconds to look at
-    :returns: int -- Number of consumed reads
+    :returns: float -- Number of consumed reads as a percentage of provisioned reads
     """
     try:
         metrics = __get_aws_metric(
@@ -34,21 +34,17 @@ def get_consumed_read_units_percent(
         raise
 
     if metrics:
-        consumed_read_units = int(
-            math.ceil(float(metrics[0]['Sum'])/float(300)))
+        consumed_read_units = (float(metrics[0]['Sum'])/float(300))
     else:
         consumed_read_units = 0
 
     try:
-        consumed_read_units_percent = int(
-            math.ceil(
-                float(consumed_read_units) /
-                float(dynamodb.get_provisioned_gsi_read_units(
-                    table_name, gsi_name)) * 100))
+        consumed_read_units_percent = (float(consumed_read_units) /
+                float(dynamodb.get_provisioned_gsi_read_units(table_name, gsi_name)) * 100)
     except JSONResponseError:
         raise
 
-    logger.info('{0} - GSI: {1} - Consumed read units: {2:d}%'.format(
+    logger.info('{0} - GSI: {1} - Consumed read units: {2:.2f}%'.format(
         table_name, gsi_name, consumed_read_units_percent))
     return consumed_read_units_percent
 
@@ -89,7 +85,7 @@ def get_throttled_by_provisioned_read_event_percent(table_name, gsi_name, lookba
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
-    :returns: int -- Percent of throttled read events by provisioning
+    :returns: float -- Percent of throttled read events by provisioning
     """
     try:
         metrics = __get_aws_metric(
@@ -122,7 +118,7 @@ def get_throttled_by_consumed_read_percent(table_name, gsi_name, lookback_window
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
-    :returns: int -- Percent of throttled read events by consumption
+    :returns: float -- Percent of throttled read events by consumption
     """
 
     try:
@@ -156,7 +152,7 @@ def get_consumed_write_units_percent(
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: How many seconds to look at
-    :returns: int -- Number of consumed writes
+    :returns: float -- Number of consumed writes as a percentage of provisioned writes
     """
     try:
         metrics = __get_aws_metric(
@@ -168,21 +164,17 @@ def get_consumed_write_units_percent(
         raise
 
     if metrics:
-        consumed_write_units = int(
-            math.ceil(float(metrics[0]['Sum'])/float(300)))
+        consumed_write_units = (float(metrics[0]['Sum'])/float(300))
     else:
         consumed_write_units = 0
 
     try:
-        consumed_write_units_percent = int(
-            math.ceil(
-                float(consumed_write_units) /
-                float(dynamodb.get_provisioned_gsi_write_units(
-                    table_name, gsi_name)) * 100))
+        consumed_write_units_percent = (float(consumed_write_units) /
+                float(dynamodb.get_provisioned_gsi_write_units(table_name, gsi_name)) * 100)
     except JSONResponseError:
         raise
 
-    logger.info('{0} - GSI: {1} - Consumed write units: {2:d}%'.format(
+    logger.info('{0} - GSI: {1} - Consumed write units: {2:.2f}%'.format(
         table_name, gsi_name, consumed_write_units_percent))
     return consumed_write_units_percent
 
@@ -224,7 +216,7 @@ def get_throttled_by_provisioned_write_event_percent(table_name, gsi_name, lookb
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
-    :returns: int -- Percent of throttled write events by provisioning
+    :returns: float -- Percent of throttled write events by provisioning
     """
     try:
         metrics = __get_aws_metric(
@@ -257,7 +249,7 @@ def get_throttled_by_consumed_write_percent(table_name, gsi_name, lookback_windo
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
-    :returns: int -- Percent of throttled write events by consumption
+    :returns: float -- Percent of throttled write events by consumption
     """
 
     try:
