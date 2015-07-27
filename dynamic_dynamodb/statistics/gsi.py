@@ -133,7 +133,7 @@ def get_throttled_by_consumed_read_percent(table_name, gsi_name, lookback_window
         raise
 
     if metrics1 and metrics2:
-        throttled_by_consumed_read_percent = ((float(metrics2) / float(300)) / float(metrics1)) * 100
+        throttled_by_consumed_read_percent = ((float(metrics2[0]['Sum'])/float(300)) / float(metrics1[0]['Sum'])) * 100
     else:
         throttled_by_consumed_read_percent = 0
 
@@ -264,7 +264,7 @@ def get_throttled_by_consumed_write_percent(table_name, gsi_name, lookback_windo
         raise
 
     if metrics1 and metrics2:
-        throttled_by_consumed_write_percent = ((float(metrics2) / float(300)) / float(metrics1)) * 100
+        throttled_by_consumed_write_percent = ((float(metrics2[0]['Sum'])/float(300)) / float(metrics1[0]['Sum'])) * 100
     else:
         throttled_by_consumed_write_percent = 0
 
