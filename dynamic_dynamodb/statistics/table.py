@@ -34,7 +34,7 @@ def get_consumed_read_units_percent(table_name, lookback_window_start=15):
 
     try:
         consumed_read_units_percent = (float(consumed_read_units) /
-                float(dynamodb.get_provisioned_table_read_units(table_name)) * 00)
+                float(dynamodb.get_provisioned_table_read_units(table_name)) * 100)
     except JSONResponseError:
         raise
 
