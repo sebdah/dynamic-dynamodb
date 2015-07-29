@@ -3,6 +3,7 @@
 import sys
 import os.path
 import ConfigParser
+import ast
 from copy import deepcopy
 
 TABLE_CONFIG_OPTIONS = [
@@ -375,6 +376,9 @@ def __parse_options(config_file, section, options):
                     print('Error: Expected an boolean value for {0}'.format(
                         option.get('option')))
                     sys.exit(1)
+            elif option.get('type') == 'dict':
+                configuration[option.get('key')] = \
+                    ast.literal_eval(config_file.get(section, option.get('option')))
             else:
                 configuration[option.get('key')] = \
                     config_file.get(section, option.get('option'))
