@@ -278,7 +278,7 @@ def __ensure_provisioning_reads(
 
         # Increase needed due to high throttled to provisioned ratio
         if (increase_throttled_by_provisioned_reads_scale and
-                    throttled_by_provisioned_read_percent >= increase_throttled_by_provisioned_reads_scale.keys()[0]):
+                    throttled_by_provisioned_read_percent >= sorted(increase_throttled_by_provisioned_reads_scale.keys()[0])):
 
             throttled_by_provisioned_calculated_provisioning = scale_reader(increase_throttled_by_provisioned_reads_scale,
                                                                             throttled_by_provisioned_read_percent)
@@ -299,7 +299,7 @@ def __ensure_provisioning_reads(
 
         # Increase needed due to high throttled to consumed ratio
         if (increase_throttled_by_consumed_reads_scale and
-                    throttled_by_consumed_read_percent >= increase_throttled_by_consumed_reads_scale.keys()[0]):
+                    throttled_by_consumed_read_percent >= sorted(increase_throttled_by_consumed_reads_scale.keys()[0])):
 
             throttled_by_consumed_calculated_provisioning = scale_reader(increase_throttled_by_consumed_reads_scale,
                                                                          throttled_by_consumed_read_percent)
@@ -319,7 +319,8 @@ def __ensure_provisioning_reads(
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
         # Increase needed due to high CU consumption
-        if increase_consumed_reads_scale and consumed_read_units_percent >= increase_consumed_reads_scale.keys()[0]:
+        if increase_consumed_reads_scale and \
+                        consumed_read_units_percent >= sorted(increase_consumed_reads_scale.keys()[0]):
 
             consumed_calculated_provisioning = scale_reader(increase_consumed_reads_scale, consumed_read_units_percent)
 
@@ -331,7 +332,7 @@ def __ensure_provisioning_reads(
                     consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
-                throttled_by_consumed_calculated_provisioning = calculators.increase_reads_in_units(
+                consumed_calculated_provisioning = calculators.increase_reads_in_units(
                     current_read_units,
                     consumed_calculated_provisioning,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
@@ -348,7 +349,7 @@ def __ensure_provisioning_reads(
                     consumed_read_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
-                throttled_by_consumed_calculated_provisioning = calculators.increase_reads_in_units(
+                consumed_calculated_provisioning = calculators.increase_reads_in_units(
                     current_read_units,
                     increase_consumed_reads_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_reads'),
@@ -603,7 +604,7 @@ def __ensure_provisioning_writes(
 
         # Increase needed due to high throttled to provisioned ratio
         if (increase_throttled_by_provisioned_writes_scale and
-                    throttled_by_provisioned_write_percent >= increase_throttled_by_provisioned_writes_scale.keys()[0]):
+                    throttled_by_provisioned_write_percent >= sorted(increase_throttled_by_provisioned_writes_scale.keys()[0])):
 
             throttled_by_provisioned_calculated_provisioning = scale_reader(increase_throttled_by_provisioned_writes_scale,
                                                                             throttled_by_provisioned_write_percent)
@@ -624,7 +625,7 @@ def __ensure_provisioning_writes(
 
         # Increase needed due to high throttled to consumed ratio
         if (increase_throttled_by_consumed_writes_scale and
-                    throttled_by_consumed_write_percent >= increase_throttled_by_consumed_writes_scale.keys()[0]):
+                    throttled_by_consumed_write_percent >= sorted(increase_throttled_by_consumed_writes_scale.keys()[0])):
 
             throttled_by_consumed_calculated_provisioning = scale_reader(increase_throttled_by_consumed_writes_scale,
                                                                          throttled_by_consumed_write_percent)
@@ -644,7 +645,8 @@ def __ensure_provisioning_writes(
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
 
         # Increase needed due to high CU consumption
-        if increase_consumed_writes_scale and consumed_write_units_percent >= increase_consumed_writes_scale.keys()[0]:
+        if increase_consumed_writes_scale and \
+                        consumed_write_units_percent >= sorted(increase_consumed_writes_scale.keys()[0]):
 
             consumed_calculated_provisioning = scale_reader(increase_consumed_writes_scale, consumed_write_units_percent)
 
@@ -656,7 +658,7 @@ def __ensure_provisioning_writes(
                     consumed_write_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
-                throttled_by_consumed_calculated_provisioning = calculators.increase_writes_in_units(
+                consumed_calculated_provisioning = calculators.increase_writes_in_units(
                     current_write_units,
                     consumed_calculated_provisioning,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_writes'),
@@ -673,7 +675,7 @@ def __ensure_provisioning_writes(
                     consumed_write_units_percent,
                     '{0} - GSI: {1}'.format(table_name, gsi_name))
             else:
-                throttled_by_consumed_calculated_provisioning = calculators.increase_writes_in_units(
+                consumed_calculated_provisioning = calculators.increase_writes_in_units(
                     current_write_units,
                     increase_consumed_writes_with,
                     get_gsi_option(table_key, gsi_key, 'max_provisioned_writes'),
@@ -976,7 +978,7 @@ def scale_reader(provision_increase_scale, current_value):
 
     if provision_increase_scale:
         scale_value = 0
-        for limits in provision_increase_scale:
+        for limits in sorted(provision_increase_scale.keys()):
             if current_value < limits:
                 return scale_value
             else:
