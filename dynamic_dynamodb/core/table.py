@@ -365,8 +365,8 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         if calculated_provisioning > current_read_units:
             logger.info(
                 '{0} - Resetting the number of consecutive '
-                'read checks. Reason: scale up {1} - scaling amount {2:.f}%'.format(
-                    table_name, scale_reason, calculated_provisioning))
+                'read checks. Reason: scale up {1}'.format(
+                    table_name, scale_reason))
             num_consec_read_checks = 0
             update_needed = True
             updated_read_units = calculated_provisioning
