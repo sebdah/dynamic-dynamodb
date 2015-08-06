@@ -199,9 +199,6 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
     # Set the updated units to the current read unit value
     updated_read_units = current_read_units
 
-    if increase_consumed_reads_scale:
-        logger.info('First threshold value {0:d}%'.format(int(sorted(increase_consumed_reads_scale.keys())[0])))
-
     # Reset consecutive reads if num_read_checks_reset_percent is reached
     if num_read_checks_reset_percent:
 
@@ -241,18 +238,17 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         increase_consumed_reads_with = increase_consumed_reads_with or increase_reads_with
 
         # Initialise variables to store calculated provisioning
-        throttled_by_provisioned_calculated_provisioning = 0
-        throttled_by_consumed_calculated_provisioning = 0
+        throttled_by_provisioned_calculated_provisioning = scale_reader(increase_throttled_by_provisioned_reads_scale,
+                                                                        throttled_by_provisioned_read_percent)
+        throttled_by_consumed_calculated_provisioning = scale_reader(increase_throttled_by_consumed_reads_scale,
+                                                                     throttled_by_consumed_read_percent)
+        consumed_calculated_provisioning = scale_reader(increase_consumed_reads_scale, consumed_read_units_percent)
         throttled_count_calculated_provisioning = 0
-        consumed_calculated_provisioning = 0
         calculated_provisioning = 0
 
         # Increase needed due to high throttled to provisioned ratio
-        if (increase_throttled_by_provisioned_reads_scale and
-            throttled_by_provisioned_read_percent >= sorted(increase_throttled_by_provisioned_reads_scale.keys())[0]):
+        if throttled_by_provisioned_calculated_provisioning:
 
-            throttled_by_provisioned_calculated_provisioning = scale_reader(increase_throttled_by_provisioned_reads_scale,
-                                                                            throttled_by_provisioned_read_percent)
             if increase_throttled_by_provisioned_reads_unit == 'percent':
                 throttled_by_provisioned_calculated_provisioning = calculators.increase_reads_in_percent(
                     current_read_units,
@@ -269,11 +265,8 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                     table_name)
 
         # Increase needed due to high throttled to consumed ratio
-        if (increase_throttled_by_consumed_reads_scale and
-            throttled_by_consumed_read_percent >= sorted(increase_throttled_by_consumed_reads_scale.keys())[0]):
+        if throttled_by_consumed_calculated_provisioning:
 
-            throttled_by_consumed_calculated_provisioning = scale_reader(increase_throttled_by_consumed_reads_scale,
-                                                                         throttled_by_consumed_read_percent)
             if increase_throttled_by_consumed_reads_unit == 'percent':
                 throttled_by_consumed_calculated_provisioning = calculators.increase_reads_in_percent(
                     current_read_units,
@@ -290,9 +283,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                     table_name)
 
         # Increase needed due to high CU consumption
-        if increase_consumed_reads_scale and consumed_read_units_percent >= sorted(increase_consumed_reads_scale.keys())[0]:
-
-            consumed_calculated_provisioning = scale_reader(increase_consumed_reads_scale, consumed_read_units_percent)
+        if consumed_calculated_provisioning:
 
             logger.info('Percent (new method) increase is by {0:.2f}%'.format(consumed_calculated_provisioning))
 
@@ -311,7 +302,8 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                     consumed_read_units_percent,
                     table_name)
 
-        elif reads_upper_threshold and consumed_read_units_percent > reads_upper_threshold:
+        elif reads_upper_threshold and consumed_read_units_percent > reads_upper_threshold \
+                and not increase_consumed_reads_scale:
 
             logger.info('Percent (old method) increase is by {0:.2f}%'.format(increase_consumed_reads_with))
 
@@ -548,18 +540,17 @@ def __ensure_provisioning_writes(
         increase_consumed_writes_with = increase_consumed_writes_with or increase_writes_with
 
         # Initialise variables to store calculated provisioning
-        throttled_by_provisioned_calculated_provisioning = 0
-        throttled_by_consumed_calculated_provisioning = 0
+        throttled_by_provisioned_calculated_provisioning = scale_reader(increase_throttled_by_provisioned_writes_scale,
+                                                                        throttled_by_provisioned_write_percent)
+        throttled_by_consumed_calculated_provisioning = scale_reader(increase_throttled_by_consumed_writes_scale,
+                                                                     throttled_by_consumed_write_percent)
+        consumed_calculated_provisioning = scale_reader(increase_consumed_writes_scale, consumed_write_units_percent)
         throttled_count_calculated_provisioning = 0
-        consumed_calculated_provisioning = 0
         calculated_provisioning = 0
 
         # Increase needed due to high throttled to provisioned ratio
-        if (increase_throttled_by_provisioned_writes_scale and
-                    throttled_by_provisioned_write_percent >= sorted(increase_throttled_by_provisioned_writes_scale.keys())[0]):
+        if throttled_by_provisioned_calculated_provisioning:
 
-            throttled_by_provisioned_calculated_provisioning = scale_reader(increase_throttled_by_provisioned_writes_scale,
-                                                                            throttled_by_provisioned_write_percent)
             if increase_throttled_by_provisioned_writes_unit == 'percent':
                 throttled_by_provisioned_calculated_provisioning = calculators.increase_writes_in_percent(
                     current_write_units,
@@ -576,11 +567,8 @@ def __ensure_provisioning_writes(
                     table_name)
 
         # Increase needed due to high throttled to consumed ratio
-        if (increase_throttled_by_consumed_writes_scale and
-                    throttled_by_consumed_write_percent >= sorted(increase_throttled_by_consumed_writes_scale.keys())[0]):
+        if throttled_by_consumed_calculated_provisioning:
 
-            throttled_by_consumed_calculated_provisioning = scale_reader(increase_throttled_by_consumed_writes_scale,
-                                                                         throttled_by_consumed_write_percent)
             if increase_throttled_by_consumed_writes_unit == 'percent':
                 throttled_by_consumed_calculated_provisioning = calculators.increase_writes_in_percent(
                     current_write_units,
@@ -597,10 +585,7 @@ def __ensure_provisioning_writes(
                     table_name)
 
         # Increase needed due to high CU consumption
-        if increase_consumed_writes_scale and \
-                        consumed_write_units_percent >= sorted(increase_consumed_writes_scale.keys())[0]:
-
-            consumed_calculated_provisioning = scale_reader(increase_consumed_writes_scale, consumed_write_units_percent)
+        if consumed_calculated_provisioning:
 
             if increase_consumed_writes_unit == 'percent':
                 consumed_calculated_provisioning = calculators.increase_writes_in_percent(
@@ -617,7 +602,8 @@ def __ensure_provisioning_writes(
                     consumed_write_units_percent,
                     table_name)
 
-        elif writes_upper_threshold and consumed_write_units_percent > writes_upper_threshold:
+        elif writes_upper_threshold and consumed_write_units_percent > writes_upper_threshold\
+                and not increase_consumed_writes_scale:
 
             if increase_consumed_writes_unit == 'percent':
                 consumed_calculated_provisioning = calculators.increase_writes_in_percent(
@@ -888,11 +874,13 @@ def scale_reader(provision_increase_scale, current_value):
     :returns: (int) The amount to scale provisioning by
     """
 
+    scale_value = 0
     if provision_increase_scale:
-        scale_value = 0
         for limits in sorted(provision_increase_scale.keys()):
             if current_value < limits:
                 return scale_value
             else:
                 scale_value = provision_increase_scale.get(limits)
+        return scale_value
+    else:
         return scale_value
