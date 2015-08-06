@@ -285,8 +285,6 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         # Increase needed due to high CU consumption
         if consumed_calculated_provisioning:
 
-            logger.info('Percent (new method) increase is by {0:.2f}%'.format(consumed_calculated_provisioning))
-
             if increase_consumed_reads_unit == 'percent':
                 consumed_calculated_provisioning = calculators.increase_reads_in_percent(
                     current_read_units,
@@ -304,8 +302,6 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
 
         elif reads_upper_threshold and consumed_read_units_percent > reads_upper_threshold \
                 and not increase_consumed_reads_scale:
-
-            logger.info('Percent (old method) increase is by {0:.2f}%'.format(increase_consumed_reads_with))
 
             if increase_consumed_reads_unit == 'percent':
                 consumed_calculated_provisioning = calculators.increase_reads_in_percent(
