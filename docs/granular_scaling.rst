@@ -1,14 +1,14 @@
 Granular Scaling
 ================
 
-The new granular scaling feature in Dynamic DynamoDB allows users to specify fine tuning for up-scaling read and write
+The granular scaling feature in Dynamic DynamoDB allows users to specify fine tuning for up-scaling read and write
 provisioning by using the new optional ``...-scale`` config options.
 
 This new config is specified by providing a dictionary of key-value pairs. The keys are the scaling thresholds for
 whichever metric is being evaluated (in percent) and the values are scaling amounts in either ``units`` or ``percent``
 depending on the config specified for the associated ``...-unit`` config option.
 
-If this new ``...-scale`` config option is not specified then the scaling amount will come from the associated
+If the ``...-scale`` config option is not specified then the scaling amount will come from the associated
 ``...-with`` config option (NOTE: This only applies to the ``increase-consumed-reads-...`` options. For the
 ``increase-throttled-by-...`` options, if the scale isn't specified then scaling based on these metrics will not occur).
 
