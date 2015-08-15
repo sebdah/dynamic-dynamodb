@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """ This module returns stats about the DynamoDB table """
-import math
 from datetime import datetime, timedelta
 
 from boto.exception import JSONResponseError, BotoServerError
@@ -22,7 +21,8 @@ def get_consumed_read_units_percent(
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: How many seconds to look at
-    :returns: float -- Number of consumed reads as a percentage of provisioned reads
+    :returns: float -- Number of consumed reads as a
+        percentage of provisioned reads
     """
     try:
         metrics = __get_aws_metric(
@@ -39,8 +39,12 @@ def get_consumed_read_units_percent(
         consumed_read_units = 0
 
     try:
-        consumed_read_units_percent = (float(consumed_read_units) /
-                float(dynamodb.get_provisioned_gsi_read_units(table_name, gsi_name)) * 100)
+        gsi_read_units = dynamodb.get_provisioned_gsi_read_units(
+            table_name, gsi_name)
+
+        consumed_read_units_percent = (
+            float(consumed_read_units) /
+            float(gsi_read_units) * 100)
     except JSONResponseError:
         raise
 
@@ -76,7 +80,9 @@ def get_throttled_read_event_count(
         table_name, gsi_name, throttled_read_events))
     return throttled_read_events
 
-def get_throttled_by_provisioned_read_event_percent(table_name, gsi_name, lookback_window_start=15):
+
+def get_throttled_by_provisioned_read_event_percent(
+        table_name, gsi_name, lookback_window_start=15):
     """ Returns the number of throttled read events in percent
 
     :type table_name: str
@@ -98,18 +104,24 @@ def get_throttled_by_provisioned_read_event_percent(table_name, gsi_name, lookba
     else:
         throttled_read_events = 0
 
-    try: throttled_by_provisioned_read_percent = (float(throttled_read_events) /
-                                                  float(dynamodb.get_provisioned_gsi_read_units(table_name, gsi_name)) *
-                                                  100)
+    try:
+        gsi_read_units = dynamodb.get_provisioned_gsi_read_units(
+            table_name, gsi_name)
+
+        throttled_by_provisioned_read_percent = (
+            float(throttled_read_events) /
+            float(gsi_read_units) * 100)
     except JSONResponseError:
         raise
 
-    logger.info('{0} - GSI: {1} - Throttled read percent by provision: {2:.2f}%'.format(
-        table_name, gsi_name, throttled_by_provisioned_read_percent))
+    logger.info(
+        '{0} - GSI: {1} - Throttled read percent by provision: {2:.2f}%'.format(
+            table_name, gsi_name, throttled_by_provisioned_read_percent))
     return throttled_by_provisioned_read_percent
 
 
-def get_throttled_by_consumed_read_percent(table_name, gsi_name, lookback_window_start=15):
+def get_throttled_by_consumed_read_percent(
+        table_name, gsi_name, lookback_window_start=15):
     """ Returns the number of throttled read events in percent of consumption
 
     :type table_name: str
@@ -133,13 +145,18 @@ def get_throttled_by_consumed_read_percent(table_name, gsi_name, lookback_window
         raise
 
     if metrics1 and metrics2:
-        throttled_by_consumed_read_percent = (((float(metrics2[0]['Sum'])/float(300)) /
-                                               (float(metrics1[0]['Sum'])/float(300))) * 100)
+        throttled_by_consumed_read_percent = (
+            (
+                (float(metrics2[0]['Sum'])/float(300)) /
+                (float(metrics1[0]['Sum'])/float(300))
+            ) * 100)
     else:
         throttled_by_consumed_read_percent = 0
 
-    logger.info('{0} - GSI: {1} - Throttled read percent by consumption: {2:.2f}%'.format(
-        table_name, gsi_name, throttled_by_consumed_read_percent))
+    logger.info(
+        '{0} - GSI: {1} - Throttled read percent '
+        'by consumption: {2:.2f}%'.format(
+            table_name, gsi_name, throttled_by_consumed_read_percent))
     return throttled_by_consumed_read_percent
 
 
@@ -153,7 +170,8 @@ def get_consumed_write_units_percent(
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: How many seconds to look at
-    :returns: float -- Number of consumed writes as a percentage of provisioned writes
+    :returns: float -- Number of consumed writes as a
+        percentage of provisioned writes
     """
     try:
         metrics = __get_aws_metric(
@@ -170,8 +188,12 @@ def get_consumed_write_units_percent(
         consumed_write_units = 0
 
     try:
-        consumed_write_units_percent = (float(consumed_write_units) /
-                float(dynamodb.get_provisioned_gsi_write_units(table_name, gsi_name)) * 100)
+        gsi_write_units = dynamodb.get_provisioned_gsi_write_units(
+            table_name, gsi_name)
+
+        consumed_write_units_percent = (
+            float(consumed_write_units) /
+            float(gsi_write_units) * 100)
     except JSONResponseError:
         raise
 
@@ -208,7 +230,8 @@ def get_throttled_write_event_count(
     return throttled_write_events
 
 
-def get_throttled_by_provisioned_write_event_percent(table_name, gsi_name, lookback_window_start=15):
+def get_throttled_by_provisioned_write_event_percent(
+        table_name, gsi_name, lookback_window_start=15):
     """ Returns the number of throttled write events during a given time frame
 
     :type table_name: str
@@ -230,18 +253,25 @@ def get_throttled_by_provisioned_write_event_percent(table_name, gsi_name, lookb
     else:
         throttled_write_events = 0
 
-    try: throttled_by_provisioned_write_percent = (float(throttled_write_events) /
-                                                float(dynamodb.get_provisioned_gsi_write_units(table_name, gsi_name)) *
-                                                100)
+    try:
+        gsi_write_units = dynamodb.get_provisioned_gsi_write_units(
+            table_name, gsi_name)
+
+        throttled_by_provisioned_write_percent = (
+            float(throttled_write_events) /
+            float(gsi_write_units) * 100)
     except JSONResponseError:
         raise
 
-    logger.info('{0} - GSI: {1} - Throttled write percent by provision: {2:.2f}%'.format(
-        table_name, gsi_name, throttled_by_provisioned_write_percent))
+    logger.info(
+        '{0} - GSI: {1} - Throttled write percent '
+        'by provision: {2:.2f}%'.format(
+            table_name, gsi_name, throttled_by_provisioned_write_percent))
     return throttled_by_provisioned_write_percent
 
 
-def get_throttled_by_consumed_write_percent(table_name, gsi_name, lookback_window_start=15):
+def get_throttled_by_consumed_write_percent(
+        table_name, gsi_name, lookback_window_start=15):
     """ Returns the number of throttled write events in percent of consumption
 
     :type table_name: str
@@ -265,13 +295,18 @@ def get_throttled_by_consumed_write_percent(table_name, gsi_name, lookback_windo
         raise
 
     if metrics1 and metrics2:
-        throttled_by_consumed_write_percent = (((float(metrics2[0]['Sum'])/float(300)) /
-                                                (float(metrics1[0]['Sum'])/float(300))) * 100)
+        throttled_by_consumed_write_percent = (
+            (
+                (float(metrics2[0]['Sum'])/float(300)) /
+                (float(metrics1[0]['Sum'])/float(300))
+            ) * 100)
     else:
         throttled_by_consumed_write_percent = 0
 
-    logger.info('{0} - GSI: {1} - Throttled write percent by consumption: {2:.2f}%'.format(
-        table_name, gsi_name, throttled_by_consumed_write_percent))
+    logger.info(
+        '{0} - GSI: {1} - Throttled write percent '
+        'by consumption: {2:.2f}%'.format(
+            table_name, gsi_name, throttled_by_consumed_write_percent))
     return throttled_by_consumed_write_percent
 
 

@@ -178,13 +178,17 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         num_read_checks_reset_percent = \
             get_table_option(key_name, 'num_read_checks_reset_percent')
         increase_throttled_by_provisioned_reads_unit = \
-            get_table_option(key_name, 'increase_throttled_by_provisioned_reads_unit')
+            get_table_option(
+                key_name, 'increase_throttled_by_provisioned_reads_unit')
         increase_throttled_by_provisioned_reads_scale = \
-            get_table_option(key_name, 'increase_throttled_by_provisioned_reads_scale')
+            get_table_option(
+                key_name, 'increase_throttled_by_provisioned_reads_scale')
         increase_throttled_by_consumed_reads_unit = \
-            get_table_option(key_name, 'increase_throttled_by_consumed_reads_unit')
+            get_table_option(
+                key_name, 'increase_throttled_by_consumed_reads_unit')
         increase_throttled_by_consumed_reads_scale = \
-            get_table_option(key_name, 'increase_throttled_by_consumed_reads_scale')
+            get_table_option(
+                key_name, 'increase_throttled_by_consumed_reads_scale')
         increase_consumed_reads_unit = \
             get_table_option(key_name, 'increase_consumed_reads_unit')
         increase_consumed_reads_with = \
@@ -231,18 +235,26 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
     else:
 
         # If local/granular values not specified use global values
-        increase_consumed_reads_unit = increase_consumed_reads_unit or increase_reads_unit
-        increase_throttled_by_provisioned_reads_unit = increase_throttled_by_provisioned_reads_unit or increase_reads_unit
-        increase_throttled_by_consumed_reads_unit = increase_throttled_by_consumed_reads_unit or increase_reads_unit
+        increase_consumed_reads_unit = \
+            increase_consumed_reads_unit or increase_reads_unit
+        increase_throttled_by_provisioned_reads_unit = \
+            increase_throttled_by_provisioned_reads_unit or increase_reads_unit
+        increase_throttled_by_consumed_reads_unit = \
+            increase_throttled_by_consumed_reads_unit or increase_reads_unit
 
-        increase_consumed_reads_with = increase_consumed_reads_with or increase_reads_with
+        increase_consumed_reads_with = \
+            increase_consumed_reads_with or increase_reads_with
 
         # Initialise variables to store calculated provisioning
-        throttled_by_provisioned_calculated_provisioning = scale_reader(increase_throttled_by_provisioned_reads_scale,
-                                                                        throttled_by_provisioned_read_percent)
-        throttled_by_consumed_calculated_provisioning = scale_reader(increase_throttled_by_consumed_reads_scale,
-                                                                     throttled_by_consumed_read_percent)
-        consumed_calculated_provisioning = scale_reader(increase_consumed_reads_scale, consumed_read_units_percent)
+        throttled_by_provisioned_calculated_provisioning = scale_reader(
+            increase_throttled_by_provisioned_reads_scale,
+            throttled_by_provisioned_read_percent)
+        throttled_by_consumed_calculated_provisioning = scale_reader(
+            increase_throttled_by_consumed_reads_scale,
+            throttled_by_consumed_read_percent)
+        consumed_calculated_provisioning = scale_reader(
+            increase_consumed_reads_scale,
+            consumed_read_units_percent)
         throttled_count_calculated_provisioning = 0
         calculated_provisioning = 0
 
@@ -250,99 +262,119 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         if throttled_by_provisioned_calculated_provisioning:
 
             if increase_throttled_by_provisioned_reads_unit == 'percent':
-                throttled_by_provisioned_calculated_provisioning = calculators.increase_reads_in_percent(
-                    current_read_units,
-                    throttled_by_provisioned_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                throttled_by_provisioned_calculated_provisioning = \
+                    calculators.increase_reads_in_percent(
+                        current_read_units,
+                        throttled_by_provisioned_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
             else:
-                throttled_by_provisioned_calculated_provisioning = calculators.increase_reads_in_units(
-                    current_read_units,
-                    throttled_by_provisioned_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                throttled_by_provisioned_calculated_provisioning = \
+                    calculators.increase_reads_in_units(
+                        current_read_units,
+                        throttled_by_provisioned_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
 
         # Increase needed due to high throttled to consumed ratio
         if throttled_by_consumed_calculated_provisioning:
 
             if increase_throttled_by_consumed_reads_unit == 'percent':
-                throttled_by_consumed_calculated_provisioning = calculators.increase_reads_in_percent(
-                    current_read_units,
-                    throttled_by_consumed_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                throttled_by_consumed_calculated_provisioning = \
+                    calculators.increase_reads_in_percent(
+                        current_read_units,
+                        throttled_by_consumed_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
             else:
-                throttled_by_consumed_calculated_provisioning = calculators.increase_reads_in_units(
-                    current_read_units,
-                    throttled_by_consumed_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                throttled_by_consumed_calculated_provisioning = \
+                    calculators.increase_reads_in_units(
+                        current_read_units,
+                        throttled_by_consumed_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
 
         # Increase needed due to high CU consumption
         if consumed_calculated_provisioning:
 
             if increase_consumed_reads_unit == 'percent':
-                consumed_calculated_provisioning = calculators.increase_reads_in_percent(
-                    current_read_units,
-                    consumed_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                consumed_calculated_provisioning = \
+                    calculators.increase_reads_in_percent(
+                        current_read_units,
+                        consumed_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
             else:
-                consumed_calculated_provisioning = calculators.increase_reads_in_units(
-                    current_read_units,
-                    consumed_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                consumed_calculated_provisioning = \
+                    calculators.increase_reads_in_units(
+                        current_read_units,
+                        consumed_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
 
-        elif reads_upper_threshold and consumed_read_units_percent > reads_upper_threshold \
-                and not increase_consumed_reads_scale:
+        elif (reads_upper_threshold
+                and consumed_read_units_percent > reads_upper_threshold
+                and not increase_consumed_reads_scale):
 
             if increase_consumed_reads_unit == 'percent':
-                consumed_calculated_provisioning = calculators.increase_reads_in_percent(
-                    current_read_units,
-                    increase_consumed_reads_with,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                consumed_calculated_provisioning = \
+                    calculators.increase_reads_in_percent(
+                        current_read_units,
+                        increase_consumed_reads_with,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
             else:
-                consumed_calculated_provisioning = calculators.increase_reads_in_units(
-                    current_read_units,
-                    increase_consumed_reads_with,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                consumed_calculated_provisioning = \
+                    calculators.increase_reads_in_units(
+                        current_read_units,
+                        increase_consumed_reads_with,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
 
         # Increase needed due to high throttling
-        if throttled_reads_upper_threshold and throttled_read_count > throttled_reads_upper_threshold:
+        if (throttled_reads_upper_threshold
+                and throttled_read_count > throttled_reads_upper_threshold):
 
             if increase_reads_unit == 'percent':
-                throttled_count_calculated_provisioning = calculators.increase_reads_in_percent(
-                    updated_read_units,
-                    increase_consumed_reads_with,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                throttled_count_calculated_provisioning = \
+                    calculators.increase_reads_in_percent(
+                        updated_read_units,
+                        increase_consumed_reads_with,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
             else:
-                throttled_count_calculated_provisioning = calculators.increase_reads_in_units(
-                    updated_read_units,
-                    increase_reads_with,
-                    get_table_option(key_name, 'max_provisioned_reads'),
-                    consumed_read_units_percent,
-                    table_name)
+                throttled_count_calculated_provisioning = \
+                    calculators.increase_reads_in_units(
+                        updated_read_units,
+                        increase_reads_with,
+                        get_table_option(key_name, 'max_provisioned_reads'),
+                        consumed_read_units_percent,
+                        table_name)
 
         # Determine which metric requires the most scaling
-        if throttled_by_provisioned_calculated_provisioning > calculated_provisioning:
-            calculated_provisioning = throttled_by_provisioned_calculated_provisioning
-            scale_reason = "due to throttled events by provisioned units threshold being exceeded"
-        if throttled_by_consumed_calculated_provisioning > calculated_provisioning:
-            calculated_provisioning = throttled_by_consumed_calculated_provisioning
-            scale_reason = "due to throttled events by consumed units threshold being exceeded"
+        if (throttled_by_provisioned_calculated_provisioning
+                > calculated_provisioning):
+            calculated_provisioning = \
+                throttled_by_provisioned_calculated_provisioning
+            scale_reason = (
+                "due to throttled events by provisioned "
+                "units threshold being exceeded")
+        if (throttled_by_consumed_calculated_provisioning
+                > calculated_provisioning):
+            calculated_provisioning = \
+                throttled_by_consumed_calculated_provisioning
+            scale_reason = (
+                "due to throttled events by consumed "
+                "units threshold being exceeded")
         if consumed_calculated_provisioning > calculated_provisioning:
             calculated_provisioning = consumed_calculated_provisioning
             scale_reason = "due to consumed threshold being exceeded"
@@ -360,7 +392,8 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
             updated_read_units = calculated_provisioning
 
     # Decrease needed due to low CU consumption
-    if consumed_read_units_percent <= reads_lower_threshold and not update_needed:
+    if (consumed_read_units_percent <= reads_lower_threshold
+            and not update_needed):
 
         # Exit if down scaling has been disabled
         if not get_table_option(key_name, 'enable_reads_down_scaling'):
@@ -474,13 +507,17 @@ def __ensure_provisioning_writes(
         num_write_checks_reset_percent = \
             get_table_option(key_name, 'num_write_checks_reset_percent')
         increase_throttled_by_provisioned_writes_unit = \
-            get_table_option(key_name, 'increase_throttled_by_provisioned_writes_unit')
+            get_table_option(
+                key_name, 'increase_throttled_by_provisioned_writes_unit')
         increase_throttled_by_provisioned_writes_scale = \
-            get_table_option(key_name, 'increase_throttled_by_provisioned_writes_scale')
+            get_table_option(
+                key_name, 'increase_throttled_by_provisioned_writes_scale')
         increase_throttled_by_consumed_writes_unit = \
-            get_table_option(key_name, 'increase_throttled_by_consumed_writes_unit')
+            get_table_option(
+                key_name, 'increase_throttled_by_consumed_writes_unit')
         increase_throttled_by_consumed_writes_scale = \
-            get_table_option(key_name, 'increase_throttled_by_consumed_writes_scale')
+            get_table_option(
+                key_name, 'increase_throttled_by_consumed_writes_scale')
         increase_consumed_writes_unit = \
             get_table_option(key_name, 'increase_consumed_writes_unit')
         increase_consumed_writes_with = \
@@ -529,18 +566,26 @@ def __ensure_provisioning_writes(
     else:
 
         # If local/granular values not specified use global values
-        increase_consumed_writes_unit = increase_consumed_writes_unit or increase_writes_unit
-        increase_throttled_by_provisioned_writes_unit = increase_throttled_by_provisioned_writes_unit or increase_writes_unit
-        increase_throttled_by_consumed_writes_unit = increase_throttled_by_consumed_writes_unit or increase_writes_unit
+        increase_consumed_writes_unit = \
+            increase_consumed_writes_unit or increase_writes_unit
+        increase_throttled_by_provisioned_writes_unit = (
+            increase_throttled_by_provisioned_writes_unit
+            or increase_writes_unit)
+        increase_throttled_by_consumed_writes_unit = \
+            increase_throttled_by_consumed_writes_unit or increase_writes_unit
 
-        increase_consumed_writes_with = increase_consumed_writes_with or increase_writes_with
+        increase_consumed_writes_with = \
+            increase_consumed_writes_with or increase_writes_with
 
         # Initialise variables to store calculated provisioning
-        throttled_by_provisioned_calculated_provisioning = scale_reader(increase_throttled_by_provisioned_writes_scale,
-                                                                        throttled_by_provisioned_write_percent)
-        throttled_by_consumed_calculated_provisioning = scale_reader(increase_throttled_by_consumed_writes_scale,
-                                                                     throttled_by_consumed_write_percent)
-        consumed_calculated_provisioning = scale_reader(increase_consumed_writes_scale, consumed_write_units_percent)
+        throttled_by_provisioned_calculated_provisioning = scale_reader(
+            increase_throttled_by_provisioned_writes_scale,
+            throttled_by_provisioned_write_percent)
+        throttled_by_consumed_calculated_provisioning = scale_reader(
+            increase_throttled_by_consumed_writes_scale,
+            throttled_by_consumed_write_percent)
+        consumed_calculated_provisioning = scale_reader(
+            increase_consumed_writes_scale, consumed_write_units_percent)
         throttled_count_calculated_provisioning = 0
         calculated_provisioning = 0
 
@@ -548,99 +593,119 @@ def __ensure_provisioning_writes(
         if throttled_by_provisioned_calculated_provisioning:
 
             if increase_throttled_by_provisioned_writes_unit == 'percent':
-                throttled_by_provisioned_calculated_provisioning = calculators.increase_writes_in_percent(
-                    current_write_units,
-                    throttled_by_provisioned_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                throttled_by_provisioned_calculated_provisioning = \
+                    calculators.increase_writes_in_percent(
+                        current_write_units,
+                        throttled_by_provisioned_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
             else:
-                throttled_by_provisioned_calculated_provisioning = calculators.increase_writes_in_units(
-                    current_write_units,
-                    throttled_by_provisioned_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                throttled_by_provisioned_calculated_provisioning = \
+                    calculators.increase_writes_in_units(
+                        current_write_units,
+                        throttled_by_provisioned_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
 
         # Increase needed due to high throttled to consumed ratio
         if throttled_by_consumed_calculated_provisioning:
 
             if increase_throttled_by_consumed_writes_unit == 'percent':
-                throttled_by_consumed_calculated_provisioning = calculators.increase_writes_in_percent(
-                    current_write_units,
-                    throttled_by_consumed_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                throttled_by_consumed_calculated_provisioning = \
+                    calculators.increase_writes_in_percent(
+                        current_write_units,
+                        throttled_by_consumed_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
             else:
-                throttled_by_consumed_calculated_provisioning = calculators.increase_writes_in_units(
-                    current_write_units,
-                    throttled_by_consumed_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                throttled_by_consumed_calculated_provisioning = \
+                    calculators.increase_writes_in_units(
+                        current_write_units,
+                        throttled_by_consumed_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
 
         # Increase needed due to high CU consumption
         if consumed_calculated_provisioning:
 
             if increase_consumed_writes_unit == 'percent':
-                consumed_calculated_provisioning = calculators.increase_writes_in_percent(
-                    current_write_units,
-                    consumed_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                consumed_calculated_provisioning = \
+                    calculators.increase_writes_in_percent(
+                        current_write_units,
+                        consumed_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
             else:
-                consumed_calculated_provisioning = calculators.increase_writes_in_units(
-                    current_write_units,
-                    consumed_calculated_provisioning,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                consumed_calculated_provisioning = \
+                    calculators.increase_writes_in_units(
+                        current_write_units,
+                        consumed_calculated_provisioning,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
 
-        elif writes_upper_threshold and consumed_write_units_percent > writes_upper_threshold\
-                and not increase_consumed_writes_scale:
+        elif (writes_upper_threshold
+              and consumed_write_units_percent > writes_upper_threshold
+              and not increase_consumed_writes_scale):
 
             if increase_consumed_writes_unit == 'percent':
-                consumed_calculated_provisioning = calculators.increase_writes_in_percent(
-                    current_write_units,
-                    increase_consumed_writes_with,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                consumed_calculated_provisioning = \
+                    calculators.increase_writes_in_percent(
+                        current_write_units,
+                        increase_consumed_writes_with,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
             else:
-                consumed_calculated_provisioning = calculators.increase_writes_in_units(
-                    current_write_units,
-                    increase_consumed_writes_with,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                consumed_calculated_provisioning = \
+                    calculators.increase_writes_in_units(
+                        current_write_units,
+                        increase_consumed_writes_with,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
 
         # Increase needed due to high throttling
-        if throttled_writes_upper_threshold and throttled_write_count > throttled_writes_upper_threshold:
+        if (throttled_writes_upper_threshold and throttled_write_count >
+                throttled_writes_upper_threshold):
 
             if increase_writes_unit == 'percent':
-                throttled_count_calculated_provisioning = calculators.increase_writes_in_percent(
-                    updated_write_units,
-                    increase_writes_with,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                throttled_count_calculated_provisioning = \
+                    calculators.increase_writes_in_percent(
+                        updated_write_units,
+                        increase_writes_with,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
             else:
-                throttled_count_calculated_provisioning = calculators.increase_writes_in_units(
-                    updated_write_units,
-                    increase_writes_with,
-                    get_table_option(key_name, 'max_provisioned_writes'),
-                    consumed_write_units_percent,
-                    table_name)
+                throttled_count_calculated_provisioning = \
+                    calculators.increase_writes_in_units(
+                        updated_write_units,
+                        increase_writes_with,
+                        get_table_option(key_name, 'max_provisioned_writes'),
+                        consumed_write_units_percent,
+                        table_name)
 
         # Determine which metric requires the most scaling
-        if throttled_by_provisioned_calculated_provisioning > calculated_provisioning:
-            calculated_provisioning = throttled_by_provisioned_calculated_provisioning
-            scale_reason = "due to throttled events by provisioned units threshold being exceeded"
-        if throttled_by_consumed_calculated_provisioning > calculated_provisioning:
-            calculated_provisioning = throttled_by_consumed_calculated_provisioning
-            scale_reason = "due to throttled events by consumed units threshold being exceeded"
+        if (throttled_by_provisioned_calculated_provisioning >
+                calculated_provisioning):
+            calculated_provisioning = \
+                throttled_by_provisioned_calculated_provisioning
+            scale_reason = (
+                "due to throttled events by provisioned "
+                "units threshold being exceeded")
+        if (throttled_by_consumed_calculated_provisioning
+                > calculated_provisioning):
+            calculated_provisioning = \
+                throttled_by_consumed_calculated_provisioning
+            scale_reason = (
+                "due to throttled events by consumed "
+                "units threshold being exceeded")
         if consumed_calculated_provisioning > calculated_provisioning:
             calculated_provisioning = consumed_calculated_provisioning
             scale_reason = "due to consumed threshold being exceeded"
@@ -658,7 +723,8 @@ def __ensure_provisioning_writes(
             updated_write_units = calculated_provisioning
 
     # Decrease needed due to low CU consumption
-    if consumed_write_units_percent <= writes_lower_threshold and not update_needed:
+    if (consumed_write_units_percent
+            <= writes_lower_threshold and not update_needed):
 
         # Exit if up scaling has been disabled
         if not get_table_option(key_name, 'enable_writes_down_scaling'):
@@ -864,7 +930,8 @@ def scale_reader(provision_increase_scale, current_value):
     """
 
     :type provision_increase_scale: dict
-    :param provision_increase_scale: dictionary with key being the scaling threshold and value being scaling amount
+    :param provision_increase_scale: dictionary with key being the
+        scaling threshold and value being scaling amount
     :type current_value: float
     :param current_value: the current consumed units or throttled events
     :returns: (int) The amount to scale provisioning by

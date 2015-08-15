@@ -378,14 +378,15 @@ def __parse_options(config_file, section, options):
                     sys.exit(1)
             elif option.get('type') == 'dict':
                 configuration[option.get('key')] = \
-                    ast.literal_eval(config_file.get(section, option.get('option')))
+                    ast.literal_eval(
+                        config_file.get(section, option.get('option')))
             else:
                 configuration[option.get('key')] = \
                     config_file.get(section, option.get('option'))
         except ConfigParser.NoOptionError:
             if option.get('required'):
-                print 'Missing [{0}] option "{1}" in configuration'.format(
-                    section, option.get('option'))
+                print('Missing [{0}] option "{1}" in configuration'.format(
+                    section, option.get('option')))
                 sys.exit(1)
 
     return configuration

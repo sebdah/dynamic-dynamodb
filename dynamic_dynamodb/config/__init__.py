@@ -327,7 +327,7 @@ def __get_logging_options(cmd_line_options, conf_file_options=None):
 def __check_gsi_rules(configuration):
     """ Do some basic checks on the configuration """
     for table_name in configuration['tables']:
-        if not 'gsis' in configuration['tables'][table_name]:
+        if 'gsis' not in configuration['tables'][table_name]:
             continue
 
         for gsi_name in configuration['tables'][table_name]['gsis']:
@@ -366,33 +366,37 @@ def __check_gsi_rules(configuration):
                     'increase-consumed-writes-unit must be set to '
                     'either percent or units, or left unset')
                 sys.exit(1)
-            if 'increase_throttled_by_consumed_reads_unit' in gsi and \
-                    gsi['increase_throttled_by_consumed_reads_unit'] and \
-                    gsi['increase_throttled_by_consumed_reads_unit'] not in valid_units:
+            if ('increase_throttled_by_consumed_reads_unit' in gsi
+                    and gsi['increase_throttled_by_consumed_reads_unit']
+                    and gsi['increase_throttled_by_consumed_reads_unit']
+                    not in valid_units):
                 print(
                     'increase-throttled-by-consumed-reads-unit must be set to '
                     'either percent or units, or left unset')
                 sys.exit(1)
-            if 'increase_throttled_by_consumed_writes_unit' in gsi and \
-                    gsi['increase_throttled_by_consumed_writes_unit'] and \
-                    gsi['increase_throttled_by_consumed_writes_unit'] not in valid_units:
+            if ('increase_throttled_by_consumed_writes_unit' in gsi
+                    and gsi['increase_throttled_by_consumed_writes_unit']
+                    and gsi['increase_throttled_by_consumed_writes_unit']
+                    not in valid_units):
                 print(
                     'increase-throttled-by-consumed-writes-unit must be set to '
                     'either percent or units, or left unset')
                 sys.exit(1)
-            if 'increase_throttled_by_provisioned_reads_unit' in gsi and \
-                    gsi['increase_throttled_by_provisioned_reads_unit'] and \
-                    gsi['increase_throttled_by_provisioned_reads_unit'] not in valid_units:
+            if ('increase_throttled_by_provisioned_reads_unit' in gsi
+                    and gsi['increase_throttled_by_provisioned_reads_unit']
+                    and gsi['increase_throttled_by_provisioned_reads_unit']
+                    not in valid_units):
                 print(
-                    'increase-throttled-by-provisioned-reads-unit must be set to '
-                    'either percent or units, or left unset')
+                    'increase-throttled-by-provisioned-reads-unit must be set '
+                    'to either percent or units, or left unset')
                 sys.exit(1)
-            if 'increase_throttled_by_provisioned_writes_unit' in gsi and \
-                    gsi['increase_throttled_by_provisioned_writes_unit'] and \
-                    gsi['increase_throttled_by_provisioned_writes_unit'] not in valid_units:
+            if ('increase_throttled_by_provisioned_writes_unit' in gsi
+                    and gsi['increase_throttled_by_provisioned_writes_unit']
+                    and gsi['increase_throttled_by_provisioned_writes_unit']
+                    not in valid_units):
                 print(
-                    'increase-throttled-by-provisioned-writes-unit must be set to '
-                    'either percent or units, or left unset')
+                    'increase-throttled-by-provisioned-writes-unit must be set '
+                    'to either percent or units, or left unset')
                 sys.exit(1)
 
             # Check lookback-window start
@@ -433,19 +437,25 @@ def __check_gsi_rules(configuration):
                 'increase_consumed_reads_with',
                 'increase_consumed_writes_with'
             ]
-            # Config options without a mandatory default should be allowed a None value
+            # Config options without a mandatory default
+            # should be allowed a None value
             non_default = [
                 'increase_consumed_reads_with',
                 'increase_consumed_writes_with'
             ]
 
             for option in options:
-                if option in non_default and option in gsi and gsi[option] and gsi[option] < 1:
+                if (option in non_default
+                        and option in gsi
+                        and gsi[option]
+                        and gsi[option] < 1):
                     print('{0} may not be lower than 1 for GSI {1}'.format(
                         option, gsi_name))
                     sys.exit(1)
 
-                if option in gsi and option not in non_default and gsi[option] < 1:
+                if (option in gsi
+                        and option not in non_default
+                        and gsi[option] < 1):
                     print('{0} may not be lower than 1 for GSI {1}'.format(
                         option, gsi_name))
                     sys.exit(1)
@@ -504,42 +514,48 @@ def __check_table_rules(configuration):
             print(
                 'decrease-writes-unit must be set to either percent or units')
             sys.exit(1)
-        if 'increase_consumed_reads_unit' in table and table['increase_consumed_reads_unit'] and \
-                table['increase_consumed_reads_unit'] not in valid_units:
+        if ('increase_consumed_reads_unit' in table
+                and table['increase_consumed_reads_unit']
+                and table['increase_consumed_reads_unit'] not in valid_units):
             print(
                 'increase-consumed-reads-unit must be set to '
                 'either percent or units, or left unset')
             sys.exit(1)
-        if 'increase_consumed_writes_unit' in table and table['increase_consumed_writes_unit'] and \
-                table['increase_consumed_writes_unit'] not in valid_units:
+        if ('increase_consumed_writes_unit' in table
+                and table['increase_consumed_writes_unit']
+                and table['increase_consumed_writes_unit'] not in valid_units):
             print(
                 'increase-consumed-writes-unit must be set to '
                 'either percent or units, or left unset')
             sys.exit(1)
-        if 'increase_throttled_by_consumed_reads_unit' in table and \
-                table['increase_throttled_by_consumed_reads_unit'] and \
-                table['increase_throttled_by_consumed_reads_unit'] not in valid_units:
+        if ('increase_throttled_by_consumed_reads_unit' in table
+                and table['increase_throttled_by_consumed_reads_unit']
+                and table['increase_throttled_by_consumed_reads_unit']
+                not in valid_units):
             print(
                 'increase-throttled-by-consumed-reads-unit must be set to '
                 'either percent or units, or left unset')
             sys.exit(1)
-        if 'increase_throttled_by_consumed_writes_unit' in table and \
-                table['increase_throttled_by_consumed_writes_unit'] and \
-                table['increase_throttled_by_consumed_writes_unit'] not in valid_units:
+        if ('increase_throttled_by_consumed_writes_unit' in table
+                and table['increase_throttled_by_consumed_writes_unit']
+                and table['increase_throttled_by_consumed_writes_unit']
+                not in valid_units):
             print(
                 'increase-throttled-by-consumed-writes-unit must be set to '
                 'either percent or units, or left unset')
             sys.exit(1)
-        if 'increase_throttled_by_provisioned_reads_unit' in table and \
-                table['increase_throttled_by_provisioned_reads_unit'] and \
-                table['increase_throttled_by_provisioned_reads_unit'] not in valid_units:
+        if ('increase_throttled_by_provisioned_reads_unit' in table
+                and table['increase_throttled_by_provisioned_reads_unit']
+                and table['increase_throttled_by_provisioned_reads_unit']
+                not in valid_units):
             print(
                 'increase-throttled-by-provisioned-reads-unit must be set to '
                 'either percent or units, or left unset')
             sys.exit(1)
-        if 'increase_throttled_by_provisioned_writes_unit' in table and \
-                table['increase_throttled_by_provisioned_writes_unit'] and \
-                table['increase_throttled_by_provisioned_writes_unit'] not in valid_units:
+        if ('increase_throttled_by_provisioned_writes_unit' in table
+                and table['increase_throttled_by_provisioned_writes_unit']
+                and table['increase_throttled_by_provisioned_writes_unit']
+                not in valid_units):
             print(
                 'increase-throttled-by-provisioned-writes-unit must be set to '
                 'either percent or units, or left unset')
@@ -585,19 +601,24 @@ def __check_table_rules(configuration):
             'increase_consumed_reads_with',
             'increase_consumed_writes_with'
         ]
-        # Config options without a mandatory default should be allowed a None value
+        # Config options without a mandatory default
+        # should be allowed a None value
         non_default = [
             'increase_consumed_reads_with',
             'increase_consumed_writes_with'
         ]
 
         for option in options:
-            if option in non_default and option in table and table[option] and table[option] < 1:
+            if (option in non_default
+                    and option in table
+                    and table[option] and table[option] < 1):
                 print('{0} may not be lower than 1 for table {1}'.format(
                     option, table_name))
                 sys.exit(1)
 
-            if option in table and option not in non_default and table[option] < 1:
+            if (option in table
+                    and option not in non_default
+                    and table[option] < 1):
                 print('{0} may not be lower than 1 for table {1}'.format(
                     option, table_name))
                 sys.exit(1)
