@@ -1,7 +1,7 @@
 Configuration options
 =====================
 
-The sections below describe the various options available in the Dynamic DynamoDB configuration file. See :ref:`_example_configuration <Example configuration>` for an example configuration file.
+The sections below describe the various options available in the Dynamic DynamoDB configuration file. See :ref:`_example_configuration` for an example configuration file.
 
 Global configuration
 --------------------
