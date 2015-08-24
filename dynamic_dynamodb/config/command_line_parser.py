@@ -155,7 +155,8 @@ def parse():
         '--increase-writes-with',
         type=int,
         help="""How much should we increase the write units with?
-                (default: 50, max: 100 if --increase-writes-unit = 'percent'""")
+                (default: 50,
+                max: 100 if --increase-writes-unit = 'percent')""")
     w_scaling_ag.add_argument(
         '--decrease-writes-with',
         type=int,
