@@ -4,6 +4,11 @@ import sys
 from dynamic_dynamodb.config import config_file_parser
 from dynamic_dynamodb.config import command_line_parser
 
+try:
+    from collections import OrderedDict as ordereddict
+except ImportError:
+    import ordereddict
+
 DEFAULT_OPTIONS = {
     'global': {
         # Command line only
@@ -147,7 +152,7 @@ def get_configuration():
     configuration = {
         'global': {},
         'logging': {},
-        'tables': {}
+        'tables': ordereddict()
     }
 
     # Read the command line options
@@ -207,11 +212,11 @@ def __get_cmd_table_options(cmd_line_options):
 def __get_config_table_options(conf_file_options):
     """ Get all table options from the config file
 
-    :type conf_file_options: dict
+    :type conf_file_options: ordereddict
     :param conf_file_options: Dictionary with all config file options
-    :returns: dict -- E.g. {'table_name': {}}
+    :returns: ordereddict -- E.g. {'table_name': {}}
     """
-    options = {}
+    options = ordereddict()
 
     if not conf_file_options:
         return options

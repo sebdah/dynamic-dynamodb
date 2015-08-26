@@ -36,19 +36,18 @@ def get_tables_and_gsis():
                         table_instance.table_name, key_name))
 
                     # Notify users about regexps that match multiple tables
-                    for key, value in table_names:
-                        if key == table_instance.table_name:
-                            logger.warning(
-                                'Table {0} matches multiple regexps in '
-                                'the configuration'.format(
-                                    table_instance.table_name))
-
-                    table_names.add(
-                        (
-                            table_instance.table_name,
-                            key_name
-                        ))
-                    not_used_tables.discard(key_name)
+                    if table_instance.table_name in [x[0] for x in table_names]:
+                        logger.warning(
+                            'Table {0} matches more than one regexp in config, '
+                            'skipping this match: "{1}"'.format(
+                                table_instance.table_name, key_name))
+                    else:
+                        table_names.add(
+                            (
+                                table_instance.table_name,
+                                key_name
+                            ))
+                        not_used_tables.discard(key_name)
                 else:
                     logger.debug(
                         "Table {0} did not match with config key {1}".format(
