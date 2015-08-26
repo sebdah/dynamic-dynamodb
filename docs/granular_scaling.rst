@@ -24,10 +24,10 @@ Example
 -------
 
 Config:
+::
 
-``increase-consumed-reads-unit``: percent
-
-``increase-consumed-reads-scale``: {0: 0, 0.25: 5, 0.5: 10, 1: 20, 2: 50, 5: 100}
+    increase-consumed-reads-unit: percent
+    increase-consumed-reads-scale: {0: 0, 0.25: 5, 0.5: 10, 1: 20, 2: 50, 5: 100}
 
 In this scenario:
 
