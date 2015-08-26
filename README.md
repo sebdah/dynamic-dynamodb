@@ -9,8 +9,6 @@ All you need to do is to tell Dynamic DynamoDB is at which point and how much yo
 
 See an example of how to configure Dynamic DynamoDB under **Basic usage** or checkout `dynamic-dynamodb --help`.
 
-**Gratefully receiving donations via [Flattr](https://flattr.com/profile/sebdah)** [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=sebdah&url=https://github.com/sebdah/dynamic-dynamodb&title=Dynamic DynamoDB&language=&tags=github&category=software)
-
 Features in short
 -----------------
 
@@ -125,8 +123,6 @@ Author
 ------
 
 This project is maintained by [Sebastian Dahlgren](http://www.sebastiandahlgren.se) ([GitHub](https://github.com/sebdah) | [Twitter](https://twitter.com/sebdah) | [LinkedIn](http://www.linkedin.com/in/sebastiandahlgren))
-
-**Gratefully receiving donations via [Flattr](https://flattr.com/profile/sebdah)** [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=sebdah&url=https://github.com/sebdah/dynamic-dynamodb&title=Dynamic DynamoDB&language=&tags=github&category=software)
 
 License
 -------
