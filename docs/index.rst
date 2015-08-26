@@ -6,6 +6,7 @@
     configuration_options
     example_configuration
     command_line_options
+    granular_scaling
     iam_permissions
     cloudformation_template
     release_notes
