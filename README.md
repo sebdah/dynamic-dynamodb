@@ -1,9 +1,6 @@
 Dynamic DynamoDB
 ================
 
-<a href="https://crate.io/packages/dynamic-dynamodb/"><img src="https://pypip.in/v/dynamic-dynamodb/badge.png"></a>
-<a href="https://crate.io/packages/dynamic-dynamodb/"><img src="https://pypip.in/d/dynamic-dynamodb/badge.png"></a>
-<a href="https://crate.io/packages/dynamic-dynamodb/"><img src="https://pypip.in/license/dynamic-dynamodb/badge.png"></a>
 <a href="http://dynamic-dynamodb.readthedocs.org/en/latest/"><img src="https://readthedocs.org/projects/dynamic-dynamodb/badge/?version=latest"></a>
 
 AWS NoSQL database DynamoDB is a great service, but it lacks automated throughput scaling. This is where Dynamic DynamoDB enters the stage. It provides automatic read and write provisioning for DynamoDB.
@@ -11,8 +8,6 @@ AWS NoSQL database DynamoDB is a great service, but it lacks automated throughpu
 All you need to do is to tell Dynamic DynamoDB is at which point and how much you want to scale up or down your DynamoDB tables. An example is in place. Let’s say you have way more traffic on your database during sales hours 4pm - 10pm. DynamicDB can monitor the increased throughput on your DynamoDB instance (via CloudWatch) and provision more throughput as needed. When the load is reducing Dynamic DynamoDB will sence that and automatically reduce your provisioning.
 
 See an example of how to configure Dynamic DynamoDB under **Basic usage** or checkout `dynamic-dynamodb --help`.
-
-**Gratefully receiving donations via [Flattr](https://flattr.com/profile/sebdah)** [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=sebdah&url=https://github.com/sebdah/dynamic-dynamodb&title=Dynamic DynamoDB&language=&tags=github&category=software)
 
 Features in short
 -----------------
@@ -128,8 +123,6 @@ Author
 ------
 
 This project is maintained by [Sebastian Dahlgren](http://www.sebastiandahlgren.se) ([GitHub](https://github.com/sebdah) | [Twitter](https://twitter.com/sebdah) | [LinkedIn](http://www.linkedin.com/in/sebastiandahlgren))
-
-**Gratefully receiving donations via [Flattr](https://flattr.com/profile/sebdah)** [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=sebdah&url=https://github.com/sebdah/dynamic-dynamodb&title=Dynamic DynamoDB&language=&tags=github&category=software)
 
 License
 -------

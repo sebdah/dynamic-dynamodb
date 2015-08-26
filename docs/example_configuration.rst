@@ -225,7 +225,7 @@ This is a full example of a Dynamic DynamoDB configuration file.
     # of scaling down. Set this to "true" to minimize down scaling.
     #always-decrease-rw-together: true
 
-Note: The configuration of tables support regular expressions so you could write ``[table: log_.* ]`` if you want to target multiple tables with one config section.
+Note: The configuration of tables support regular expressions so you could write ``[table: log_.* ]`` if you want to target multiple tables with one config section, however if a table name matches the regex of more than one section, only the first match will be used.  (This will let you set a ``[table: .*]`` section at the end as a catchall.)
 
 
 Example ``logging.conf``

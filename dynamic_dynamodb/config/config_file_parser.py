@@ -3,7 +3,13 @@
 import sys
 import os.path
 import ConfigParser
+import ast
 from copy import deepcopy
+
+try:
+    from collections import OrderedDict as ordereddict
+except ImportError:
+    import ordereddict
 
 TABLE_CONFIG_OPTIONS = [
     {
@@ -52,7 +58,7 @@ TABLE_CONFIG_OPTIONS = [
         'key': 'reads_upper_threshold',
         'option': 'reads-upper-threshold',
         'required': False,
-        'type': 'int'
+        'type': 'float'
     },
     {
         'key': 'throttled_reads_upper_threshold',
@@ -94,7 +100,7 @@ TABLE_CONFIG_OPTIONS = [
         'key': 'writes_upper_threshold',
         'option': 'writes-upper-threshold',
         'required': False,
-        'type': 'int'
+        'type': 'float'
     },
     {
         'key': 'throttled_writes_upper_threshold',
@@ -239,6 +245,90 @@ TABLE_CONFIG_OPTIONS = [
         'option': 'lookback-window-start',
         'required': False,
         'type': 'int'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_reads_unit',
+        'option': 'increase-throttled-by-provisioned-reads-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_reads_scale',
+        'option': 'increase-throttled-by-provisioned-reads-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_writes_unit',
+        'option': 'increase-throttled-by-provisioned-writes-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_throttled_by_provisioned_writes_scale',
+        'option': 'increase-throttled-by-provisioned-writes-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_reads_unit',
+        'option': 'increase-throttled-by-consumed-reads-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_reads_scale',
+        'option': 'increase-throttled-by-consumed-reads-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_writes_unit',
+        'option': 'increase-throttled-by-consumed-writes-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_throttled_by_consumed_writes_scale',
+        'option': 'increase-throttled-by-consumed-writes-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_consumed_reads_unit',
+        'option': 'increase-consumed-reads-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_consumed_reads_with',
+        'option': 'increase-consumed-reads-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_consumed_reads_scale',
+        'option': 'increase-consumed-reads-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'increase_consumed_writes_unit',
+        'option': 'increase-consumed-writes-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'increase_consumed_writes_with',
+        'option': 'increase-consumed-writes-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'increase_consumed_writes_scale',
+        'option': 'increase-consumed-writes-scale',
+        'required': False,
+        'type': 'dict'
     }
 ]
 
@@ -291,13 +381,17 @@ def __parse_options(config_file, section, options):
                     print('Error: Expected an boolean value for {0}'.format(
                         option.get('option')))
                     sys.exit(1)
+            elif option.get('type') == 'dict':
+                configuration[option.get('key')] = \
+                    ast.literal_eval(
+                        config_file.get(section, option.get('option')))
             else:
                 configuration[option.get('key')] = \
                     config_file.get(section, option.get('option'))
         except ConfigParser.NoOptionError:
             if option.get('required'):
-                print 'Missing [{0}] option "{1}" in configuration'.format(
-                    section, option.get('option'))
+                print('Missing [{0}] option "{1}" in configuration'.format(
+                    section, option.get('option')))
                 sys.exit(1)
 
     return configuration
@@ -407,7 +501,7 @@ def parse(config_path):
     #
     # Handle [table: ]
     #
-    table_config = {'tables': {}}
+    table_config = {'tables': ordereddict()}
 
     # Find the first table definition
     found_table = False
@@ -446,10 +540,10 @@ def parse(config_path):
             table_config['tables'][table_key]['gsis'] = {}
 
         table_config['tables'][table_key]['gsis'][gsi_key] = \
-            dict(default_options.items() + __parse_options(
+            ordereddict(default_options.items() + __parse_options(
                 config_file, current_section, TABLE_CONFIG_OPTIONS).items())
 
-    return dict(
+    return ordereddict(
         global_config.items() +
         logging_config.items() +
         table_config.items())

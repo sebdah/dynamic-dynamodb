@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
 
-  "Description": "This is a sample CloudFormation template for deploying Dynamic DynamoDB version 2.x. This package will be installed from the Python Package Index repository. For more information, see http://dynamic-dynamodb.readthedocs.org.",
+  "Description": "This is a sample CloudFormation template for deploying Dynamic DynamoDB 1.x. This package will be installed from the Python Package Index repository. For more information, see http://dynamic-dynamodb.readthedocs.org.",
 
   "Parameters": {
     "S3Bucket": {
@@ -118,7 +118,7 @@
               "fi",
               "easy_install pip || error_exit 'Failed to install pip'",
               "log \"Installed pip\"",
-              "echo \"dynamic-dynamodb>=2.0.0,<3.0.0\">/etc/dynamic-dynamodb/requirements.txt",
+              "echo \"dynamic-dynamodb>=1.7.0,<2.0.0\">/etc/dynamic-dynamodb/requirements.txt",
               "/usr/local/bin/pip install -U -r /etc/dynamic-dynamodb/requirements.txt || error_exit 'Failed to install dynamic-dynamodb package from pip repository'",
               "log \"Installed dynamic-dynamodb\"",
               "",

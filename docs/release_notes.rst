@@ -1,6 +1,16 @@
 Release notes
 =============
 
+2.0.0
+-----
+
+**Release date:** 2015-08-26
+
+- Match each table to at most one config section (`#250 <https://github.com/sebdah/dynamic-dynamodb/issues/250>`). Thanks for the pull request `@memory <https://github.com/memory>`
+- Granular up-scaling and new scaling metrics (`#252 <https://github.com/sebdah/dynamic-dynamodb/issues/250>`). Thanks for the pull request `@omnidavez <https://github.com/omnidavez>`
+
+Please note that this change is not backwards compatible due to the nature of `#250 <https://github.com/sebdah/dynamic-dynamodb/issues/250>`. Though it is in a minority of use cases, it may in some cases break existing configuration. Details can be found in the pull request `#251 <https://github.com/sebdah/dynamic-dynamodb/issues/251>`
+
 1.20.6
 ------
 
