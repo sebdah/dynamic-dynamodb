@@ -20,6 +20,8 @@ def get_consumed_read_units_percent(table_name, lookback_window_start=15,
     :param table_name: Name of the DynamoDB table
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Number of consumed reads as a percentage of provisioned reads
     """
     try:
@@ -55,6 +57,8 @@ def get_throttled_read_event_count(table_name, lookback_window_start=15,
     :param table_name: Name of the DynamoDB table
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: int -- Number of throttled read events during the time period
     """
     try:
@@ -83,6 +87,8 @@ def get_throttled_by_provisioned_read_event_percent(table_name,
     :param table_name: Name of the DynamoDB table
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Percent of throttled read events by provisioning
     """
     try:
@@ -118,6 +124,8 @@ def get_throttled_by_consumed_read_percent(table_name, lookback_window_start=15,
     :param table_name: Name of the DynamoDB table
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Percent of throttled read events by consumption
     """
 
@@ -152,6 +160,8 @@ def get_consumed_write_units_percent(table_name, lookback_window_start=15,
     :param table_name: Name of the DynamoDB table
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Number of consumed writes as a percentage of provisioned writes
     """
     try:
@@ -188,6 +198,8 @@ def get_throttled_write_event_count(table_name,
     :param table_name: Name of the DynamoDB table
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: int -- Number of throttled write events during the time period
     """
     try:
@@ -216,6 +228,8 @@ def get_throttled_by_provisioned_write_event_percent(table_name,
     :param table_name: Name of the DynamoDB table
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Percent of throttled write events by provisioning
     """
     try:
@@ -252,6 +266,8 @@ def get_throttled_by_consumed_write_percent(table_name,
     :param table_name: Name of the DynamoDB table
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Percent of throttled write events by consumption
     """
 
