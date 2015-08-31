@@ -247,6 +247,12 @@ TABLE_CONFIG_OPTIONS = [
         'type': 'int'
     },
     {
+        'key': 'lookback_period',
+        'option': 'lookback-period',
+        'required': False,
+        'type': 'int'
+    },
+    {
         'key': 'increase_throttled_by_provisioned_reads_unit',
         'option': 'increase-throttled-by-provisioned-reads-unit',
         'required': False,
