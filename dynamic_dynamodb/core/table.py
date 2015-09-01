@@ -195,6 +195,12 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
             get_table_option(key_name, 'increase_consumed_reads_with')
         increase_consumed_reads_scale = \
             get_table_option(key_name, 'increase_consumed_reads_scale')
+        decrease_consumed_reads_unit = \
+            get_table_option(key_name, 'decrease_consumed_reads_unit')
+        decrease_consumed_reads_with = \
+            get_table_option(key_name, 'decrease_consumed_reads_with')
+        decrease_consumed_reads_scale = \
+            get_table_option(key_name, 'decrease_consumed_reads_scale')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -392,8 +398,19 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
             updated_read_units = calculated_provisioning
 
     # Decrease needed due to low CU consumption
-    if (consumed_read_units_percent <= reads_lower_threshold
-            and not update_needed):
+    if not update_needed:
+        # If local/granular values not specified use global values
+        decrease_consumed_reads_unit = \
+            decrease_consumed_reads_unit or decrease_reads_unit
+
+        decrease_consumed_reads_with = \
+            decrease_consumed_reads_with or decrease_reads_with
+
+        # Initialise variables to store calculated provisioning
+        consumed_calculated_provisioning = scale_reader(
+            decrease_consumed_reads_scale,
+            consumed_read_units_percent)
+        calculated_provisioning = None
 
         # Exit if down scaling has been disabled
         if not get_table_option(key_name, 'enable_reads_down_scaling'):
@@ -402,20 +419,45 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                 'down reads has been disabled in the configuration'.format(
                     table_name))
         else:
-            if decrease_reads_unit == 'percent':
-                calculated_provisioning = calculators.decrease_reads_in_percent(
-                    updated_read_units,
-                    decrease_reads_with,
-                    get_table_option(key_name, 'min_provisioned_reads'),
-                    table_name)
-            else:
-                calculated_provisioning = calculators.decrease_reads_in_units(
-                    updated_read_units,
-                    decrease_reads_with,
-                    get_table_option(key_name, 'min_provisioned_reads'),
-                    table_name)
+            if consumed_calculated_provisioning:
+                if decrease_consumed_reads_unit == 'percent':
+                    calculated_provisioning = \
+                        calculators.decrease_reads_in_percent(
+                            updated_read_units,
+                            consumed_calculated_provisioning,
+                            get_table_option(
+                                key_name, 'min_provisioned_reads'),
+                            table_name)
+                else:
+                    calculated_provisioning = \
+                        calculators.decrease_reads_in_units(
+                            updated_read_units,
+                            consumed_calculated_provisioning,
+                            get_table_option(
+                                key_name, 'min_provisioned_reads'),
+                            table_name)
+            elif (reads_lower_threshold
+                  and consumed_read_units_percent > reads_lower_threshold
+                  and not decrease_consumed_reads_scale):
+                if decrease_consumed_reads_unit == 'percent':
+                    calculated_provisioning = \
+                        calculators.decrease_reads_in_percent(
+                            updated_read_units,
+                            decrease_consumed_reads_with,
+                            get_table_option(
+                                key_name, 'min_provisioned_reads'),
+                            table_name)
+                else:
+                    calculated_provisioning = \
+                        calculators.decrease_reads_in_units(
+                            updated_read_units,
+                            decrease_consumed_reads_with,
+                            get_table_option(
+                                key_name, 'min_provisioned_reads'),
+                            table_name)
 
-            if current_read_units != calculated_provisioning:
+            if (calculated_provisioning
+                    and current_read_units != calculated_provisioning):
                 num_consec_read_checks = num_consec_read_checks + 1
 
                 if num_consec_read_checks >= num_read_checks_before_scale_down:
@@ -524,6 +566,12 @@ def __ensure_provisioning_writes(
             get_table_option(key_name, 'increase_consumed_writes_with')
         increase_consumed_writes_scale = \
             get_table_option(key_name, 'increase_consumed_writes_scale')
+        decrease_consumed_writes_unit = \
+            get_table_option(key_name, 'decrease_consumed_writes_unit')
+        decrease_consumed_writes_with = \
+            get_table_option(key_name, 'decrease_consumed_writes_with')
+        decrease_consumed_writes_scale = \
+            get_table_option(key_name, 'decrease_consumed_writes_scale')
     except JSONResponseError:
         raise
     except BotoServerError:
@@ -723,35 +771,70 @@ def __ensure_provisioning_writes(
             updated_write_units = calculated_provisioning
 
     # Decrease needed due to low CU consumption
-    if (consumed_write_units_percent
-            <= writes_lower_threshold and not update_needed):
+    if not update_needed:
+        # If local/granular values not specified use global values
+        decrease_consumed_writes_unit = \
+            decrease_consumed_writes_unit or decrease_writes_unit
 
-        # Exit if up scaling has been disabled
+        decrease_consumed_writes_with = \
+            decrease_consumed_writes_with or decrease_writes_with
+
+        # Initialise variables to store calculated provisioning
+        consumed_calculated_provisioning = scale_reader(
+            decrease_consumed_writes_scale,
+            consumed_write_units_percent)
+        calculated_provisioning = None
+        print decrease_consumed_writes_scale, consumed_write_units_percent
+
+        # Exit if down scaling has been disabled
         if not get_table_option(key_name, 'enable_writes_down_scaling'):
             logger.debug(
-                '{0} - Down scaling event detected. No action taken as scaling '
+                '{0} - Down scaling event detected. No action taken as scaling'
                 'down writes has been disabled in the configuration'.format(
                     table_name))
         else:
-            if decrease_writes_unit == 'percent':
-                calculated_provisioning = \
-                    calculators.decrease_writes_in_percent(
-                        current_write_units,
-                        decrease_writes_with,
-                        get_table_option(key_name, 'min_provisioned_writes'),
-                        table_name)
-            else:
-                calculated_provisioning = calculators.decrease_writes_in_units(
-                    current_write_units,
-                    decrease_writes_with,
-                    get_table_option(key_name, 'min_provisioned_writes'),
-                    table_name)
+            if consumed_calculated_provisioning:
+                if decrease_writes_unit == 'percent':
+                    calculated_provisioning = \
+                        calculators.decrease_writes_in_percent(
+                            updated_write_units,
+                            consumed_calculated_provisioning,
+                            get_table_option(
+                                key_name, 'min_provisioned_writes'),
+                            table_name)
+                else:
+                    calculated_provisioning = \
+                        calculators.decrease_writes_in_units(
+                            updated_write_units,
+                            consumed_calculated_provisioning,
+                            get_table_option(
+                                key_name, 'min_provisioned_writes'),
+                            table_name)
+            elif (writes_lower_threshold
+                  and consumed_write_units_percent > writes_lower_threshold
+                  and not decrease_consumed_writes_scale):
+                if decrease_writes_unit == 'percent':
+                    calculated_provisioning = \
+                        calculators.decrease_writes_in_percent(
+                            updated_write_units,
+                            decrease_writes_with,
+                            get_table_option(
+                                key_name, 'min_provisioned_writes'),
+                            table_name)
+                else:
+                    calculated_provisioning = \
+                        calculators.decrease_writes_in_units(
+                            updated_write_units,
+                            decrease_writes_with,
+                            get_table_option(
+                                key_name, 'min_provisioned_writes'),
+                            table_name)
 
-            if current_write_units != calculated_provisioning:
+            if (calculated_provisioning and
+                    current_write_units != calculated_provisioning):
                 num_consec_write_checks = num_consec_write_checks + 1
 
-                if (num_consec_write_checks >=
-                        num_write_checks_before_scale_down):
+                if num_consec_write_checks >= num_write_checks_before_scale_down:
                     update_needed = True
                     updated_write_units = calculated_provisioning
 
