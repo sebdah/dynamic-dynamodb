@@ -166,20 +166,22 @@ def __ensure_provisioning_reads(
     try:
         lookback_window_start = get_gsi_option(
             table_key, gsi_key, 'lookback_window_start')
+        lookback_period = get_gsi_option(
+            table_key, gsi_key, 'lookback_period')
         current_read_units = dynamodb.get_provisioned_gsi_read_units(
             table_name, gsi_name)
         consumed_read_units_percent = \
             gsi_stats.get_consumed_read_units_percent(
-                table_name, gsi_name, lookback_window_start)
+                table_name, gsi_name, lookback_window_start, lookback_period)
         throttled_read_count = \
             gsi_stats.get_throttled_read_event_count(
-                table_name, gsi_name, lookback_window_start)
+                table_name, gsi_name, lookback_window_start, lookback_period)
         throttled_by_provisioned_read_percent = \
             gsi_stats.get_throttled_by_provisioned_read_event_percent(
-                table_name, gsi_name, lookback_window_start)
+                table_name, gsi_name, lookback_window_start, lookback_period)
         throttled_by_consumed_read_percent = \
             gsi_stats.get_throttled_by_consumed_read_percent(
-                table_name, gsi_name, lookback_window_start)
+                table_name, gsi_name, lookback_window_start, lookback_period)
         reads_upper_threshold = \
             get_gsi_option(table_key, gsi_key, 'reads_upper_threshold')
         reads_lower_threshold = \
@@ -559,20 +561,22 @@ def __ensure_provisioning_writes(
     try:
         lookback_window_start = get_gsi_option(
             table_key, gsi_key, 'lookback_window_start')
+        lookback_period = get_gsi_option(
+            table_key, gsi_key, 'lookback_period')
         current_write_units = dynamodb.get_provisioned_gsi_write_units(
             table_name, gsi_name)
         consumed_write_units_percent = \
             gsi_stats.get_consumed_write_units_percent(
-                table_name, gsi_name, lookback_window_start)
+                table_name, gsi_name, lookback_window_start, lookback_period)
         throttled_write_count = \
             gsi_stats.get_throttled_write_event_count(
-                table_name, gsi_name, lookback_window_start)
+                table_name, gsi_name, lookback_window_start, lookback_period)
         throttled_by_provisioned_write_percent = \
             gsi_stats.get_throttled_by_provisioned_write_event_percent(
-                table_name, gsi_name, lookback_window_start)
+                table_name, gsi_name, lookback_window_start, lookback_period)
         throttled_by_consumed_write_percent = \
             gsi_stats.get_throttled_by_consumed_write_percent(
-                table_name, gsi_name, lookback_window_start)
+                table_name, gsi_name, lookback_window_start, lookback_period)
         writes_upper_threshold = \
             get_gsi_option(table_key, gsi_key, 'writes_upper_threshold')
         writes_lower_threshold = \
@@ -996,10 +1000,12 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
     """
     lookback_window_start = get_gsi_option(
         table_key, gsi_key, 'lookback_window_start')
+    lookback_period = get_gsi_option(
+        table_key, gsi_key, 'lookback_period')
     consumed_read_units_percent = gsi_stats.get_consumed_read_units_percent(
-        table_name, gsi_name, lookback_window_start)
+        table_name, gsi_name, lookback_window_start, lookback_period)
     consumed_write_units_percent = gsi_stats.get_consumed_write_units_percent(
-        table_name, gsi_name, lookback_window_start)
+        table_name, gsi_name, lookback_window_start, lookback_period)
 
     reads_upper_alarm_threshold = \
         get_gsi_option(table_key, gsi_key, 'reads-upper-alarm-threshold')
