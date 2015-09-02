@@ -407,7 +407,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
             decrease_consumed_reads_with or decrease_reads_with
 
         # Initialise variables to store calculated provisioning
-        consumed_calculated_provisioning = scale_reader(
+        consumed_calculated_provisioning = scale_reader_decrease(
             decrease_consumed_reads_scale,
             consumed_read_units_percent)
         calculated_provisioning = None
@@ -780,11 +780,10 @@ def __ensure_provisioning_writes(
             decrease_consumed_writes_with or decrease_writes_with
 
         # Initialise variables to store calculated provisioning
-        consumed_calculated_provisioning = scale_reader(
+        consumed_calculated_provisioning = scale_reader_decrease(
             decrease_consumed_writes_scale,
             consumed_write_units_percent)
         calculated_provisioning = None
-        print decrease_consumed_writes_scale, consumed_write_units_percent
 
         # Exit if down scaling has been disabled
         if not get_table_option(key_name, 'enable_writes_down_scaling'):
@@ -1027,6 +1026,27 @@ def scale_reader(provision_increase_scale, current_value):
                 return scale_value
             else:
                 scale_value = provision_increase_scale.get(limits)
+        return scale_value
+    else:
+        return scale_value
+
+def scale_reader_decrease(provision_decrease_scale, current_value):
+    """
+
+    :type provision_decrease_scale: dict
+    :param provision_decrease_scale: dictionary with key being the
+        scaling threshold and value being scaling amount
+    :type current_value: float
+    :param current_value: the current consumed units or throttled events
+    :returns: (int) The amount to scale provisioning by
+    """
+    scale_value = 0
+    if provision_decrease_scale:
+        for limits in sorted(provision_decrease_scale.keys(), reverse=True):
+            if current_value > limits:
+                return scale_value
+            else:
+                scale_value = provision_decrease_scale.get(limits)
         return scale_value
     else:
         return scale_value
