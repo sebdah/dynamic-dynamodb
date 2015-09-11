@@ -14,7 +14,7 @@ def return_requires():
         'requests >= 0.14.1',
         'logutils >= 0.3.3',
         'retrying >= 1.3.3'
-    ],
+    ]
     if sys.version_info < (2, 7):
         install_requires.append('ordereddict >= 1.1')
     return install_requires
