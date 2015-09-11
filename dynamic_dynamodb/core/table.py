@@ -863,9 +863,9 @@ def __ensure_provisioning_alarm(table_name, key_name):
             consumed_read_units_percent >= reads_upper_alarm_threshold):
         upper_alert_triggered = True
         upper_alert_message.append(
-            '{0} - Consumed Read Capacity {1:d}% '
+            '{0} - Consumed Read Capacity {1:f}% '
             'was greater than or equal to the upper '
-            'alarm threshold {2:d}%\n'.format(
+            'alarm threshold {2:f}%\n'.format(
                 table_name,
                 consumed_read_units_percent,
                 reads_upper_alarm_threshold))
@@ -874,9 +874,9 @@ def __ensure_provisioning_alarm(table_name, key_name):
             consumed_write_units_percent >= writes_upper_alarm_threshold):
         upper_alert_triggered = True
         upper_alert_message.append(
-            '{0} - Consumed Write Capacity {1:d}% '
+            '{0} - Consumed Write Capacity {1:f}% '
             'was greater than or equal to the upper alarm '
-            'threshold {2:d}%\n'.format(
+            'threshold {2:f}%\n'.format(
                 table_name,
                 consumed_write_units_percent,
                 writes_upper_alarm_threshold))
@@ -888,8 +888,8 @@ def __ensure_provisioning_alarm(table_name, key_name):
             consumed_read_units_percent < reads_lower_alarm_threshold):
         lower_alert_triggered = True
         lower_alert_message.append(
-            '{0} - Consumed Read Capacity {1:d}% '
-            'was below the lower alarm threshold {2:d}%\n'.format(
+            '{0} - Consumed Read Capacity {1:f}% '
+            'was below the lower alarm threshold {2:f}%\n'.format(
                 table_name,
                 consumed_read_units_percent,
                 reads_lower_alarm_threshold))
@@ -898,8 +898,8 @@ def __ensure_provisioning_alarm(table_name, key_name):
             consumed_write_units_percent < writes_lower_alarm_threshold):
         lower_alert_triggered = True
         lower_alert_message.append(
-            '{0} - Consumed Write Capacity {1:d}% '
-            'was below the lower alarm threshold {2:d}%\n'.format(
+            '{0} - Consumed Write Capacity {1:f}% '
+            'was below the lower alarm threshold {2:f}%\n'.format(
                 table_name,
                 consumed_write_units_percent,
                 writes_lower_alarm_threshold))
