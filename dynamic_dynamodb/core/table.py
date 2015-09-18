@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Core components """
 from boto.exception import JSONResponseError, BotoServerError
-import sys
 
 from dynamic_dynamodb import calculators
 from dynamic_dynamodb.aws import dynamodb, sns
