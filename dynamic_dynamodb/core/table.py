@@ -428,8 +428,18 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
             update_needed = True
             updated_read_units = int(max_provisioned_reads)
             logger.info(
-                'Will not increase writes over max-provisioned-reads '
+                'Will not increase reads over max-provisioned-reads '
                 'limit ({0} writes)'.format(updated_read_units))
+            if calculators.is_consumed_over_max(
+                    current_read_units,
+                    max_provisioned_reads,
+                    consumed_read_units_percent):
+                update_needed = False
+                updated_read_units = current_read_units
+                logger.info(
+                    '{0} - Consumed is over provisioned reads max '
+                    'limit. Will leave table at current setting.'.format(
+                        table_name))
 
     # Ensure that we have met the min-provisioning
     if min_provisioned_reads:
@@ -763,6 +773,16 @@ def __ensure_provisioning_writes(
             logger.info(
                 'Will not increase writes over max-provisioned-writes '
                 'limit ({0} writes)'.format(updated_write_units))
+            if calculators.is_consumed_over_max(
+                    current_write_units,
+                    max_provisioned_writes,
+                    consumed_write_units_percent):
+                update_needed = False
+                updated_write_units = current_write_units
+                logger.info(
+                    '{0} - Consumed is over provisioned writes max '
+                    'limit. Will leave table at current setting.'.format(
+                        table_name))
 
     # Ensure that we have met the min-provisioning
     if min_provisioned_writes:

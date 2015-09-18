@@ -339,6 +339,25 @@ def increase_writes_in_units(
     return updated_provisioning
 
 
+def is_consumed_over_max(
+        current_provisioning, max_provisioning, consumed_units_percent):
+    """
+    Determines if the currently consumed capacity is over the max capacity for
+    this table
+
+    :type current_provisioning: int
+    :param current_provisioning: The current provisioning
+    :type max_provisioning: int
+    :param max_provisioning: Configured max provisioned units
+    :type consumed_units_percent: float
+    :param consumed_units_percent: Percent of consumed units
+    :returns: bool - if consumed is over max
+    """
+    consumption_based_current_provisioning = \
+        int(math.ceil(current_provisioning*(consumed_units_percent/100)))
+    return consumption_based_current_provisioning > max_provisioning
+
+
 def __get_min_reads(current_provisioning, min_provisioned_reads, log_tag):
     """ Get the minimum number of reads to current_provisioning
 
