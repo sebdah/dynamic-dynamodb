@@ -798,6 +798,7 @@ def __ensure_provisioning_writes(
         table_name,
         num_consec_write_checks,
         num_write_checks_before_scale_down))
+
     return update_needed, updated_write_units, num_consec_write_checks
 
 
