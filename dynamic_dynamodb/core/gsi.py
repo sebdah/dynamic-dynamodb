@@ -66,8 +66,8 @@ def ensure_provisioning(
         # Handle throughput updates
         if read_update_needed or write_update_needed:
             logger.info(
-                '{0} - GSI: {1} - Changing provisioning to {2:d} '
-                'read units and {3:d} write units'.format(
+                '{0} - GSI: {1} - Changing provisioning to {2:f} '
+                'read units and {3:f} write units'.format(
                     table_name,
                     gsi_name,
                     int(updated_read_units),
@@ -1017,9 +1017,9 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
             consumed_read_units_percent >= reads_upper_alarm_threshold):
         upper_alert_triggered = True
         upper_alert_message.append(
-            '{0} - GSI: {1} - Consumed Read Capacity {2:d}% '
+            '{0} - GSI: {1} - Consumed Read Capacity {2:f}% '
             'was greater than or equal to the upper alarm '
-            'threshold {3:d}%\n'.format(
+            'threshold {3:f}%\n'.format(
                 table_name,
                 gsi_name,
                 consumed_read_units_percent,
@@ -1029,9 +1029,9 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
             consumed_write_units_percent >= writes_upper_alarm_threshold):
         upper_alert_triggered = True
         upper_alert_message.append(
-            '{0} - GSI: {1} - Consumed Write Capacity {2:d}% '
+            '{0} - GSI: {1} - Consumed Write Capacity {2:f}% '
             'was greater than or equal to the upper alarm '
-            'threshold {3:d}%\n'.format(
+            'threshold {3:f}%\n'.format(
                 table_name,
                 gsi_name,
                 consumed_write_units_percent,
@@ -1044,8 +1044,8 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
             consumed_read_units_percent < reads_lower_alarm_threshold):
         lower_alert_triggered = True
         lower_alert_message.append(
-            '{0} - GSI: {1} - Consumed Read Capacity {2:d}% '
-            'was below the lower alarm threshold {3:d}%\n'.format(
+            '{0} - GSI: {1} - Consumed Read Capacity {2:f}% '
+            'was below the lower alarm threshold {3:f}%\n'.format(
                 table_name,
                 gsi_name,
                 consumed_read_units_percent,
@@ -1055,8 +1055,8 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
             consumed_write_units_percent < writes_lower_alarm_threshold):
         lower_alert_triggered = True
         lower_alert_message.append(
-            '{0} - GSI: {1} - Consumed Write Capacity {2:d}% '
-            'was below the lower alarm threshold {3:d}%\n'.format(
+            '{0} - GSI: {1} - Consumed Write Capacity {2:f}% '
+            'was below the lower alarm threshold {3:f}%\n'.format(
                 table_name,
                 gsi_name,
                 consumed_write_units_percent,
