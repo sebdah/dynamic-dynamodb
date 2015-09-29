@@ -1,6 +1,15 @@
 Release notes
 =============
 
+2.0.1
+-----
+
+**Release date:** 2015-09-29
+
+- Fix value error when logging floats (`#265 <https://github.com/sebdah/dynamic-dynamodb/issues/265>`)
+- Fix installation on Python < 2.7 (`#260 <https://github.com/sebdah/dynamic-dynamodb/issues/260>`). Thanks for the pull request `@Sazpaimon <https://github.com/Sazpaimon>`
+
+
 2.0.0
 -----
 
