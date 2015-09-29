@@ -1,6 +1,15 @@
 Release notes
 =============
 
+2.0.2
+-----
+
+**Release date:** 2015-09-29
+
+- Use HTTP rather than SSH for git clone (`#266 <https://github.com/sebdah/dynamic-dynamodb/issues/266>`). Thanks for the pull request `@superprat <https://github.com/superprat>`
+
+
+
 2.0.1
 -----
 
