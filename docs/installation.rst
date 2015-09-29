@@ -16,7 +16,7 @@ Manually via Git
 It is also possible to install Dynamic DynamoDB manually, if you do no have access to ``pip``. First checkout the project from GitHub:
 ::
 
-    git clone git@github.com:sebdah/dynamic-dynamodb.git
+    git clone https://github.com/sebdah/dynamic-dynamodb
 
 Then install the ``dynamic-dynamodb`` command locally.
 ::
