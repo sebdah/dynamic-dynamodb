@@ -87,7 +87,13 @@ DEFAULT_OPTIONS = {
         'increase_throttled_by_consumed_reads_unit': None,
         'increase_throttled_by_consumed_reads_scale': None,
         'increase_throttled_by_consumed_writes_unit': None,
-        'increase_throttled_by_consumed_writes_scale': None
+        'increase_throttled_by_consumed_writes_scale': None,
+        'decrease_consumed_reads_unit': None,
+        'decrease_consumed_reads_with': None,
+        'decrease_consumed_reads_scale': None,
+        'decrease_consumed_writes_unit': None,
+        'decrease_consumed_writes_with': None,
+        'decrease_consumed_writes_scale': None,
     },
     'gsi': {
         'reads-upper-alarm-threshold': 0,
@@ -442,13 +448,17 @@ def __check_gsi_rules(configuration):
                 'min_provisioned_writes',
                 'max_provisioned_writes',
                 'increase_consumed_reads_with',
-                'increase_consumed_writes_with'
+                'increase_consumed_writes_with',
+                'decrease_consumed_reads_with',
+                'decrease_consumed_writes_with'
             ]
             # Config options without a mandatory default
             # should be allowed a None value
             non_default = [
                 'increase_consumed_reads_with',
-                'increase_consumed_writes_with'
+                'increase_consumed_writes_with',
+                'decrease_consumed_reads_with',
+                'decrease_consumed_writes_with'
             ]
 
             for option in options:
