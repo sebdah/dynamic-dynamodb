@@ -247,6 +247,12 @@ TABLE_CONFIG_OPTIONS = [
         'type': 'int'
     },
     {
+        'key': 'lookback_period',
+        'option': 'lookback-period',
+        'required': False,
+        'type': 'int'
+    },
+    {
         'key': 'increase_throttled_by_provisioned_reads_unit',
         'option': 'increase-throttled-by-provisioned-reads-unit',
         'required': False,
@@ -327,6 +333,42 @@ TABLE_CONFIG_OPTIONS = [
     {
         'key': 'increase_consumed_writes_scale',
         'option': 'increase-consumed-writes-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'decrease_consumed_reads_unit',
+        'option': 'decrease-consumed-reads-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'decrease_consumed_reads_with',
+        'option': 'decrease-consumed-reads-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'decrease_consumed_reads_scale',
+        'option': 'decrease-consumed-reads-scale',
+        'required': False,
+        'type': 'dict'
+    },
+    {
+        'key': 'decrease_consumed_writes_unit',
+        'option': 'decrease-consumed-writes-unit',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'decrease_consumed_writes_with',
+        'option': 'decrease-consumed-writes-with',
+        'required': False,
+        'type': 'int'
+    },
+    {
+        'key': 'decrease_consumed_writes_scale',
+        'option': 'decrease-consumed-writes-scale',
         'required': False,
         'type': 'dict'
     }

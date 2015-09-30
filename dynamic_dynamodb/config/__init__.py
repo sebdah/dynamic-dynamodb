@@ -70,6 +70,7 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
         'lookback_window_start': 15,
+        'lookback_period': 5,
         'maintenance_windows': None,
         'sns_topic_arn': None,
         'sns_message_types': [],
@@ -86,7 +87,13 @@ DEFAULT_OPTIONS = {
         'increase_throttled_by_consumed_reads_unit': None,
         'increase_throttled_by_consumed_reads_scale': None,
         'increase_throttled_by_consumed_writes_unit': None,
-        'increase_throttled_by_consumed_writes_scale': None
+        'increase_throttled_by_consumed_writes_scale': None,
+        'decrease_consumed_reads_unit': None,
+        'decrease_consumed_reads_with': None,
+        'decrease_consumed_reads_scale': None,
+        'decrease_consumed_writes_unit': None,
+        'decrease_consumed_writes_with': None,
+        'decrease_consumed_writes_scale': None,
     },
     'gsi': {
         'reads-upper-alarm-threshold': 0,
@@ -125,6 +132,7 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
         'lookback_window_start': 15,
+        'lookback_period': 5,
         'maintenance_windows': None,
         'sns_topic_arn': None,
         'sns_message_types': [],
@@ -405,10 +413,10 @@ def __check_gsi_rules(configuration):
                 sys.exit(1)
 
             # Check lookback-window start
-            if gsi['lookback_window_start'] < 5:
+            if gsi['lookback_window_start'] < 1:
                 print(
-                    'lookback-window-start must be a value higher than 5, '
-                    'as DynamoDB sends CloudWatch data every 5 minutes')
+                    'lookback-window-start must be a value higher than 1, '
+                    'as DynamoDB sends CloudWatch data every minute')
                 sys.exit(1)
 
             # Check sns-message-types
@@ -440,13 +448,17 @@ def __check_gsi_rules(configuration):
                 'min_provisioned_writes',
                 'max_provisioned_writes',
                 'increase_consumed_reads_with',
-                'increase_consumed_writes_with'
+                'increase_consumed_writes_with',
+                'decrease_consumed_reads_with',
+                'decrease_consumed_writes_with'
             ]
             # Config options without a mandatory default
             # should be allowed a None value
             non_default = [
                 'increase_consumed_reads_with',
-                'increase_consumed_writes_with'
+                'increase_consumed_writes_with',
+                'decrease_consumed_reads_with',
+                'decrease_consumed_writes_with'
             ]
 
             for option in options:
@@ -567,10 +579,10 @@ def __check_table_rules(configuration):
             sys.exit(1)
 
         # Check lookback-window start
-        if table['lookback_window_start'] < 5:
+        if table['lookback_window_start'] < 1:
             print(
-                'lookback-window-start must be a value higher than 5, '
-                'as DynamoDB sends CloudWatch data every 5 minutes')
+                'lookback-window-start must be a value higher than 1, '
+                'as DynamoDB sends CloudWatch data every minute')
             sys.exit(1)
 
         # Check sns-message-types
