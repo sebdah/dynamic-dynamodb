@@ -1,10 +1,10 @@
 Release notes
 =============
 
-2.1.x
+2.1.0
 -----
 
-**Release date:** unknown
+**Release date:** 2015-09-30
 
 - Support for granular downscaling (`#263 <https://github.com/sebdah/dynamic-dynamodb/issues/263>`). Thanks for the pull request `@Sazpaimon <https://github.com/Sazpaimon>`
 - Allow configurable lookback period instead of the hardcoded 5 minute one (`#261 <https://github.com/sebdah/dynamic-dynamodb/issues/261>`). Thanks for the pull request `@Sazpaimon <https://github.com/Sazpaimon>`
