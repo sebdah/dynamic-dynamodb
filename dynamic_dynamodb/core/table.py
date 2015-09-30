@@ -141,20 +141,21 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
     try:
         lookback_window_start = get_table_option(
             key_name, 'lookback_window_start')
+        lookback_period = get_table_option(key_name, 'lookback_period')
         current_read_units = dynamodb.get_provisioned_table_read_units(
             table_name)
         consumed_read_units_percent = \
             table_stats.get_consumed_read_units_percent(
-                table_name, lookback_window_start)
+                table_name, lookback_window_start, lookback_period)
         throttled_read_count = \
             table_stats.get_throttled_read_event_count(
-                table_name, lookback_window_start)
+                table_name, lookback_window_start, lookback_period)
         throttled_by_provisioned_read_percent = \
             table_stats.get_throttled_by_provisioned_read_event_percent(
-                table_name, lookback_window_start)
+                table_name, lookback_window_start, lookback_period)
         throttled_by_consumed_read_percent = \
             table_stats.get_throttled_by_consumed_read_percent(
-                table_name, lookback_window_start)
+                table_name, lookback_window_start, lookback_period)
         reads_upper_threshold = \
             get_table_option(key_name, 'reads_upper_threshold')
         reads_lower_threshold = \
@@ -470,20 +471,21 @@ def __ensure_provisioning_writes(
     try:
         lookback_window_start = get_table_option(
             key_name, 'lookback_window_start')
+        lookback_period = get_table_option(key_name, 'lookback_period')
         current_write_units = dynamodb.get_provisioned_table_write_units(
             table_name)
         consumed_write_units_percent = \
             table_stats.get_consumed_write_units_percent(
-                table_name, lookback_window_start)
+                table_name, lookback_window_start, lookback_period)
         throttled_write_count = \
             table_stats.get_throttled_write_event_count(
-                table_name, lookback_window_start)
+                table_name, lookback_window_start, lookback_period)
         throttled_by_provisioned_write_percent = \
             table_stats.get_throttled_by_provisioned_write_event_percent(
-                table_name, lookback_window_start)
+                table_name, lookback_window_start, lookback_period)
         throttled_by_consumed_write_percent = \
             table_stats.get_throttled_by_consumed_write_percent(
-                table_name, lookback_window_start)
+                table_name, lookback_window_start, lookback_period)
         writes_upper_threshold = \
             get_table_option(key_name, 'writes_upper_threshold')
         writes_lower_threshold = \
@@ -842,10 +844,11 @@ def __ensure_provisioning_alarm(table_name, key_name):
     """
     lookback_window_start = get_table_option(
         key_name, 'lookback_window_start')
+    lookback_period = get_table_option(key_name, 'lookback_period')
     consumed_read_units_percent = table_stats.get_consumed_read_units_percent(
-        table_name, lookback_window_start)
+        table_name, lookback_window_start, lookback_period)
     consumed_write_units_percent = table_stats.get_consumed_write_units_percent(
-        table_name, lookback_window_start)
+        table_name, lookback_window_start, lookback_period)
 
     reads_upper_alarm_threshold = \
         get_table_option(key_name, 'reads-upper-alarm-threshold')

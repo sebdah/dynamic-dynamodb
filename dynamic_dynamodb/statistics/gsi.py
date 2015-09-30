@@ -12,7 +12,7 @@ from dynamic_dynamodb.aws.cloudwatch import (
 
 
 def get_consumed_read_units_percent(
-        table_name, gsi_name, lookback_window_start=15):
+        table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of consumed read units in percent
 
     :type table_name: str
@@ -20,7 +20,9 @@ def get_consumed_read_units_percent(
     :type gsi_name: str
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
-    :param lookback_window_start: How many seconds to look at
+    :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Number of consumed reads as a
         percentage of provisioned reads
     """
@@ -29,12 +31,15 @@ def get_consumed_read_units_percent(
             table_name,
             gsi_name,
             lookback_window_start,
+            lookback_period,
             'ConsumedReadCapacityUnits')
     except BotoServerError:
         raise
 
     if metrics:
-        consumed_read_units = (float(metrics[0]['Sum'])/float(300))
+        lookback_seconds = lookback_period * 60
+        consumed_read_units = (
+            float(metrics[0]['Sum']) / float(lookback_seconds))
     else:
         consumed_read_units = 0
 
@@ -54,7 +59,7 @@ def get_consumed_read_units_percent(
 
 
 def get_throttled_read_event_count(
-        table_name, gsi_name, lookback_window_start=15):
+        table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled read events during a given time frame
 
     :type table_name: str
@@ -62,12 +67,18 @@ def get_throttled_read_event_count(
     :type gsi_name: str
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
-    :param lookback_window_start: How many seconds to look at
-    :returns: int -- Number of throttled read events
+    :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
+    :returns: int -- Number of throttled read events during the time period
     """
     try:
         metrics = __get_aws_metric(
-            table_name, gsi_name, lookback_window_start, 'ReadThrottleEvents')
+            table_name,
+            gsi_name,
+            lookback_window_start,
+            lookback_period,
+            'ReadThrottleEvents')
     except BotoServerError:
         raise
 
@@ -82,7 +93,7 @@ def get_throttled_read_event_count(
 
 
 def get_throttled_by_provisioned_read_event_percent(
-        table_name, gsi_name, lookback_window_start=15):
+        table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled read events in percent
 
     :type table_name: str
@@ -91,16 +102,24 @@ def get_throttled_by_provisioned_read_event_percent(
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Percent of throttled read events by provisioning
     """
     try:
         metrics = __get_aws_metric(
-            table_name, gsi_name, lookback_window_start, 'ReadThrottleEvents')
+            table_name,
+            gsi_name,
+            lookback_window_start,
+            lookback_period,
+            'ReadThrottleEvents')
     except BotoServerError:
         raise
 
     if metrics:
-        throttled_read_events = (float(metrics[0]['Sum'])/float(300))
+        lookback_seconds = lookback_period * 60
+        throttled_read_events = (
+            float(metrics[0]['Sum']) / float(lookback_seconds))
     else:
         throttled_read_events = 0
 
@@ -115,13 +134,14 @@ def get_throttled_by_provisioned_read_event_percent(
         raise
 
     logger.info(
-        '{0} - GSI: {1} - Throttled read percent by provision: {2:.2f}%'.format(
+        '{0} - GSI: {1} - Throttled read percent '
+        'by provision: {2:.2f}%'.format(
             table_name, gsi_name, throttled_by_provisioned_read_percent))
     return throttled_by_provisioned_read_percent
 
 
 def get_throttled_by_consumed_read_percent(
-        table_name, gsi_name, lookback_window_start=15):
+        table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled read events in percent of consumption
 
     :type table_name: str
@@ -130,6 +150,8 @@ def get_throttled_by_consumed_read_percent(
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Percent of throttled read events by consumption
     """
 
@@ -138,17 +160,23 @@ def get_throttled_by_consumed_read_percent(
             table_name,
             gsi_name,
             lookback_window_start,
+            lookback_period,
             'ConsumedReadCapacityUnits')
         metrics2 = __get_aws_metric(
-            table_name, gsi_name, lookback_window_start, 'ReadThrottleEvents')
+            table_name,
+            gsi_name,
+            lookback_window_start,
+            lookback_period,
+            'ReadThrottleEvents')
     except BotoServerError:
         raise
 
     if metrics1 and metrics2:
+        lookback_seconds = lookback_period * 60
         throttled_by_consumed_read_percent = (
             (
-                (float(metrics2[0]['Sum'])/float(300)) /
-                (float(metrics1[0]['Sum'])/float(300))
+                (float(metrics2[0]['Sum']) / float(lookback_seconds)) /
+                (float(metrics1[0]['Sum']) / float(lookback_seconds))
             ) * 100)
     else:
         throttled_by_consumed_read_percent = 0
@@ -161,7 +189,7 @@ def get_throttled_by_consumed_read_percent(
 
 
 def get_consumed_write_units_percent(
-        table_name, gsi_name, lookback_window_start=15):
+        table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of consumed write units in percent
 
     :type table_name: str
@@ -169,7 +197,9 @@ def get_consumed_write_units_percent(
     :type gsi_name: str
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
-    :param lookback_window_start: How many seconds to look at
+    :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Number of consumed writes as a
         percentage of provisioned writes
     """
@@ -178,12 +208,15 @@ def get_consumed_write_units_percent(
             table_name,
             gsi_name,
             lookback_window_start,
+            lookback_period,
             'ConsumedWriteCapacityUnits')
     except BotoServerError:
         raise
 
     if metrics:
-        consumed_write_units = (float(metrics[0]['Sum'])/float(300))
+        lookback_seconds = lookback_period * 60
+        consumed_write_units = (
+            float(metrics[0]['Sum']) / float(lookback_seconds))
     else:
         consumed_write_units = 0
 
@@ -203,7 +236,7 @@ def get_consumed_write_units_percent(
 
 
 def get_throttled_write_event_count(
-        table_name, gsi_name, lookback_window_start=15):
+        table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled write events during a given time frame
 
     :type table_name: str
@@ -211,12 +244,18 @@ def get_throttled_write_event_count(
     :type gsi_name: str
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
-    :param lookback_window_start: How many seconds to look at
-    :returns: int -- Number of throttled write events
+    :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
+    :returns: int -- Number of throttled write events during the time period
     """
     try:
         metrics = __get_aws_metric(
-            table_name, gsi_name, lookback_window_start, 'WriteThrottleEvents')
+            table_name,
+            gsi_name,
+            lookback_window_start,
+            lookback_period,
+            'WriteThrottleEvents')
     except BotoServerError:
         raise
 
@@ -231,7 +270,7 @@ def get_throttled_write_event_count(
 
 
 def get_throttled_by_provisioned_write_event_percent(
-        table_name, gsi_name, lookback_window_start=15):
+        table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled write events during a given time frame
 
     :type table_name: str
@@ -240,16 +279,24 @@ def get_throttled_by_provisioned_write_event_percent(
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Percent of throttled write events by provisioning
     """
     try:
         metrics = __get_aws_metric(
-            table_name, gsi_name, lookback_window_start, 'WriteThrottleEvents')
+            table_name,
+            gsi_name,
+            lookback_window_start,
+            lookback_period,
+            'WriteThrottleEvents')
     except BotoServerError:
         raise
 
     if metrics:
-        throttled_write_events = (float(metrics[0]['Sum'])/float(300))
+        lookback_seconds = lookback_period * 60
+        throttled_write_events = float(metrics[0]['Sum']) / float(
+            lookback_seconds)
     else:
         throttled_write_events = 0
 
@@ -271,7 +318,7 @@ def get_throttled_by_provisioned_write_event_percent(
 
 
 def get_throttled_by_consumed_write_percent(
-        table_name, gsi_name, lookback_window_start=15):
+        table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled write events in percent of consumption
 
     :type table_name: str
@@ -280,6 +327,8 @@ def get_throttled_by_consumed_write_percent(
     :param gsi_name: Name of the GSI
     :type lookback_window_start: int
     :param lookback_window_start: Relative start time for the CloudWatch metric
+    :type lookback_period: int
+    :param lookback_period: Number of minutes to look at
     :returns: float -- Percent of throttled write events by consumption
     """
 
@@ -288,17 +337,24 @@ def get_throttled_by_consumed_write_percent(
             table_name,
             gsi_name,
             lookback_window_start,
+            lookback_period,
             'ConsumedWriteCapacityUnits')
         metrics2 = __get_aws_metric(
-            table_name, gsi_name, lookback_window_start, 'WriteThrottleEvents')
+            table_name,
+            gsi_name,
+            lookback_window_start,
+            lookback_period,
+            'WriteThrottleEvents')
+
     except BotoServerError:
         raise
 
     if metrics1 and metrics2:
+        lookback_seconds = lookback_period * 60
         throttled_by_consumed_write_percent = (
             (
-                (float(metrics2[0]['Sum'])/float(300)) /
-                (float(metrics1[0]['Sum'])/float(300))
+                (float(metrics2[0]['Sum']) / float(lookback_seconds)) /
+                (float(metrics1[0]['Sum']) / float(lookback_seconds))
             ) * 100)
     else:
         throttled_by_consumed_write_percent = 0
@@ -315,7 +371,11 @@ def get_throttled_by_consumed_write_percent(
     wait_exponential_multiplier=1000,
     wait_exponential_max=10000,
     stop_max_attempt_number=10)
-def __get_aws_metric(table_name, gsi_name, lookback_window_start, metric_name):
+def __get_aws_metric(table_name,
+                     gsi_name,
+                     lookback_window_start,
+                     lookback_period,
+                     metric_name):
     """ Returns a  metric list from the AWS CloudWatch service, may return
     None if no metric exists
 
@@ -325,19 +385,22 @@ def __get_aws_metric(table_name, gsi_name, lookback_window_start, metric_name):
     :param gsi_name: Name of a GSI on the given DynamoDB table
     :type lookback_window_start: int
     :param lookback_window_start: How many minutes to look at
-    :type metric_name str
-    :param metric_name Name of the metric to retrieve from CloudWatch
+    :type lookback_period: int
+    :type lookback_period: Length of the lookback period in minutes
+    :type metric_name: str
+    :param metric_name: Name of the metric to retrieve from CloudWatch
     :returns: list --
         A list of time series data for the given metric, may be None if
         there was no data
     """
     try:
         now = datetime.utcnow()
-        start_time = now-timedelta(minutes=lookback_window_start)
-        end_time = now-timedelta(minutes=lookback_window_start-5)
+        start_time = now - timedelta(minutes=lookback_window_start)
+        end_time = now - timedelta(
+            minutes=lookback_window_start - lookback_period)
 
         return cloudwatch_connection.get_metric_statistics(
-            period=300,                 # Always look at 5 minutes windows
+            period=lookback_period * 60,
             start_time=start_time,
             end_time=end_time,
             metric_name=metric_name,

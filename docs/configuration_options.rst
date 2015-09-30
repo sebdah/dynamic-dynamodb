@@ -41,8 +41,6 @@ Table configuration
 
 Important note: The table name is treated as a regular expression. That means that ``my_table`` also will match ``my_table2``, unless you express it as a valid regular expression; ``^my_table$``. This feature enables you to easily configure many tables or tables with dynamic names.
 
-Please note also that DynamoDB writes CloudWatch data every 5 minutes, thus ``reads/writes-upper/lower-threshold`` and ``throttled-reads/writes-upper-threshold`` is counted over 5 minute intervals.
-
 =============================================== ========= =========================== ==========================================
 Option                                          Type      Default                     Comment
 =============================================== ========= =========================== ==========================================
@@ -93,7 +91,8 @@ increase-throttled-by-provisioned-writes-scale  ``dict``                        
                                                                                       Detailed information on the scale dict can be found `here <http://dynamic-dynamodb.readthedocs.org/en/latest/granular_scaling.html>`__.
 increase-writes-unit                            ``str``   ``percent``                 Set if we should scale up in ``units`` or ``percent``
 increase-writes-with                            ``int``   50                          Number of ``units`` or ``percent`` we should scale up the write provisioning with. Choose entity with ``increase-writes-unit``.
-lookback-window-start                           ``int``   15                          Dynamic DynamoDB fetches data from CloudWatch in a window that streches between ``now()-15`` and ``now()-10`` minutes. If you want to look at slightly newer data, change this value. Please note that it might not be set to less than 5 minutes (as CloudWatch data for DynamoDB is updated every 5 minutes).
+lookback-window-start                           ``int``   15                          Dynamic DynamoDB fetches data from CloudWatch in a window that streches between ``now()-15`` and ``now()-10`` minutes. If you want to look at slightly newer data, change this value. Please note that it might not be set to less than 1 minute (as CloudWatch data for DynamoDB is updated every minute).
+lookback-period                                 ``int``   5                           Changes the duration of CloudWatch data to look at. For example, instead of looking at ``now()-15`` to ``now()-10``, you can look at ``now()-15`` to ``now()-14``
 maintenance-windows                             ``str``                               Force Dynamic DynamoDB to operate within maintenance windows. E.g. ``22:00-23:59,00:00-06:00``
 max-provisioned-reads                           ``int``                               Maximum number of provisioned reads for the table
 max-provisioned-writes                          ``int``                               Maximum number of provisioned writes for the table
@@ -128,8 +127,6 @@ Global secondary index configuration
 Important note: Both the GSI name and the table name is treated as regular expressions. That means that ``my_gsi`` also will match ``my_gsi``, unless you express it as a valid regular expression; ``^my_gsi$``. This feature enables you to easily configure many GSIs with one configuration section.
 
 The ``table:`` section after ``gsi:`` **must** match with an existing ``table:`` section.
-
-Please note also that DynamoDB writes CloudWatch data every 5 minutes, thus ``reads/writes-upper/lower-threshold`` and ``throttled-reads/writes-upper-threshold`` is counted over 5 minute intervals.
 
 =============================================== ========= =========================== ==========================================
 Option                                          Type      Default                     Comment

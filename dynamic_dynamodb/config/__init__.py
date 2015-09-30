@@ -70,6 +70,7 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
         'lookback_window_start': 15,
+        'lookback_period': 5,
         'maintenance_windows': None,
         'sns_topic_arn': None,
         'sns_message_types': [],
@@ -125,6 +126,7 @@ DEFAULT_OPTIONS = {
         'allow_scaling_down_writes_on_0_percent': False,
         'always_decrease_rw_together': False,
         'lookback_window_start': 15,
+        'lookback_period': 5,
         'maintenance_windows': None,
         'sns_topic_arn': None,
         'sns_message_types': [],
@@ -405,10 +407,10 @@ def __check_gsi_rules(configuration):
                 sys.exit(1)
 
             # Check lookback-window start
-            if gsi['lookback_window_start'] < 5:
+            if gsi['lookback_window_start'] < 1:
                 print(
-                    'lookback-window-start must be a value higher than 5, '
-                    'as DynamoDB sends CloudWatch data every 5 minutes')
+                    'lookback-window-start must be a value higher than 1, '
+                    'as DynamoDB sends CloudWatch data every minute')
                 sys.exit(1)
 
             # Check sns-message-types
@@ -567,10 +569,10 @@ def __check_table_rules(configuration):
             sys.exit(1)
 
         # Check lookback-window start
-        if table['lookback_window_start'] < 5:
+        if table['lookback_window_start'] < 1:
             print(
-                'lookback-window-start must be a value higher than 5, '
-                'as DynamoDB sends CloudWatch data every 5 minutes')
+                'lookback-window-start must be a value higher than 1, '
+                'as DynamoDB sends CloudWatch data every minute')
             sys.exit(1)
 
         # Check sns-message-types
