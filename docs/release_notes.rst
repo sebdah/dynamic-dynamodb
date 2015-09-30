@@ -6,6 +6,7 @@ Release notes
 
 **Release date:** unknown
 
+- Support for granular downscaling (`#263 <https://github.com/sebdah/dynamic-dynamodb/issues/263>`). Thanks for the pull request `@Sazpaimon <https://github.com/Sazpaimon>`
 - Allow configurable lookback period instead of the hardcoded 5 minute one (`#261 <https://github.com/sebdah/dynamic-dynamodb/issues/261>`). Thanks for the pull request `@Sazpaimon <https://github.com/Sazpaimon>`
 - Don't scale down if it would scale below the current consumed units (`#268 <https://github.com/sebdah/dynamic-dynamodb/issues/261>`). Thanks for the pull request `@Sazpaimon <https://github.com/Sazpaimon>`
 
