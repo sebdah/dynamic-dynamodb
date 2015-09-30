@@ -441,6 +441,16 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                 '{0} - Increasing reads to meet min-provisioned-reads '
                 'limit ({1} reads)'.format(table_name, updated_read_units))
 
+    if calculators.is_consumed_over_proposed(
+            current_read_units,
+            updated_read_units,
+            consumed_read_units_percent):
+        update_needed = False
+        updated_read_units = current_read_units
+        logger.info(
+            '{0} - Consumed is over proposed read units. Will leave table at '
+            'current setting.'.format(table_name))
+
     logger.info('{0} - Consecutive read checks {1}/{2}'.format(
         table_name,
         num_consec_read_checks,
@@ -774,6 +784,16 @@ def __ensure_provisioning_writes(
             logger.info(
                 '{0} - Increasing writes to meet min-provisioned-writes '
                 'limit ({1} writes)'.format(table_name, updated_write_units))
+
+    if calculators.is_consumed_over_proposed(
+            current_write_units,
+            updated_write_units,
+            consumed_write_units_percent):
+        update_needed = False
+        updated_write_units = current_write_units
+        logger.info(
+            '{0} - Consumed is over proposed write units. Will leave table at '
+            'current setting.'.format(table_name))
 
     logger.info('{0} - Consecutive write checks {1}/{2}'.format(
         table_name,

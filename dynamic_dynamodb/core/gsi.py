@@ -523,6 +523,16 @@ def __ensure_provisioning_reads(
                     gsi_name,
                     updated_read_units))
 
+    if calculators.is_consumed_over_proposed(
+            current_read_units,
+            updated_read_units,
+            consumed_read_units_percent):
+        update_needed = False
+    updated_read_units = current_read_units
+    logger.info(
+        '{0} - GSI: {1} - Consumed is over proposed read units. Will leave '
+        'table at current setting.'.format(table_name, gsi_name))
+
     logger.info('{0} - GSI: {1} - Consecutive read checks {2}/{3}'.format(
         table_name,
         gsi_name,
@@ -912,6 +922,16 @@ def __ensure_provisioning_writes(
                     table_name,
                     gsi_name,
                     updated_write_units))
+
+    if calculators.is_consumed_over_proposed(
+            current_write_units,
+            updated_write_units,
+            consumed_write_units_percent):
+        update_needed = False
+    updated_write_units = current_write_units
+    logger.info(
+        '{0} - GSI: {1} - Consumed is over proposed write units. Will leave '
+        'table at current setting.'.format(table_name, gsi_name))
 
     logger.info('{0} - GSI: {1} - Consecutive write checks {2}/{3}'.format(
         table_name,
