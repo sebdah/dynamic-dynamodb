@@ -1,14 +1,19 @@
 Release notes
 =============
 
+2.1.x
+-----
+
+**Release date:** unknown
+
+- Allow configurable lookback period instead of the hardcoded 5 minute one (`#261 <https://github.com/sebdah/dynamic-dynamodb/issues/261>`). Thanks for the pull request `@Sazpaimon <https://github.com/Sazpaimon>`
+
 2.0.2
 -----
 
 **Release date:** 2015-09-30
 
 - Use HTTP rather than SSH for git clone (`#266 <https://github.com/sebdah/dynamic-dynamodb/issues/266>`). Thanks for the pull request `@superprat <https://github.com/superprat>`
-
-
 
 2.0.1
 -----
