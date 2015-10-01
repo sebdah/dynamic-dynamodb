@@ -7,7 +7,7 @@ from dynamic_dynamodb.config import command_line_parser
 try:
     from collections import OrderedDict as ordereddict
 except ImportError:
-    import ordereddict
+    from ordereddict import OrderedDict as ordereddict
 
 DEFAULT_OPTIONS = {
     'global': {
