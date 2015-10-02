@@ -1,6 +1,15 @@
 Release notes
 =============
 
+2.1.1
+-----
+
+**Release date:** 2015-10-02
+
+- Depend on argparse for Python 2.6 (`#274 <https://github.com/sebdah/dynamic-dynamodb/issues/274>`)
+- Fix import of ordered dicts for Python 2.6 (`#273 <https://github.com/sebdah/dynamic-dynamodb/issues/273>`). Thanks for the pull request `@KyleAlanDavis <https://github.com/KyleAlanDavis>`
+- Fix upscaling reads and writes for GSI (`#271 <https://github.com/sebdah/dynamic-dynamodb/issues/271>`). Thanks for the pull request `@qqshfox <https://github.com/qqshfox>`
+
 2.1.0
 -----
 
