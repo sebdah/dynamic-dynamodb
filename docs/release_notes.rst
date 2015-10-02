@@ -1,6 +1,13 @@
 Release notes
 =============
 
+2.1.1
+-----
+
+**Release date:** 2015-10-02
+
+- Depend on argparse for Python 2.6 (`#274 <https://github.com/sebdah/dynamic-dynamodb/issues/274>`)
+
 2.1.0
 -----
 
