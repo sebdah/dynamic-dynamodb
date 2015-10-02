@@ -16,6 +16,7 @@ def return_requires():
         'retrying >= 1.3.3'
     ]
     if sys.version_info < (2, 7):
+        install_requires.append('argparse >= 1.4.0')
         install_requires.append('ordereddict >= 1.1')
     return install_requires
 

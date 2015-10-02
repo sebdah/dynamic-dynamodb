@@ -9,7 +9,7 @@ from copy import deepcopy
 try:
     from collections import OrderedDict as ordereddict
 except ImportError:
-    import ordereddict
+    from ordereddict import OrderedDict as ordereddict
 
 TABLE_CONFIG_OPTIONS = [
     {
