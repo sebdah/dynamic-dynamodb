@@ -57,7 +57,9 @@ def is_open(table_name=None, table_key=None, gsi_name=None, gsi_key=None):
             url=match.group('url'))
         auth = (match.group('username'), match.group('password'))
 
-    headers = {"x-table-name": table_name}
+    headers = {}
+    if table_name:
+        headers["x-table-name"] = table_name
     if gsi_name:
         headers["x-gsi-name"] = gsi_name
 
