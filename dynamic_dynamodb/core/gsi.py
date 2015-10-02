@@ -29,8 +29,9 @@ def ensure_provisioning(
     :param num_consec_write_checks: How many consecutive checks have we had
     :returns: (int, int) -- num_consec_read_checks, num_consec_write_checks
     """
-    if get_global_option('circuit_breaker_url'):
-        if circuit_breaker.is_open():
+    if get_global_option('circuit_breaker_url') or get_gsi_option(
+            table_key, gsi_key, 'circuit_breaker_url'):
+        if circuit_breaker.is_open(table_name, table_key, gsi_name, gsi_key):
             logger.warning('Circuit breaker is OPEN!')
             return (0, 0)
 
