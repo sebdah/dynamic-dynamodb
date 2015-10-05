@@ -438,7 +438,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
                                 key_name, 'min_provisioned_reads'),
                             table_name)
             elif (reads_lower_threshold
-                  and consumed_read_units_percent > reads_lower_threshold
+                  and consumed_read_units_percent < reads_lower_threshold
                   and not decrease_consumed_reads_scale):
                 if decrease_consumed_reads_unit == 'percent':
                     calculated_provisioning = \
@@ -823,7 +823,7 @@ def __ensure_provisioning_writes(
                                 key_name, 'min_provisioned_writes'),
                             table_name)
             elif (writes_lower_threshold
-                  and consumed_write_units_percent > writes_lower_threshold
+                  and consumed_write_units_percent < writes_lower_threshold
                   and not decrease_consumed_writes_scale):
                 if decrease_consumed_writes_unit == 'percent':
                     calculated_provisioning = \

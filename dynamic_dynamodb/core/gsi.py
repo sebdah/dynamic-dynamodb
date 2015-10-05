@@ -510,7 +510,7 @@ def __ensure_provisioning_reads(
                                 table_key, gsi_key, 'min_provisioned_reads'),
                             '{0} - GSI: {1}'.format(table_name, gsi_name))
             elif (reads_lower_threshold
-                  and consumed_read_units_percent > reads_lower_threshold
+                  and consumed_read_units_percent < reads_lower_threshold
                   and not decrease_consumed_reads_scale):
                 if decrease_consumed_reads_unit == 'percent':
                     calculated_provisioning = \
@@ -953,7 +953,7 @@ def __ensure_provisioning_writes(
                                 table_key, gsi_key, 'min_provisioned_writes'),
                             '{0} - GSI: {1}'.format(table_name, gsi_name))
             elif (writes_lower_threshold
-                  and consumed_write_units_percent > writes_lower_threshold
+                  and consumed_write_units_percent < writes_lower_threshold
                   and not decrease_consumed_writes_scale):
                 if decrease_consumed_writes_unit == 'percent':
                     calculated_provisioning = \
