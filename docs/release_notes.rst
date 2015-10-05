@@ -1,6 +1,13 @@
 Release notes
 =============
 
+2.2.0
+-----
+
+**Release date:** unknown
+
+- Fix minor spelling and formatting issues (`#278 <https://github.com/sebdah/dynamic-dynamodb/issues/278>`)
+
 2.1.2
 -----
 
