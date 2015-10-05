@@ -1,6 +1,13 @@
 Release notes
 =============
 
+2.1.2
+-----
+
+**Release date:** 2015-10-05
+
+- Fix the lower_threshold checking (`#275 <https://github.com/sebdah/dynamic-dynamodb/issues/273>`). Thanks for the pull request `@KyleAlanDavis <https://github.com/KyleAlanDavis>`
+
 2.1.1
 -----
 
