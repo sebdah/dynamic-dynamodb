@@ -556,7 +556,7 @@ def __ensure_provisioning_reads(
             update_needed = True
             updated_read_units = int(min_provisioned_reads)
             logger.info(
-                '{0} - GSI: {1} - Increasing reads to'
+                '{0} - GSI: {1} - Increasing reads to '
                 'meet gsi-min-provisioned-reads '
                 'limit ({2} reads)'.format(
                     table_name,
