@@ -1000,7 +1000,7 @@ def __ensure_provisioning_writes(
             update_needed = True
             updated_write_units = int(min_provisioned_writes)
             logger.info(
-                '{0} - GSI: {1} - Increasing writes to'
+                '{0} - GSI: {1} - Increasing writes to '
                 'meet gsi-min-provisioned-writes '
                 'limit ({2} writes)'.format(
                     table_name,
