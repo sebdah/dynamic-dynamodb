@@ -94,6 +94,8 @@ DEFAULT_OPTIONS = {
         'decrease_consumed_writes_unit': None,
         'decrease_consumed_writes_with': None,
         'decrease_consumed_writes_scale': None,
+        'circuit_breaker_url': None,
+        'circuit_breaker_timeout': 10000.00
     },
     'gsi': {
         'reads-upper-alarm-threshold': 0,
@@ -149,7 +151,9 @@ DEFAULT_OPTIONS = {
         'increase_throttled_by_consumed_reads_unit': None,
         'increase_throttled_by_consumed_reads_scale': None,
         'increase_throttled_by_consumed_writes_unit': None,
-        'increase_throttled_by_consumed_writes_scale': None
+        'increase_throttled_by_consumed_writes_scale': None,
+        'circuit_breaker_url': None,
+        'circuit_breaker_timeout': 10000.00
     }
 }
 

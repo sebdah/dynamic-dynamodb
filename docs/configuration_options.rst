@@ -11,11 +11,11 @@ Global configuration
 ===================================== ========= ============= ==========================================
 Option                                Type      Default       Comment
 ===================================== ========= ============= ==========================================
-aws-access-key-id                     ``str``                  AWS access API key
-aws-secret-access-key-id              ``str``                  AWS secret API key
+aws-access-key-id                     ``str``                 AWS access API key
+aws-secret-access-key-id              ``str``                 AWS secret API key
 check-interval                        ``int``   300           How many seconds to wait between the checks
 circuit-breaker-timeout               ``float`` 10000.00      Timeout for the circuit breaker, in ms
-circuit-breaker-url                   ``str``                  URL to poll for circuit breaking. Dynamic DynamoDB will only run if the circuit breaker returns ``HTTP/200``
+circuit-breaker-url                   ``str``                 URL to poll for circuit breaking. Dynamic DynamoDB will only run if the circuit breaker returns ``HTTP/200``. When polling the URL, the headers ``x-table-name`` and ``x-gsi-name`` will be sent identifying the table and GSI names, if applicable.
 region                                ``str``   ``us-east-1`` AWS region to use
 ===================================== ========= ============= ==========================================
 
@@ -47,6 +47,8 @@ Option                                          Type      Default               
 allow-scaling-down-reads-on-0-percent           ``bool``  ``false``                   Allow down-scaling of reads when 0% is used.
 allow-scaling-down-writes-on-0-percent          ``bool``  ``false``                   Allow down-scaling of writes when 0% is used.
 always-decrease-rw-together                     ``bool``  ``false``                   Restrict scale down to only happen when both reads AND writes are in need of scaling down. Set this to ``true`` to minimize down-scaling.
+circuit-breaker-timeout                         ``float`` 10000.00                    Timeout for the circuit breaker, in ms. Overrides the global setting if set.
+circuit-breaker-url                             ``str``                               URL to poll for circuit breaking. Dynamic DynamoDB will only run if the circuit breaker returns ``HTTP/200``. Overrides the global setting if set. When polling the URL, the header ``x-table-name`` will be sent identifying the table name.
 decrease-reads-unit                             ``str``   ``percent``                 Set if we should scale down reads in ``units`` or ``percent``
 decrease-reads-with                             ``int``   50                          Number of ``units`` or ``percent`` we should scale down the read provisioning with. Choose entity with ``decrease-reads-unit``.
 decrease-writes-unit                            ``str``   ``percent``                 Set if we should scale down in ``units`` or ``percent``
@@ -134,6 +136,8 @@ Option                                          Type      Default               
 allow-scaling-down-reads-on-0-percent           ``bool``  ``false``                   Allow down-scaling of reads when 0% is used.
 allow-scaling-down-writes-on-0-percent          ``bool``  ``false``                   Allow down-scaling of writes when 0% is used.
 always-decrease-rw-together                     ``bool``  ``false``                   Restrict scale down to only happen when both reads AND writes are in need of scaling down. Set this to ``true`` to minimize down-scaling.
+circuit-breaker-timeout                         ``float`` 10000.00                    Timeout for the circuit breaker, in ms. Overrides the global setting if set.
+circuit-breaker-url                             ``str``                               URL to poll for circuit breaking. Dynamic DynamoDB will only run if the circuit breaker returns ``HTTP/200``. Overrides the global setting if set. When polling the URL, the headers ``x-table-name`` and ``x-gsi-name`` will be sent identifying the table and GSI names.
 decrease-reads-unit                             ``str``   ``percent``                 Set if we should scale down reads in ``units`` or ``percent``
 decrease-reads-with                             ``int``   50                          Number of ``units`` or ``percent`` we should scale down the read provisioning with. Choose entity with ``decrease-reads-unit``.
 decrease-writes-unit                            ``str``   ``percent``                 Set if we should scale down in ``units`` or ``percent``

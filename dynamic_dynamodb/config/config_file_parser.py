@@ -371,7 +371,20 @@ TABLE_CONFIG_OPTIONS = [
         'option': 'decrease-consumed-writes-scale',
         'required': False,
         'type': 'dict'
-    }
+    },
+    {
+        'key': 'circuit_breaker_url',
+        'option': 'circuit-breaker-url',
+        'required': False,
+        'type': 'str'
+    },
+    {
+        'key': 'circuit_breaker_timeout',
+        'option': 'circuit-breaker-timeout',
+        'required': False,
+        'type': 'float'
+    },
+
 ]
 
 
