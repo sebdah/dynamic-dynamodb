@@ -1,6 +1,14 @@
 Release notes
 =============
 
+2.2.0
+-----
+
+**Release date:** 2015-10-23
+
+- Circuit breaker a per-table/gsi config option (`#276 <https://github.com/sebdah/dynamic-dynamodb/issues/276>`). Thanks for the pull request `@Sazpaimon <https://github.com/Sazpaimon>`
+- Fix minor spelling and formatting issues (`#278 <https://github.com/sebdah/dynamic-dynamodb/issues/278>`)
+
 2.1.2
 -----
 

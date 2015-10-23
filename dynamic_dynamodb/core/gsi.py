@@ -29,8 +29,9 @@ def ensure_provisioning(
     :param num_consec_write_checks: How many consecutive checks have we had
     :returns: (int, int) -- num_consec_read_checks, num_consec_write_checks
     """
-    if get_global_option('circuit_breaker_url'):
-        if circuit_breaker.is_open():
+    if get_global_option('circuit_breaker_url') or get_gsi_option(
+            table_key, gsi_key, 'circuit_breaker_url'):
+        if circuit_breaker.is_open(table_name, table_key, gsi_name, gsi_key):
             logger.warning('Circuit breaker is OPEN!')
             return (0, 0)
 
@@ -556,7 +557,7 @@ def __ensure_provisioning_reads(
             update_needed = True
             updated_read_units = int(min_provisioned_reads)
             logger.info(
-                '{0} - GSI: {1} - Increasing reads to'
+                '{0} - GSI: {1} - Increasing reads to '
                 'meet gsi-min-provisioned-reads '
                 'limit ({2} reads)'.format(
                     table_name,
@@ -1000,7 +1001,7 @@ def __ensure_provisioning_writes(
             update_needed = True
             updated_write_units = int(min_provisioned_writes)
             logger.info(
-                '{0} - GSI: {1} - Increasing writes to'
+                '{0} - GSI: {1} - Increasing writes to '
                 'meet gsi-min-provisioned-writes '
                 'limit ({2} writes)'.format(
                     table_name,
