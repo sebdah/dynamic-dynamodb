@@ -282,7 +282,7 @@ def update_table_provisioning(
     # Make sure we aren't scaling down if we turned off downscaling
     if (not get_table_option(key_name, 'enable_reads_down_scaling') or
             not get_table_option(key_name, 'enable_writes_down_scaling')):
-        if (not get_table_option(key_name, 'enable_reads_down_scaling') or
+        if (not get_table_option(key_name, 'enable_reads_down_scaling') and
                 current_reads > reads):
             reads = current_reads
         if (not get_table_option(key_name, 'enable_writes_down_scaling') and
