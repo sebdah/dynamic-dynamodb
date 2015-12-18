@@ -279,6 +279,23 @@ def update_table_provisioning(
     current_reads = int(get_provisioned_table_read_units(table_name))
     current_writes = int(get_provisioned_table_write_units(table_name))
 
+    # Make sure we aren't scaling down if we turned off downscaling
+    if (not get_table_option(key_name, 'enable_reads_down_scaling') or
+            not get_table_option(key_name, 'enable_writes_down_scaling')):
+        if (not get_table_option(key_name, 'enable_reads_down_scaling') and
+                current_reads > reads):
+            reads = current_reads
+        if (not get_table_option(key_name, 'enable_writes_down_scaling') and
+                current_writes > writes):
+            writes = current_writes
+
+        # Return if we do not need to scale at all
+        if reads == current_reads and writes == current_writes:
+            logger.info(
+                '{0} - No need to scale up reads nor writes'.format(
+                    table_name))
+            return
+
     if retry_with_only_increase:
         # Ensure that we are only doing increases
         if current_reads > reads:
@@ -423,6 +440,26 @@ def update_gsi_provisioning(
     """
     current_reads = int(get_provisioned_gsi_read_units(table_name, gsi_name))
     current_writes = int(get_provisioned_gsi_write_units(table_name, gsi_name))
+
+    # Make sure we aren't scaling down if we turned off downscaling
+    if (not get_gsi_option(table_key, gsi_key, 'enable_reads_down_scaling') or
+            not get_gsi_option(
+                table_key, gsi_key, 'enable_writes_down_scaling')):
+        if (not get_gsi_option(
+                table_key, gsi_key, 'enable_reads_down_scaling') and
+                current_reads > reads):
+            reads = current_reads
+        if (not get_gsi_option(
+                table_key, gsi_key, 'enable_writes_down_scaling') and
+                current_writes > writes):
+            writes = current_writes
+
+        # Return if we do not need to scale at all
+        if reads == current_reads and writes == current_writes:
+            logger.info(
+                '{0} - No need to scale up reads nor writes'.format(
+                    table_name))
+            return
 
     if retry_with_only_increase:
         # Ensure that we are only doing increases
