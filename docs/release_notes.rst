@@ -1,6 +1,13 @@
 Release notes
 =============
 
+2.2.1
+-----
+
+**Release date** 2015-12-18
+
+- Make sure we aren't downscaling if disabled in the config (`#279 <https://github.com/sebdah/dynamic-dynamodb/pull/279>`). Thanks for the pull request `Sazpaimon <https://github.com/Sazpaimon>`
+
 2.2.0
 -----
 
