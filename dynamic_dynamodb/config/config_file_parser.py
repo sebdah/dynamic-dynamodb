@@ -3,6 +3,7 @@
 import sys
 import os.path
 import ConfigParser
+import re
 import ast
 from copy import deepcopy
 
@@ -462,6 +463,7 @@ def parse(config_path):
 
     # Read the configuration file
     config_file = ConfigParser.RawConfigParser()
+    config_file.SECTCRE = re.compile(r"\[ *(?P<header>.*) *\]")
     config_file.optionxform = lambda option: option
     config_file.read(config_path)
 
