@@ -1,6 +1,13 @@
 Release notes
 =============
 
+2.3.x
+-----
+
+**Release date** TBD
+
+- Allow `]` in configuration section names (`#281 <https://github.com/sebdah/dynamic-dynamodb/issues/281>`)
+
 2.2.1
 -----
 
