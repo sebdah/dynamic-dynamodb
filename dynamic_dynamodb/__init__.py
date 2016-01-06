@@ -47,7 +47,7 @@ class DynamicDynamoDBDaemon(Daemon):
         """
         try:
             while True:
-                execute()
+                execute_with_sleep()
         except Exception as error:
             logger.exception(error)
 
@@ -95,7 +95,7 @@ def main():
                 execute()
             else:
                 while True:
-                    execute()
+                    execute_with_sleep()
 
     except Exception as error:
         logger.exception(error)
@@ -213,8 +213,11 @@ def execute():
             else:
                 raise
 
+
+def execute_with_sleep():
+    execute()
+
     # Sleep between the checks
-    if not get_global_option('run_once'):
-        logger.debug('Sleeping {0} seconds until next check'.format(
-            get_global_option('check_interval')))
-        time.sleep(get_global_option('check_interval'))
+    logger.debug('Sleeping {0} seconds until next check'.format(
+        get_global_option('check_interval')))
+    time.sleep(get_global_option('check_interval'))

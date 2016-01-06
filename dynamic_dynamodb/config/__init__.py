@@ -158,8 +158,11 @@ DEFAULT_OPTIONS = {
 }
 
 
-def get_configuration():
-    """ Get the configuration from command line and config files """
+def get_configuration(conf_options):
+    """ Get the configuration from command line and config files
+
+    :param conf_options: dict
+    """
     # This is the dict we will return
     configuration = {
         'global': {},
@@ -171,7 +174,7 @@ def get_configuration():
     cmd_line_options = command_line_parser.parse()
 
     # If a configuration file is specified, read that as well
-    conf_file_options = None
+    conf_file_options = conf_options
     if 'config' in cmd_line_options:
         conf_file_options = config_file_parser.parse(
             cmd_line_options['config'])
