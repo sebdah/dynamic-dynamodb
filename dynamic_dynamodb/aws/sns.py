@@ -7,6 +7,8 @@ from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import (
     get_gsi_option, get_table_option, get_global_option)
 
+SNS_CONNECTION = None
+
 
 def publish_gsi_notification(
         table_key, gsi_key, message, message_types, subject=None):
@@ -80,7 +82,7 @@ def __publish(topic, message, subject=None):
     :returns: None
     """
     try:
-        SNS_CONNECTION.publish(topic=topic, message=message, subject=subject)
+        get_sns_connection().publish(topic=topic, message=message, subject=subject)
         logger.info('Sent SNS notification to {0}'.format(topic))
     except BotoServerError as error:
         logger.error('Problem sending SNS notification: {0}'.format(
@@ -120,4 +122,9 @@ def __get_connection_SNS():
     logger.debug('Connected to SNS in {0}'.format(region))
     return connection
 
-SNS_CONNECTION = __get_connection_SNS()
+
+def get_sns_connection():
+    global SNS_CONNECTION
+    if SNS_CONNECTION is None:
+        SNS_CONNECTION = __get_connection_SNS()
+    return SNS_CONNECTION
