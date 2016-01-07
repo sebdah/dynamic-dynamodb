@@ -39,7 +39,7 @@ Update Lambda Function Code
 After you've created the stack, you can get lambda function name:
 ::
 
-    LAMBDA_NAME=$(aws cloudformation describe-stack-resource --stack-name dynamic-dynamodb-lambda --logical-resource-id LambdaFunction --query 'StackResourceDetail.PhysicalResourceId' --output text)
+    LAMBDA_NAME=$(aws cloudformation describe-stack-resource --stack-name $STACK_NAME --logical-resource-id LambdaFunction --query 'StackResourceDetail.PhysicalResourceId' --output text)
 
 Update lambda code by running helper script:
 ::
