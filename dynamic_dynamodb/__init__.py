@@ -30,7 +30,7 @@ from dynamic_dynamodb.aws import dynamodb
 from dynamic_dynamodb.core import gsi, table
 from dynamic_dynamodb.daemon import Daemon
 from dynamic_dynamodb.config_handler import get_global_option, get_table_option
-from dynamic_dynamodb.log_handler import LOGGER as logger
+from dynamic_dynamodb.log_handler import get_logger
 
 CHECK_STATUS = {
     'tables': {},
@@ -49,10 +49,11 @@ class DynamicDynamoDBDaemon(Daemon):
             while True:
                 execute_with_sleep()
         except Exception as error:
-            logger.exception(error)
+            get_logger().exception(error)
 
 
 def main():
+    logger = get_logger()
     """ Main function called from dynamic-dynamodb """
     try:
         if get_global_option('daemon'):
@@ -103,6 +104,7 @@ def main():
 
 def execute():
     """ Ensure provisioning """
+    logger = get_logger()
     boto_server_error_retries = 3
 
     # Ensure provisioning
@@ -218,6 +220,6 @@ def execute_with_sleep():
     execute()
 
     # Sleep between the checks
-    logger.debug('Sleeping {0} seconds until next check'.format(
+    get_logger().debug('Sleeping {0} seconds until next check'.format(
         get_global_option('check_interval')))
     time.sleep(get_global_option('check_interval'))

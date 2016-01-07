@@ -9,7 +9,7 @@ from boto import dynamodb2
 from boto.dynamodb2.table import Table
 from boto.exception import DynamoDBResponseError, JSONResponseError
 
-from dynamic_dynamodb.log_handler import LOGGER as logger
+from dynamic_dynamodb.log_handler import get_logger
 from dynamic_dynamodb.config_handler import (
     get_configured_tables,
     get_global_option,
@@ -25,6 +25,7 @@ def get_tables_and_gsis():
 
     :returns: set -- A set of tuples (table_name, table_conf_key)
     """
+    logger = get_logger()
     table_names = set()
     configured_tables = get_configured_tables()
     not_used_tables = set(configured_tables)
@@ -79,7 +80,7 @@ def get_table(table_name):
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
         if dynamodb_error == 'ResourceNotFoundException':
-            logger.error(
+            get_logger().error(
                 '{0} - Table {1} not found'.format(table_name, table_name))
 
         raise
@@ -126,7 +127,7 @@ def get_provisioned_gsi_read_units(table_name, gsi_name):
                 gsi[u'ProvisionedThroughput'][u'ReadCapacityUnits'])
             break
 
-    logger.debug(
+    get_logger().debug(
         '{0} - GSI: {1} - Currently provisioned read units: {2:d}'.format(
             table_name, gsi_name, read_units))
     return read_units
@@ -152,7 +153,7 @@ def get_provisioned_gsi_write_units(table_name, gsi_name):
                 gsi[u'ProvisionedThroughput'][u'WriteCapacityUnits'])
             break
 
-    logger.debug(
+    get_logger().debug(
         '{0} - GSI: {1} - Currently provisioned write units: {2:d}'.format(
             table_name, gsi_name, write_units))
     return write_units
@@ -173,7 +174,7 @@ def get_provisioned_table_read_units(table_name):
     read_units = int(
         desc[u'Table'][u'ProvisionedThroughput'][u'ReadCapacityUnits'])
 
-    logger.debug('{0} - Currently provisioned read units: {1:d}'.format(
+    get_logger().debug('{0} - Currently provisioned read units: {1:d}'.format(
         table_name, read_units))
     return read_units
 
@@ -193,7 +194,7 @@ def get_provisioned_table_write_units(table_name):
     write_units = int(
         desc[u'Table'][u'ProvisionedThroughput'][u'WriteCapacityUnits'])
 
-    logger.debug('{0} - Currently provisioned write units: {1:d}'.format(
+    get_logger().debug('{0} - Currently provisioned write units: {1:d}'.format(
         table_name, write_units))
     return write_units
 
@@ -218,6 +219,7 @@ def list_tables():
 
     :returns: list -- List of DynamoDB tables
     """
+    logger = get_logger()
     tables = []
 
     try:
@@ -277,6 +279,7 @@ def update_table_provisioning(
     :type retry_with_only_increase: bool
     :param retry_with_only_increase: Set to True to ensure only increases
     """
+    logger = get_logger()
     table = get_table(table_name)
     current_reads = int(get_provisioned_table_read_units(table_name))
     current_writes = int(get_provisioned_table_write_units(table_name))
@@ -440,6 +443,7 @@ def update_gsi_provisioning(
     :type retry_with_only_increase: bool
     :param retry_with_only_increase: Set to True to ensure only increases
     """
+    logger = get_logger()
     current_reads = int(get_provisioned_gsi_read_units(table_name, gsi_name))
     current_writes = int(get_provisioned_gsi_write_units(table_name, gsi_name))
 
@@ -625,6 +629,7 @@ def __get_connection_dynamodb(retries=3):
     :type retries: int
     :param retries: Number of times to retry to connect to DynamoDB
     """
+    logger = get_logger()
     connected = False
     region = get_global_option('region')
 
@@ -677,7 +682,7 @@ def __is_gsi_maintenance_window(table_name, gsi_name, maintenance_windows):
         try:
             start, end = window.split('-', 1)
         except ValueError:
-            logger.error(
+            get_logger().error(
                 '{0} - GSI: {1} - '
                 'Malformatted maintenance window'.format(table_name, gsi_name))
             return False
@@ -709,7 +714,7 @@ def __is_table_maintenance_window(table_name, maintenance_windows):
         try:
             start, end = window.split('-', 1)
         except ValueError:
-            logger.error(
+            get_logger().error(
                 '{0} - Malformatted maintenance window'.format(table_name))
             return False
 

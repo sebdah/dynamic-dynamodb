@@ -6,7 +6,7 @@ from boto.exception import JSONResponseError, BotoServerError
 from retrying import retry
 
 from dynamic_dynamodb.aws import dynamodb
-from dynamic_dynamodb.log_handler import LOGGER as logger
+from dynamic_dynamodb.log_handler import get_logger
 from dynamic_dynamodb.aws.cloudwatch import get_cloudwatch_connection
 
 
@@ -52,7 +52,7 @@ def get_consumed_read_units_percent(
     except JSONResponseError:
         raise
 
-    logger.info('{0} - GSI: {1} - Consumed read units: {2:.2f}%'.format(
+    get_logger().info('{0} - GSI: {1} - Consumed read units: {2:.2f}%'.format(
         table_name, gsi_name, consumed_read_units_percent))
     return consumed_read_units_percent
 
@@ -86,7 +86,7 @@ def get_throttled_read_event_count(
     else:
         throttled_read_events = 0
 
-    logger.info('{0} - GSI: {1} - Read throttle count: {2:d}'.format(
+    get_logger().info('{0} - GSI: {1} - Read throttle count: {2:d}'.format(
         table_name, gsi_name, throttled_read_events))
     return throttled_read_events
 
@@ -132,7 +132,7 @@ def get_throttled_by_provisioned_read_event_percent(
     except JSONResponseError:
         raise
 
-    logger.info(
+    get_logger().info(
         '{0} - GSI: {1} - Throttled read percent '
         'by provision: {2:.2f}%'.format(
             table_name, gsi_name, throttled_by_provisioned_read_percent))
@@ -180,7 +180,7 @@ def get_throttled_by_consumed_read_percent(
     else:
         throttled_by_consumed_read_percent = 0
 
-    logger.info(
+    get_logger().info(
         '{0} - GSI: {1} - Throttled read percent '
         'by consumption: {2:.2f}%'.format(
             table_name, gsi_name, throttled_by_consumed_read_percent))
@@ -229,7 +229,7 @@ def get_consumed_write_units_percent(
     except JSONResponseError:
         raise
 
-    logger.info('{0} - GSI: {1} - Consumed write units: {2:.2f}%'.format(
+    get_logger().info('{0} - GSI: {1} - Consumed write units: {2:.2f}%'.format(
         table_name, gsi_name, consumed_write_units_percent))
     return consumed_write_units_percent
 
@@ -263,7 +263,7 @@ def get_throttled_write_event_count(
     else:
         throttled_write_events = 0
 
-    logger.info('{0} - GSI: {1} - Write throttle count: {2:d}'.format(
+    get_logger().info('{0} - GSI: {1} - Write throttle count: {2:d}'.format(
         table_name, gsi_name, throttled_write_events))
     return throttled_write_events
 
@@ -309,7 +309,7 @@ def get_throttled_by_provisioned_write_event_percent(
     except JSONResponseError:
         raise
 
-    logger.info(
+    get_logger().info(
         '{0} - GSI: {1} - Throttled write percent '
         'by provision: {2:.2f}%'.format(
             table_name, gsi_name, throttled_by_provisioned_write_percent))
@@ -358,7 +358,7 @@ def get_throttled_by_consumed_write_percent(
     else:
         throttled_by_consumed_write_percent = 0
 
-    logger.info(
+    get_logger().info(
         '{0} - GSI: {1} - Throttled write percent '
         'by consumption: {2:.2f}%'.format(
             table_name, gsi_name, throttled_by_consumed_write_percent))
@@ -411,7 +411,7 @@ def __get_aws_metric(table_name,
             },
             unit='Count')
     except BotoServerError as error:
-        logger.error(
+        get_logger().error(
             'Unknown boto error. Status: "{0}". '
             'Reason: "{1}". Message: {2}'.format(
                 error.status,

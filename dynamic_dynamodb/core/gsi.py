@@ -6,7 +6,7 @@ from dynamic_dynamodb import calculators
 from dynamic_dynamodb.aws import dynamodb, sns
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import gsi as gsi_stats
-from dynamic_dynamodb.log_handler import LOGGER as logger
+from dynamic_dynamodb.log_handler import get_logger
 from dynamic_dynamodb.config_handler import get_global_option, get_gsi_option
 
 
@@ -29,6 +29,7 @@ def ensure_provisioning(
     :param num_consec_write_checks: How many consecutive checks have we had
     :returns: (int, int) -- num_consec_read_checks, num_consec_write_checks
     """
+    logger = get_logger()
     if get_global_option('circuit_breaker_url') or get_gsi_option(
             table_key, gsi_key, 'circuit_breaker_url'):
         if circuit_breaker.is_open(table_name, table_key, gsi_name, gsi_key):
@@ -116,6 +117,7 @@ def __calculate_always_decrease_rw_values(
     :param provisioned_writes: Currently provisioned writes
     :returns: (int, int) -- (reads, writes)
     """
+    logger = get_logger()
     if read_units <= provisioned_reads and write_units <= provisioned_writes:
         return (read_units, write_units)
 
@@ -155,6 +157,7 @@ def __ensure_provisioning_reads(
     :returns: (bool, int, int)
         update_needed, updated_read_units, num_consec_read_checks
     """
+    logger = get_logger()
     if not get_gsi_option(table_key, gsi_key, 'enable_reads_autoscaling'):
         logger.info(
             '{0} - GSI: {1} - '
@@ -600,6 +603,7 @@ def __ensure_provisioning_writes(
     :returns: (bool, int, int)
         update_needed, updated_write_units, num_consec_write_checks
     """
+    logger = get_logger()
     if not get_gsi_option(table_key, gsi_key, 'enable_writes_autoscaling'):
         logger.info(
             '{0} - GSI: {1} - '
@@ -1044,6 +1048,8 @@ def __update_throughput(
     :type write_units: int
     :param write_units: New write unit provisioning
     """
+    logger = get_logger()
+
     try:
         current_ru = dynamodb.get_provisioned_gsi_read_units(
             table_name, gsi_name)
@@ -1103,6 +1109,7 @@ def __ensure_provisioning_alarm(table_name, table_key, gsi_name, gsi_key):
     :type gsi_key: str
     :param gsi_key: Configuration option key name
     """
+    logger = get_logger()
     lookback_window_start = get_gsi_option(
         table_key, gsi_key, 'lookback_window_start')
     lookback_period = get_gsi_option(

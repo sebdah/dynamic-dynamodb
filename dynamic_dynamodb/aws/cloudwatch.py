@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Ensure connections to CloudWatch """
-from dynamic_dynamodb.log_handler import LOGGER as logger
+from dynamic_dynamodb.log_handler import get_logger
 from dynamic_dynamodb.config_handler import get_global_option
 
 from boto.ec2 import cloudwatch
@@ -10,6 +10,7 @@ CLOUDWATCH_CONNECTION = None
 
 def __get_connection_cloudwatch():
     """ Ensure connection to CloudWatch """
+    logger = get_logger()
     region = get_global_option('region')
     try:
         if (get_global_option('aws_access_key_id') and

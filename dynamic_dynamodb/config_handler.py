@@ -12,7 +12,7 @@ def get_configuration(configuration=None):
     return CONFIGURATION
 
 
-def set_configuration(configuration):
+def set_configuration(configuration=None):
     global CONFIGURATION
     CONFIGURATION = config.get_configuration(configuration)
 

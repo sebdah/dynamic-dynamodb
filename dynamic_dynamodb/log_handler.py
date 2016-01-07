@@ -61,46 +61,56 @@ LOG_CONFIG = {
     }
 }
 
-if config_handler.get_logging_option('log_config_file'):
-    # Read configuration from an external Python logging file
-    logging.config.fileConfig(os.path.expanduser(
-        config_handler.get_logging_option('log_config_file')))
-else:
-    # File handler
-    if config_handler.get_logging_option('log_file'):
-        log_file = os.path.expanduser(
-            config_handler.get_logging_option('log_file'))
-        LOG_CONFIG['handlers']['file'] = {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'formatter': 'standard',
-            'filename': log_file,
-            'when': 'midnight',
-            'backupCount': 5
-        }
-        LOG_CONFIG['loggers']['']['handlers'].append('file')
-        LOG_CONFIG['loggers']['dynamic-dynamodb']['handlers'].append('file')
+LOGGER = None
 
-    # Configure a custom log level
-    if config_handler.get_logging_option('log_level'):
-        LOG_CONFIG['handlers']['console']['level'] = \
-            config_handler.get_logging_option('log_level').upper()
-        if 'file' in LOG_CONFIG['handlers']:
-            LOG_CONFIG['handlers']['file']['level'] = \
+
+def _config_logging():
+    if config_handler.get_logging_option('log_config_file'):
+        # Read configuration from an external Python logging file
+        logging.config.fileConfig(os.path.expanduser(
+            config_handler.get_logging_option('log_config_file')))
+    else:
+        # File handler
+        if config_handler.get_logging_option('log_file'):
+            log_file = os.path.expanduser(
+                config_handler.get_logging_option('log_file'))
+            LOG_CONFIG['handlers']['file'] = {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.TimedRotatingFileHandler',
+                'formatter': 'standard',
+                'filename': log_file,
+                'when': 'midnight',
+                'backupCount': 5
+            }
+            LOG_CONFIG['loggers']['']['handlers'].append('file')
+            LOG_CONFIG['loggers']['dynamic-dynamodb']['handlers'].append('file')
+
+        # Configure a custom log level
+        if config_handler.get_logging_option('log_level'):
+            LOG_CONFIG['handlers']['console']['level'] = \
                 config_handler.get_logging_option('log_level').upper()
+            if 'file' in LOG_CONFIG['handlers']:
+                LOG_CONFIG['handlers']['file']['level'] = \
+                    config_handler.get_logging_option('log_level').upper()
 
-    # Add dry-run to the formatter if in dry-run mode
-    if config_handler.get_global_option('dry_run'):
-        LOG_CONFIG['handlers']['console']['formatter'] = 'dry-run'
-        if 'file' in LOG_CONFIG['handlers']:
-            LOG_CONFIG['handlers']['file']['formatter'] = 'dry-run'
+        # Add dry-run to the formatter if in dry-run mode
+        if config_handler.get_global_option('dry_run'):
+            LOG_CONFIG['handlers']['console']['formatter'] = 'dry-run'
+            if 'file' in LOG_CONFIG['handlers']:
+                LOG_CONFIG['handlers']['file']['formatter'] = 'dry-run'
 
-    try:
-        dictconfig.dictConfig(LOG_CONFIG)
-    except ValueError as error:
-        print('Error configuring logger: {0}'.format(error))
-        sys.exit(1)
-    except:
-        raise
+        try:
+            dictconfig.dictConfig(LOG_CONFIG)
+        except ValueError as error:
+            print('Error configuring logger: {0}'.format(error))
+            sys.exit(1)
+        except:
+            raise
 
-LOGGER = logging.getLogger('dynamic-dynamodb')
+
+def get_logger():
+    global LOGGER
+    if LOGGER is None:
+        _config_logging()
+        LOGGER = logging.getLogger('dynamic-dynamodb')
+    return LOGGER

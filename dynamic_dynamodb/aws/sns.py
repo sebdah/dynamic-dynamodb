@@ -3,7 +3,7 @@
 from boto import sns
 from boto.exception import BotoServerError
 
-from dynamic_dynamodb.log_handler import LOGGER as logger
+from dynamic_dynamodb.log_handler import get_logger
 from dynamic_dynamodb.config_handler import (
     get_gsi_option, get_table_option, get_global_option)
 
@@ -81,6 +81,7 @@ def __publish(topic, message, subject=None):
     :param subject: Subject to use for e-mail notifications
     :returns: None
     """
+    logger = get_logger()
     try:
         get_sns_connection().publish(topic=topic, message=message, subject=subject)
         logger.info('Sent SNS notification to {0}'.format(topic))
@@ -93,6 +94,7 @@ def __publish(topic, message, subject=None):
 
 def __get_connection_SNS():
     """ Ensure connection to SNS """
+    logger = get_logger()
     region = get_global_option('region')
 
     try:

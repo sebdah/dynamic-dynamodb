@@ -5,7 +5,7 @@ import sys
 
 import requests
 
-from dynamic_dynamodb.log_handler import LOGGER as logger
+from dynamic_dynamodb.log_handler import get_logger
 from dynamic_dynamodb.config_handler import get_global_option, \
     get_table_option, get_gsi_option
 
@@ -19,6 +19,7 @@ def is_open(table_name=None, table_key=None, gsi_name=None, gsi_key=None):
     :param gsi_key: Configuration key for the GSI
     :returns: bool -- True if the circuit is open
     """
+    logger = get_logger()
     logger.debug('Checking circuit breaker status')
 
     # Parse the URL to make sure it is OK

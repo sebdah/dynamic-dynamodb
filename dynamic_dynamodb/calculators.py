@@ -2,7 +2,7 @@
 """ General approach to calucations """
 import math
 
-from dynamic_dynamodb.log_handler import LOGGER as logger
+from dynamic_dynamodb.log_handler import get_logger
 
 
 def decrease_reads_in_percent(
@@ -19,6 +19,7 @@ def decrease_reads_in_percent(
     :param log_tag: Prefix for the log
     :returns: int -- New provisioning value
     """
+    logger = get_logger()
     percent = float(percent)
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
@@ -55,6 +56,7 @@ def decrease_reads_in_units(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
+    logger = get_logger()
     updated_provisioning = int(current_provisioning) - int(units)
     min_provisioned_reads = __get_min_reads(
         current_provisioning,
@@ -91,6 +93,7 @@ def decrease_writes_in_percent(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
+    logger = get_logger()
     percent = float(percent)
     decrease = int(float(current_provisioning)*(float(percent)/100))
     updated_provisioning = current_provisioning - decrease
@@ -129,6 +132,7 @@ def decrease_writes_in_units(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
+    logger = get_logger()
     updated_provisioning = int(current_provisioning) - int(units)
     min_provisioned_writes = __get_min_writes(
         current_provisioning,
@@ -168,6 +172,7 @@ def increase_reads_in_percent(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
+    logger = get_logger()
     current_provisioning = float(current_provisioning)
     consumed_read_units_percent = float(consumed_read_units_percent)
     percent = float(percent)
@@ -217,6 +222,7 @@ def increase_reads_in_units(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
+    logger = get_logger()
     units = int(units)
     current_provisioning = float(current_provisioning)
     consumed_read_units_percent = float(consumed_read_units_percent)
@@ -262,6 +268,7 @@ def increase_writes_in_percent(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
+    logger = get_logger()
     current_provisioning = float(current_provisioning)
     consumed_write_units_percent = float(consumed_write_units_percent)
     percent = float(percent)
@@ -311,6 +318,7 @@ def increase_writes_in_units(
     :type log_tag: str
     :param log_tag: Prefix for the log
     """
+    logger = get_logger()
     units = int(units)
     current_provisioning = float(current_provisioning)
     consumed_write_units_percent = float(consumed_write_units_percent)
@@ -369,6 +377,7 @@ def __get_min_reads(current_provisioning, min_provisioned_reads, log_tag):
     :param log_tag: Prefix for the log
     :returns: int -- Minimum number of reads
     """
+    logger = get_logger()
     # Fallback value to ensure that we always have at least 1 read
     reads = 1
 
@@ -400,6 +409,7 @@ def __get_min_writes(current_provisioning, min_provisioned_writes, log_tag):
     :param log_tag: Prefix for the log
     :returns: int -- Minimum number of writes
     """
+    logger = get_logger()
     # Fallback value to ensure that we always have at least 1 read
     writes = 1
 
