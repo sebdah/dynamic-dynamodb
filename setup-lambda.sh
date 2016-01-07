@@ -21,7 +21,7 @@ pushd package && zip -qr -MM ../dynamic-dynamodb-lambda.zip . && popd
 aws s3 cp dynamic-dynamodb-lambda.zip s3://${S3_BUCKET_NAME}
 
 # Update lambda function code
-if [ -z ${LAMBDA_FUNCTION_NAME} ]; then
+if [ ! -z ${LAMBDA_FUNCTION_NAME} ]; then
     aws lambda update-function-code --s3-bucket ${S3_BUCKET_NAME} \
         --s3-key dynamic-dynamodb-lambda.zip \
         --function-name ${LAMBDA_FUNCTION_NAME}
