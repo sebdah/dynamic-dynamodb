@@ -17,6 +17,9 @@ develop-eggs
 .installed.cfg
 lib
 lib64
+/package
+/dynamic-dynamodb-lambda.zip
+/dynamic-dynamodb.conf
 
 # Installer logs
 pip-log.txt
