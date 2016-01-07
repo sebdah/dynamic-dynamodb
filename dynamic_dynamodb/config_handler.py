@@ -2,7 +2,19 @@
 """ Configuration handler """
 import config
 
-CONFIGURATION = config.get_configuration()
+CONFIGURATION = None
+
+
+def get_configuration(configuration=None):
+    global CONFIGURATION
+    if CONFIGURATION is None:
+        CONFIGURATION = config.get_configuration(configuration)
+    return CONFIGURATION
+
+
+def set_configuration(configuration):
+    global CONFIGURATION
+    CONFIGURATION = config.get_configuration(configuration)
 
 
 def get_configured_tables():
@@ -11,7 +23,7 @@ def get_configured_tables():
     :returns: list -- List of tables
     """
     try:
-        return CONFIGURATION['tables'].keys()
+        return get_configuration()['tables'].keys()
     except KeyError:
         return []
 
@@ -22,7 +34,7 @@ def get_global_option(option):
     :returns: str or None
     """
     try:
-        return CONFIGURATION['global'][option]
+        return get_configuration()['global'][option]
     except KeyError:
         return None
 
@@ -37,7 +49,7 @@ def get_gsi_option(table_key, gsi_key, option):
     :returns: str or None
     """
     try:
-        return CONFIGURATION['tables'][table_key]['gsis'][gsi_key][option]
+        return get_configuration()['tables'][table_key]['gsis'][gsi_key][option]
     except KeyError:
         return None
 
@@ -48,7 +60,7 @@ def get_logging_option(option):
     :returns: str or None
     """
     try:
-        return CONFIGURATION['logging'][option]
+        return get_configuration()['logging'][option]
     except KeyError:
         return None
 
@@ -61,6 +73,6 @@ def get_table_option(table_name, option):
     :returns: str or None
     """
     try:
-        return CONFIGURATION['tables'][table_name][option]
+        return get_configuration()['tables'][table_name][option]
     except KeyError:
         return None
