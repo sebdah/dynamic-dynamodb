@@ -5,6 +5,8 @@ from dynamic_dynamodb.config_handler import get_global_option
 
 from boto.ec2 import cloudwatch
 
+CLOUDWATCH_CONNECTION = None
+
 
 def __get_connection_cloudwatch():
     """ Ensure connection to CloudWatch """
@@ -36,4 +38,8 @@ def __get_connection_cloudwatch():
     return connection
 
 
-CLOUDWATCH_CONNECTION = __get_connection_cloudwatch()
+def get_cloudwatch_connection():
+    global CLOUDWATCH_CONNECTION
+    if CLOUDWATCH_CONNECTION is None:
+        CLOUDWATCH_CONNECTION = __get_connection_cloudwatch()
+    return CLOUDWATCH_CONNECTION

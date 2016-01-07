@@ -7,8 +7,7 @@ from retrying import retry
 
 from dynamic_dynamodb.aws import dynamodb
 from dynamic_dynamodb.log_handler import LOGGER as logger
-from dynamic_dynamodb.aws.cloudwatch import (
-    CLOUDWATCH_CONNECTION as cloudwatch_connection)
+from dynamic_dynamodb.aws.cloudwatch import get_cloudwatch_connection
 
 
 def get_consumed_read_units_percent(
@@ -399,7 +398,7 @@ def __get_aws_metric(table_name,
         end_time = now - timedelta(
             minutes=lookback_window_start - lookback_period)
 
-        return cloudwatch_connection.get_metric_statistics(
+        return get_cloudwatch_connection().get_metric_statistics(
             period=lookback_period * 60,
             start_time=start_time,
             end_time=end_time,
