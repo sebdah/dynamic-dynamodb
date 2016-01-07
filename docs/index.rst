@@ -9,6 +9,7 @@
     granular_scaling
     iam_permissions
     cloudformation_template
+    aws_lambda
     release_notes
     bug_reporting
     license
