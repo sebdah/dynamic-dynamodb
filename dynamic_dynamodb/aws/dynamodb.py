@@ -17,6 +17,8 @@ from dynamic_dynamodb.config_handler import (
     get_table_option)
 from dynamic_dynamodb.aws import sns
 
+DYNAMODB_CONNECTION = None
+
 
 def get_tables_and_gsis():
     """ Get a set of tables and gsis and their configuration keys
@@ -73,7 +75,7 @@ def get_table(table_name):
     :returns: boto.dynamodb.table.Table
     """
     try:
-        table = Table(table_name, connection=DYNAMODB_CONNECTION)
+        table = Table(table_name, connection=get_dynamodb_connection())
     except DynamoDBResponseError as error:
         dynamodb_error = error.body['__type'].rsplit('#', 1)[1]
         if dynamodb_error == 'ResourceNotFoundException':
@@ -95,7 +97,7 @@ def get_gsi_status(table_name, gsi_name):
     :returns: str
     """
     try:
-        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+        desc = get_dynamodb_connection().describe_table(table_name)
     except JSONResponseError:
         raise
 
@@ -114,7 +116,7 @@ def get_provisioned_gsi_read_units(table_name, gsi_name):
     :returns: int -- Number of read units
     """
     try:
-        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+        desc = get_dynamodb_connection().describe_table(table_name)
     except JSONResponseError:
         raise
 
@@ -140,7 +142,7 @@ def get_provisioned_gsi_write_units(table_name, gsi_name):
     :returns: int -- Number of write units
     """
     try:
-        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+        desc = get_dynamodb_connection().describe_table(table_name)
     except JSONResponseError:
         raise
 
@@ -164,7 +166,7 @@ def get_provisioned_table_read_units(table_name):
     :returns: int -- Number of read units
     """
     try:
-        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+        desc = get_dynamodb_connection().describe_table(table_name)
     except JSONResponseError:
         raise
 
@@ -184,7 +186,7 @@ def get_provisioned_table_write_units(table_name):
     :returns: int -- Number of write units
     """
     try:
-        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+        desc = get_dynamodb_connection().describe_table(table_name)
     except JSONResponseError:
         raise
 
@@ -204,7 +206,7 @@ def get_table_status(table_name):
     :returns: str
     """
     try:
-        desc = DYNAMODB_CONNECTION.describe_table(table_name)
+        desc = get_dynamodb_connection().describe_table(table_name)
     except JSONResponseError:
         raise
 
@@ -219,13 +221,13 @@ def list_tables():
     tables = []
 
     try:
-        table_list = DYNAMODB_CONNECTION.list_tables()
+        table_list = get_dynamodb_connection().list_tables()
         while True:
             for table_name in table_list[u'TableNames']:
                 tables.append(get_table(table_name))
 
             if u'LastEvaluatedTableName' in table_list:
-                table_list = DYNAMODB_CONNECTION.list_tables(
+                table_list = get_dynamodb_connection().list_tables(
                     table_list[u'LastEvaluatedTableName'])
             else:
                 break
@@ -523,7 +525,7 @@ def update_gsi_provisioning(
         return
 
     try:
-        DYNAMODB_CONNECTION.update_table(
+        get_dynamodb_connection().update_table(
             table_name=table_name,
             global_secondary_index_updates=[
                 {
@@ -607,7 +609,7 @@ def table_gsis(table_name):
     :returns: list -- List of GSI names
     """
     try:
-        desc = DYNAMODB_CONNECTION.describe_table(table_name)[u'Table']
+        desc = get_dynamodb_connection().describe_table(table_name)[u'Table']
     except JSONResponseError:
         raise
 
@@ -722,4 +724,9 @@ def __is_table_maintenance_window(table_name, maintenance_windows):
 
     return False
 
-DYNAMODB_CONNECTION = __get_connection_dynamodb()
+
+def get_dynamodb_connection():
+    global DYNAMODB_CONNECTION
+    if DYNAMODB_CONNECTION is None:
+        DYNAMODB_CONNECTION = __get_connection_dynamodb()
+    return DYNAMODB_CONNECTION
