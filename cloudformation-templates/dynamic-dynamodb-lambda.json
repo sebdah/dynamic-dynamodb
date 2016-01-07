@@ -1,0 +1,148 @@
+{
+    "Description": "This is a sample CloudFormation template for deploying Dynamic DynamoDB version 2.x as AWS Lambda.",
+    "Parameters": {
+        "S3Bucket": {
+            "Type": "String",
+            "Default": "dynamic-dynamodb",
+            "Description": "Remove this default value and enter your pre-created S3 Bucket url upto folder name. (Please include the trailing /. Example: https://s3.amazonaws.com/my-bucket/ should be input as s3://my-bucket/). It will be used for storing a copy of Dynamic DynamoDB configuration file."
+        },
+        "S3Key": {
+            "Type": "String",
+            "Default": "dynamic-dynamodb-lambda.zip",
+            "Description": ""
+        }
+    },
+    "Outputs": {
+        "LambdaFunctionPhysicalResourceArn": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "LambdaFunction",
+                    "Arn"
+                ]
+            }
+        },
+        "LambdaFunctionPhysicalResourceId": {
+            "Value": {
+                "Ref": "LambdaFunction"
+            }
+        }
+    },
+    "Resources": {
+        "LambdaFunction": {
+            "Properties": {
+                "Code": {
+                    "S3Bucket": {"Ref": "S3Bucket"},
+                    "S3Key": {"Ref": "S3Key"}
+                },
+                "Handler": "lambda.handler",
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaRole",
+                        "Arn"
+                    ]
+                },
+                "Runtime": "python2.7",
+                "Timeout": 5
+            },
+            "Type": "AWS::Lambda::Function"
+        },
+        "LambdaRole": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": [
+                                        "arn:aws:logs:*:*:*"
+                                    ]
+                                }
+                            ]
+                        },
+                        "PolicyName": "CloudWatchLogs"
+                    },
+                    {
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "sns:Publish"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": [
+                                        "arn:aws:sns:*:*:*"
+                                    ]
+                                }
+                            ]
+                        },
+                        "PolicyName": "SNS"
+                    },
+                    {
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:UpdateTable"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": [
+                                        "arn:aws:dynamodb:**"
+                                    ]
+                                },
+                                {
+                                    "Action": [
+                                        "dynamodb:ListTables"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": [
+                                        "*"
+                                    ]
+                                }
+                            ]
+                        },
+                        "PolicyName": "DynamoDB"
+                    },
+                    {
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "cloudwatch:GetMetricStatistics"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": [
+                                        "*"
+                                    ]
+                                }
+                            ]
+                        },
+                        "PolicyName": "CloudWatch"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::Role"
+        }
+    }
+}
