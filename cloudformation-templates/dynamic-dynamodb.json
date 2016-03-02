@@ -34,30 +34,51 @@
   },
 
   "Mappings": {
-    "Region2AMI": {
+    "RegionMap": {
       "us-east-1": {
-        "64": "ami-fb8e9292"
+        "AMI": "ami-fb8e9292",
+        "IamRoleServiceHost": "ec2.amazonaws.com",
+        "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "us-west-1": {
-        "64": "ami-7aba833f"
+        "AMI": "ami-7aba833f",
+        "IamRoleServiceHost": "ec2.amazonaws.com",
+        "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "us-west-2": {
-        "64": "ami-043a5034"
+        "AMI": "ami-043a5034",
+        "IamRoleServiceHost": "ec2.amazonaws.com",
+        "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "eu-west-1": {
-        "64": "ami-2918e35e"
+        "AMI": "ami-2918e35e",
+        "IamRoleServiceHost": "ec2.amazonaws.com",
+        "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "sa-east-1": {
-        "64": "ami-215dff3c"
+        "AMI": "ami-215dff3c",
+        "IamRoleServiceHost": "ec2.amazonaws.com",
+        "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "ap-southeast-1": {
-        "64": "ami-b40d5ee6"
+        "AMI": "ami-b40d5ee6",
+        "IamRoleServiceHost": "ec2.amazonaws.com",
+        "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "ap-southeast-2": {
-        "64": "ami-3b4bd301"
+        "AMI": "ami-3b4bd301",
+        "IamRoleServiceHost": "ec2.amazonaws.com",
+        "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "ap-northeast-1": {
-        "64": "ami-c9562fc8"
+        "AMI": "ami-c9562fc8",
+        "IamRoleServiceHost": "ec2.amazonaws.com",
+        "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
+      },
+      "cn-north-1": {
+        "AMI": "ami-0637ff6b",
+        "IamRoleServiceHost": "ec2.amazonaws.com.cn",
+        "IamRolePolicySnsResource": "arn:aws-cn:sns:*::dynamic-dynamodb"
       }
     }
   },
@@ -66,7 +87,7 @@
     "LaunchConfig": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": { "Fn::FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "64" ] },
+        "ImageId": { "Fn::FindInMap": [ "RegionMap", { "Ref": "AWS::Region" }, "AMI" ] },
         "InstanceType": { "Ref" : "InstanceType" },
         "KeyName": { "Ref": "KeyPair" },
         "SecurityGroups": [ { "Ref": "SecurityGroup" } ],
@@ -371,7 +392,7 @@
           "Statement": [ {
             "Effect": "Allow",
             "Principal": {
-              "Service": [ "ec2.amazonaws.com" ]
+              "Service": [ { "Fn::FindInMap": [ "RegionMap", { "Ref": "AWS::Region" }, "IamRoleServiceHost" ] } ]
             },
             "Action": [ "sts:AssumeRole" ]
           }]
@@ -400,7 +421,7 @@
                   "sns:Publish"
                 ],
                 "Resource": [
-                  "arn:aws:sns:*::dynamic-dynamodb"
+                  { "Fn::FindInMap": [ "RegionMap", { "Ref": "AWS::Region" }, "IamRolePolicySnsResource" ] }
                 ]
               }
             ]
