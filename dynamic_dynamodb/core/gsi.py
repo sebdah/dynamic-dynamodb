@@ -263,17 +263,6 @@ def __ensure_provisioning_reads(
 
             num_consec_read_checks = 0
 
-    if (consumed_read_units_percent == 0 and not
-            get_gsi_option(
-                table_key,
-                gsi_key,
-                'allow_scaling_down_reads_on_0_percent')):
-
-        logger.info(
-            '{0} - GSI: {1} - '
-            'Scaling down reads is not done when usage is at 0%'.format(
-                table_name, gsi_name))
-
     # Exit if up scaling has been disabled
     if not get_gsi_option(table_key, gsi_key, 'enable_reads_up_scaling'):
         logger.debug(
@@ -492,6 +481,16 @@ def __ensure_provisioning_reads(
                 'No action taken as scaling '
                 'down reads has been disabled in the configuration'.format(
                     table_name, gsi_name))
+        # Exit if reads == 0% and downscaling has been disabled at 0%
+        elif (consumed_read_units_percent == 0 and not
+                get_gsi_option(
+                    table_key,
+                    gsi_key,
+                    'allow_scaling_down_reads_on_0_percent')):
+            logger.info(
+                '{0} - GSI: {1} - Down scaling event detected. '
+                'No action taken as scaling down reads is not done when'
+                ' usage is at 0%'.format(table_name, gsi_name))
         else:
             if consumed_calculated_provisioning:
                 if decrease_consumed_reads_unit == 'percent':
@@ -712,15 +711,6 @@ def __ensure_provisioning_writes(
 
             num_consec_write_checks = 0
 
-    # Check if we should update write provisioning
-    if (consumed_write_units_percent == 0 and not get_gsi_option(
-            table_key, gsi_key, 'allow_scaling_down_writes_on_0_percent')):
-
-        logger.info(
-            '{0} - GSI: {1} - '
-            'Scaling down writes is not done when usage is at 0%'.format(
-                table_name, gsi_name))
-
     # Exit if up scaling has been disabled
     if not get_gsi_option(table_key, gsi_key, 'enable_writes_up_scaling'):
         logger.debug(
@@ -935,6 +925,13 @@ def __ensure_provisioning_writes(
                 'No action taken as scaling '
                 'down writes has been disabled in the configuration'.format(
                     table_name, gsi_name))
+        # Exit if writes == 0% and downscaling has been disabled at 0%
+        elif (consumed_write_units_percent == 0 and not get_gsi_option(
+                table_key, gsi_key, 'allow_scaling_down_writes_on_0_percent')):
+            logger.info(
+                '{0} - GSI: {1} - Down scaling event detected. '
+                'No action taken as scaling down writes is not done when'
+                ' usage is at 0%'.format(table_name, gsi_name))
         else:
             if consumed_calculated_provisioning:
                 if decrease_consumed_writes_unit == 'percent':
