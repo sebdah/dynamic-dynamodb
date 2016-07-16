@@ -9,6 +9,7 @@ Release notes
 - Allow `]` in configuration section names (`#281 <https://github.com/sebdah/dynamic-dynamodb/issues/281>`)
 - Security fix for pid and log files (`#301 <https://github.com/sebdah/dynamic-dynamodb/pull/301>`)
 - Update CloudFormation template to allow dots in key-pair name (`#287 <https://github.com/sebdah/dynamic-dynamodb/pull/287>`)
+- Update CloudFormation template to add support for China (Beijing) region (`#288 <https://github.com/sebdah/dynamic-dynamodb/pull/288>`)
 
 2.2.1
 -----
