@@ -1,6 +1,18 @@
 Release notes
 =============
 
+2.3.0
+-----
+
+**Release date** 2016-07-16
+
+- Accept any HTTP `2xx` code as response for a healthy circuit breaker (`#292 <https://github.com/sebdah/dynamic-dynamodb/issues/292>`)
+- Allow `]` in configuration section names (`#281 <https://github.com/sebdah/dynamic-dynamodb/issues/281>`)
+- Security fix for pid and log files (`#301 <https://github.com/sebdah/dynamic-dynamodb/pull/301>`)
+- Update CloudFormation template to allow dots in key-pair name (`#287 <https://github.com/sebdah/dynamic-dynamodb/pull/287>`)
+- Update CloudFormation template to add support for China (Beijing) region (`#288 <https://github.com/sebdah/dynamic-dynamodb/pull/288>`)
+- Fixed `allow-scaling-down-on-0-percent` bug (`#304 <https://github.com/sebdah/dynamic-dynamodb/pull/304>`)
+
 2.2.1
 -----
 

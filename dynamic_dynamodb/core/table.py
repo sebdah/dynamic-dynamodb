@@ -226,13 +226,6 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
 
             num_consec_read_checks = 0
 
-    if (consumed_read_units_percent == 0 and not
-            get_table_option(
-                key_name, 'allow_scaling_down_reads_on_0_percent')):
-        logger.info(
-            '{0} - Scaling down reads is not done when usage is at 0%'.format(
-                table_name))
-
     # Exit if up scaling has been disabled
     if not get_table_option(key_name, 'enable_reads_up_scaling'):
         logger.debug(
@@ -419,6 +412,14 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
             logger.debug(
                 '{0} - Down scaling event detected. No action taken as scaling'
                 ' down reads has been disabled in the configuration'.format(
+                    table_name))
+        # Exit if reads == 0% and downscaling has been disabled at 0%
+        elif (consumed_read_units_percent == 0 and not
+                get_table_option(
+                    key_name, 'allow_scaling_down_reads_on_0_percent')):
+            logger.info(
+                '{0} - Down scaling event detected. No action taken as scaling'
+                ' down reads is not done when usage is at 0%'.format(
                     table_name))
         else:
             if consumed_calculated_provisioning:
@@ -609,15 +610,6 @@ def __ensure_provisioning_writes(
 
             num_consec_write_checks = 0
 
-    # Check if we should update write provisioning
-    if (consumed_write_units_percent == 0 and not
-            get_table_option(
-                key_name, 'allow_scaling_down_writes_on_0_percent')):
-
-        logger.info(
-            '{0} - Scaling down writes is not done when usage is at 0%'.format(
-                table_name))
-
     # Exit if up scaling has been disabled
     if not get_table_option(key_name, 'enable_writes_up_scaling'):
         logger.debug(
@@ -804,6 +796,14 @@ def __ensure_provisioning_writes(
             logger.debug(
                 '{0} - Down scaling event detected. No action taken as scaling'
                 ' down writes has been disabled in the configuration'.format(
+                    table_name))
+        # Exit if writes == 0% and downscaling has been disabled at 0%
+        elif (consumed_write_units_percent == 0 and not
+                get_table_option(
+                    key_name, 'allow_scaling_down_writes_on_0_percent')):
+            logger.info(
+                '{0} - Down scaling event detected. No action taken as scaling'
+                ' down writes is not done when usage is at 0%'.format(
                     table_name))
         else:
             if consumed_calculated_provisioning:

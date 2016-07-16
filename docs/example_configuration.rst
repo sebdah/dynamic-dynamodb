@@ -22,7 +22,7 @@ This is a full example of a Dynamic DynamoDB configuration file.
 
     # Circuit breaker configuration
     # No provisioning updates will be made unless this URL returns
-    # a HTTP 200 OK status code
+    # a HTTP 2xx OK status code
     #circuit-breaker-url: http://my.service.com/v1/is_up
     #circuit-breaker-timeout: 500
 
@@ -41,7 +41,7 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Read provisioning configuration
     #
-    
+
     # Thresholds for trigging throughput alarm to send notification (%)
     # reads-upper-alarm-threshold: 0
     # reads-lower-alarm-threshold: 0
@@ -206,7 +206,7 @@ This is a full example of a Dynamic DynamoDB configuration file.
     #
     # Comma separated list. Currently supported values:
     # - scale-up                    Get notifications when the table is scaled up
-    # - scale-down                  Get notifications when the table is scaled 
+    # - scale-down                  Get notifications when the table is scaled
     # - high-throughput-alarm       Get notifications when exceed high throughput threshold
     # - low-throughput-alarm        Get notifications when below low throughput threshold
     #
