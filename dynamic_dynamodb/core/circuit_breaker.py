@@ -70,7 +70,7 @@ def is_open(table_name=None, table_key=None, gsi_name=None, gsi_key=None):
             auth=auth,
             timeout=timeout / 1000.00,
             headers=headers)
-        if int(response.status_code) > 200 and int(response.status_code) < 300:
+        if int(response.status_code) >= 200 and int(response.status_code) < 300:
             logger.info('Circuit breaker is closed')
             return False
         else:
