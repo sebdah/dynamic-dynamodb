@@ -1,6 +1,13 @@
 Release notes
 =============
 
+2.3.1
+-----
+
+**Release date** 2016-08-03
+
+- Bug fix: Include `HTTP 200` as an acceptable response code for the circuit breaker
+
 2.3.0
 -----
 
