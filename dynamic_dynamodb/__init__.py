@@ -55,7 +55,9 @@ class DynamicDynamoDBDaemon(Daemon):
 def main():
     """ Main function called from dynamic-dynamodb """
     try:
-        if get_global_option('daemon'):
+        if get_global_option('show_config'):
+            print config.get_configuration()
+        elif get_global_option('daemon'):
             daemon = DynamicDynamoDBDaemon(
                 '{0}/dynamic-dynamodb.{1}.pid'.format(
                     get_global_option('pid_file_dir'),
