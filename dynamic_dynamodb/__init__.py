@@ -20,6 +20,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import json
 import re
 import sys
 import time
@@ -56,7 +57,7 @@ def main():
     """ Main function called from dynamic-dynamodb """
     try:
         if get_global_option('show_config'):
-            print config.get_configuration()
+            print json.dumps(config.get_configuration(), indent=2)
         elif get_global_option('daemon'):
             daemon = DynamicDynamoDBDaemon(
                 '{0}/dynamic-dynamodb.{1}.pid'.format(
