@@ -1,6 +1,13 @@
 Release notes
 =============
 
+2.4.0
+-----
+
+**Release date** 2016-11-25
+
+- Add `--show-config` option (`#317 <https://github.com/sebdah/dynamic-dynamodb/pull/317>`__). Thanks for the pull request `michaelkaye <https://github.com/michaelkaye>`__
+
 2.3.1
 -----
 
