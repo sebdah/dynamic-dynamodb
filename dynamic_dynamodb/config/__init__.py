@@ -16,6 +16,7 @@ DEFAULT_OPTIONS = {
         'daemon': False,
         'instance': 'default',
         'dry_run': False,
+        'show_config': False,
         'pid_file_dir': '/tmp',
         'run_once': False,
 
