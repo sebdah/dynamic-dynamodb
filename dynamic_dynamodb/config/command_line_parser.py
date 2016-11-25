@@ -22,6 +22,10 @@ def parse():
         action='store_true',
         help='Run once and then exit Dynamic DynamoDB, instead of looping')
     parser.add_argument(
+        '--show-config',
+        action='store_true',
+        help='Parse config files, print parsed data and then exit Dynamic DynamoDB')
+    parser.add_argument(
         '--check-interval',
         type=int,
         help="""How many seconds should we wait between
