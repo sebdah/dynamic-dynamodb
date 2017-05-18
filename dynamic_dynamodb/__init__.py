@@ -165,15 +165,16 @@ def execute():
                         sys.exit(1)
 
             for gsi_name, gsi_key in sorted(gsi_names):
+                unic_gsi_name = ':'.join([table_name, gsi_name])
                 try:
                     gsi_num_consec_read_checks = \
-                        CHECK_STATUS['gsis'][gsi_name]['reads']
+                        CHECK_STATUS['gsis'][unic_gsi_name]['reads']
                 except KeyError:
                     gsi_num_consec_read_checks = 0
 
                 try:
                     gsi_num_consec_write_checks = \
-                        CHECK_STATUS['gsis'][gsi_name]['writes']
+                        CHECK_STATUS['gsis'][unic_gsi_name]['writes']
                 except KeyError:
                     gsi_num_consec_write_checks = 0
 
@@ -186,7 +187,7 @@ def execute():
                         gsi_num_consec_read_checks,
                         gsi_num_consec_write_checks)
 
-                CHECK_STATUS['gsis'][gsi_name] = {
+                CHECK_STATUS['gsis'][unic_gsi_name] = {
                     'reads': gsi_num_consec_read_checks,
                     'writes': gsi_num_consec_write_checks
                 }
