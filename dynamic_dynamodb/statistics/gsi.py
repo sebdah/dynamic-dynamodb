@@ -6,12 +6,11 @@ from boto.exception import JSONResponseError, BotoServerError
 from retrying import retry
 
 from dynamic_dynamodb.aws import dynamodb
-from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.aws.cloudwatch import (
     CLOUDWATCH_CONNECTION as cloudwatch_connection)
 
 
-def get_consumed_read_units_percent(
+def get_consumed_read_units_percent(logger,
         table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of consumed read units in percent
 
@@ -27,7 +26,7 @@ def get_consumed_read_units_percent(
         percentage of provisioned reads
     """
     try:
-        metrics = __get_aws_metric(
+        metrics = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
@@ -58,7 +57,7 @@ def get_consumed_read_units_percent(
     return consumed_read_units_percent
 
 
-def get_throttled_read_event_count(
+def get_throttled_read_event_count(logger,
         table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled read events during a given time frame
 
@@ -73,7 +72,7 @@ def get_throttled_read_event_count(
     :returns: int -- Number of throttled read events during the time period
     """
     try:
-        metrics = __get_aws_metric(
+        metrics = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
@@ -92,7 +91,7 @@ def get_throttled_read_event_count(
     return throttled_read_events
 
 
-def get_throttled_by_provisioned_read_event_percent(
+def get_throttled_by_provisioned_read_event_percent(logger,
         table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled read events in percent
 
@@ -107,7 +106,7 @@ def get_throttled_by_provisioned_read_event_percent(
     :returns: float -- Percent of throttled read events by provisioning
     """
     try:
-        metrics = __get_aws_metric(
+        metrics = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
@@ -140,7 +139,7 @@ def get_throttled_by_provisioned_read_event_percent(
     return throttled_by_provisioned_read_percent
 
 
-def get_throttled_by_consumed_read_percent(
+def get_throttled_by_consumed_read_percent(logger,
         table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled read events in percent of consumption
 
@@ -156,13 +155,13 @@ def get_throttled_by_consumed_read_percent(
     """
 
     try:
-        metrics1 = __get_aws_metric(
+        metrics1 = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
             lookback_period,
             'ConsumedReadCapacityUnits')
-        metrics2 = __get_aws_metric(
+        metrics2 = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
@@ -188,7 +187,7 @@ def get_throttled_by_consumed_read_percent(
     return throttled_by_consumed_read_percent
 
 
-def get_consumed_write_units_percent(
+def get_consumed_write_units_percent(logger,
         table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of consumed write units in percent
 
@@ -204,7 +203,7 @@ def get_consumed_write_units_percent(
         percentage of provisioned writes
     """
     try:
-        metrics = __get_aws_metric(
+        metrics = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
@@ -235,7 +234,7 @@ def get_consumed_write_units_percent(
     return consumed_write_units_percent
 
 
-def get_throttled_write_event_count(
+def get_throttled_write_event_count(logger,
         table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled write events during a given time frame
 
@@ -250,7 +249,7 @@ def get_throttled_write_event_count(
     :returns: int -- Number of throttled write events during the time period
     """
     try:
-        metrics = __get_aws_metric(
+        metrics = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
@@ -269,7 +268,7 @@ def get_throttled_write_event_count(
     return throttled_write_events
 
 
-def get_throttled_by_provisioned_write_event_percent(
+def get_throttled_by_provisioned_write_event_percent(logger,
         table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled write events during a given time frame
 
@@ -284,7 +283,7 @@ def get_throttled_by_provisioned_write_event_percent(
     :returns: float -- Percent of throttled write events by provisioning
     """
     try:
-        metrics = __get_aws_metric(
+        metrics = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
@@ -317,7 +316,7 @@ def get_throttled_by_provisioned_write_event_percent(
     return throttled_by_provisioned_write_percent
 
 
-def get_throttled_by_consumed_write_percent(
+def get_throttled_by_consumed_write_percent(logger,
         table_name, gsi_name, lookback_window_start=15, lookback_period=5):
     """ Returns the number of throttled write events in percent of consumption
 
@@ -333,13 +332,13 @@ def get_throttled_by_consumed_write_percent(
     """
 
     try:
-        metrics1 = __get_aws_metric(
+        metrics1 = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
             lookback_period,
             'ConsumedWriteCapacityUnits')
-        metrics2 = __get_aws_metric(
+        metrics2 = __get_aws_metric(logger,
             table_name,
             gsi_name,
             lookback_window_start,
@@ -371,7 +370,7 @@ def get_throttled_by_consumed_write_percent(
     wait_exponential_multiplier=1000,
     wait_exponential_max=10000,
     stop_max_attempt_number=10)
-def __get_aws_metric(table_name,
+def __get_aws_metric(logger, table_name,
                      gsi_name,
                      lookback_window_start,
                      lookback_period,
