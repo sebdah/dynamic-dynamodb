@@ -24,6 +24,8 @@ import json
 import re
 import sys
 import time
+import threading
+import dynamic_dynamodb.log_handler as log_handler
 
 from boto.exception import JSONResponseError, BotoServerError
 
@@ -38,6 +40,8 @@ CHECK_STATUS = {
     'gsis': {}
 }
 
+table_threads = {}
+stop_thread = False
 
 class DynamicDynamoDBDaemon(Daemon):
     """ Daemon for Dynamic DynamoDB"""
@@ -102,7 +106,146 @@ def main():
 
     except Exception as error:
         logger.exception(error)
+    except KeyboardInterrupt:
+        while threading.active_count() > 1:
+            for thread in table_threads.values():
+                thread.do_run = False
+            logger.info('Waiting for all threads... {}s'.format(get_global_option('check_interval')))
+            time.sleep(get_global_option('check_interval'))
+        raise
 
+def execute_table(table_name, table_key, table_logger):
+    try:
+        table_num_consec_read_checks = \
+            CHECK_STATUS['tables'][table_name]['reads']
+    except KeyError:
+        table_num_consec_read_checks = 0
+
+    try:
+        table_num_consec_write_checks = \
+            CHECK_STATUS['tables'][table_name]['writes']
+    except KeyError:
+        table_num_consec_write_checks = 0
+
+    try:
+        # The return var shows how many times the scale-down criteria
+        #  has been met. This is coupled with a var in config,
+        # "num_intervals_scale_down", to delay the scale-down
+        table_num_consec_read_checks, table_num_consec_write_checks = \
+            table.ensure_provisioning(
+                table_name,
+                table_key,
+                table_num_consec_read_checks,
+                table_num_consec_write_checks,
+                table_logger)
+
+        CHECK_STATUS['tables'][table_name] = {
+            'reads': table_num_consec_read_checks,
+            'writes': table_num_consec_write_checks
+        }
+
+        gsi_names = set()
+        # Add regexp table names
+        for gst_instance in dynamodb.table_gsis(table_name):
+            gsi_name = gst_instance[u'IndexName']
+
+            try:
+                gsi_keys = get_table_option(table_key, 'gsis').keys()
+
+            except AttributeError:
+                # Continue if there are not GSIs configured
+                continue
+
+            for gsi_key in gsi_keys:
+                try:
+                    if re.match(gsi_key, gsi_name):
+                        table_logger.debug(
+                            'Table {0} GSI {1} matches '
+                            'GSI config key {2}'.format(
+                                table_name, gsi_name, gsi_key))
+                        gsi_names.add((gsi_name, gsi_key))
+
+                except re.error:
+                    table_logger.error('Invalid regular expression: "{0}"'.format(
+                        gsi_key))
+                    sys.exit(1)
+
+        for gsi_name, gsi_key in sorted(gsi_names):
+            try:
+                gsi_num_consec_read_checks = \
+                    CHECK_STATUS['gsis'][gsi_name]['reads']
+            except KeyError:
+                gsi_num_consec_read_checks = 0
+
+            try:
+                gsi_num_consec_write_checks = \
+                    CHECK_STATUS['gsis'][gsi_name]['writes']
+            except KeyError:
+                gsi_num_consec_write_checks = 0
+
+            gsi_num_consec_read_checks, gsi_num_consec_write_checks = \
+                gsi.ensure_provisioning(
+                    table_name,
+                    table_key,
+                    gsi_name,
+                    gsi_key,
+                    gsi_num_consec_read_checks,
+                    gsi_num_consec_write_checks,
+                    table_logger)
+
+            CHECK_STATUS['gsis'][gsi_name] = {
+                'reads': gsi_num_consec_read_checks,
+                'writes': gsi_num_consec_write_checks
+            }
+
+    except JSONResponseError as error:
+        exception = error.body['__type'].split('#')[1]
+
+        if exception == 'ResourceNotFoundException':
+            table_logger.error('{0} - Table {1} does not exist anymore'.format(
+                table_name,
+                table_name))
+
+    except BotoServerError as error:
+        if boto_server_error_retries > 0:
+            table_logger.error(
+                'Unknown boto error. Status: "{0}". '
+                'Reason: "{1}". Message: {2}'.format(
+                    error.status,
+                    error.reason,
+                    error.message))
+            table_logger.error(
+                'Please bug report if this error persists')
+            boto_server_error_retries -= 1
+        else:
+            raise
+
+def execute_table_in_loop(table_name, table_key, table_logger):
+    if not get_global_option('daemon') and get_global_option('run_once'):
+        execute_table(table_name, table_key)
+    else:
+        t = threading.currentThread()
+        while getattr(t, "do_run", True):
+            execute_table(table_name, table_key, table_logger)
+            logger.debug('Sleeping {0} seconds until next check'.format(
+                get_global_option('check_interval')))
+            time.sleep(get_global_option('check_interval'))
+            
+  
+def execute_in_thread(table_name, table_key):
+    if table_name in table_threads:
+        thread = table_threads.get(table_name)
+        if thread.isAlive():
+            logger.debug("Thread {} still running".format(table_name))
+        else:
+            logger.error("Thread {} was stopped!".format(table_name))
+            sys.exit(1)
+    else:
+        table_logger=log_handler.getTableLogger(table_name)
+        logger.info("Start new thread: " + table_name)
+        thread = threading.Thread(target=execute_table_in_loop, args=[table_name, table_key, table_logger])
+        table_threads[table_name]=thread
+        thread.start()
 
 def execute():
     """ Ensure provisioning """
@@ -110,114 +253,9 @@ def execute():
 
     # Ensure provisioning
     for table_name, table_key in sorted(dynamodb.get_tables_and_gsis()):
-        try:
-            table_num_consec_read_checks = \
-                CHECK_STATUS['tables'][table_name]['reads']
-        except KeyError:
-            table_num_consec_read_checks = 0
-
-        try:
-            table_num_consec_write_checks = \
-                CHECK_STATUS['tables'][table_name]['writes']
-        except KeyError:
-            table_num_consec_write_checks = 0
-
-        try:
-            # The return var shows how many times the scale-down criteria
-            #  has been met. This is coupled with a var in config,
-            # "num_intervals_scale_down", to delay the scale-down
-            table_num_consec_read_checks, table_num_consec_write_checks = \
-                table.ensure_provisioning(
-                    table_name,
-                    table_key,
-                    table_num_consec_read_checks,
-                    table_num_consec_write_checks)
-
-            CHECK_STATUS['tables'][table_name] = {
-                'reads': table_num_consec_read_checks,
-                'writes': table_num_consec_write_checks
-            }
-
-            gsi_names = set()
-            # Add regexp table names
-            for gst_instance in dynamodb.table_gsis(table_name):
-                gsi_name = gst_instance[u'IndexName']
-
-                try:
-                    gsi_keys = get_table_option(table_key, 'gsis').keys()
-
-                except AttributeError:
-                    # Continue if there are not GSIs configured
-                    continue
-
-                for gsi_key in gsi_keys:
-                    try:
-                        if re.match(gsi_key, gsi_name):
-                            logger.debug(
-                                'Table {0} GSI {1} matches '
-                                'GSI config key {2}'.format(
-                                    table_name, gsi_name, gsi_key))
-                            gsi_names.add((gsi_name, gsi_key))
-
-                    except re.error:
-                        logger.error('Invalid regular expression: "{0}"'.format(
-                            gsi_key))
-                        sys.exit(1)
-
-            for gsi_name, gsi_key in sorted(gsi_names):
-                try:
-                    gsi_num_consec_read_checks = \
-                        CHECK_STATUS['gsis'][gsi_name]['reads']
-                except KeyError:
-                    gsi_num_consec_read_checks = 0
-
-                try:
-                    gsi_num_consec_write_checks = \
-                        CHECK_STATUS['gsis'][gsi_name]['writes']
-                except KeyError:
-                    gsi_num_consec_write_checks = 0
-
-                gsi_num_consec_read_checks, gsi_num_consec_write_checks = \
-                    gsi.ensure_provisioning(
-                        table_name,
-                        table_key,
-                        gsi_name,
-                        gsi_key,
-                        gsi_num_consec_read_checks,
-                        gsi_num_consec_write_checks)
-
-                CHECK_STATUS['gsis'][gsi_name] = {
-                    'reads': gsi_num_consec_read_checks,
-                    'writes': gsi_num_consec_write_checks
-                }
-
-        except JSONResponseError as error:
-            exception = error.body['__type'].split('#')[1]
-
-            if exception == 'ResourceNotFoundException':
-                logger.error('{0} - Table {1} does not exist anymore'.format(
-                    table_name,
-                    table_name))
-                continue
-
-        except BotoServerError as error:
-            if boto_server_error_retries > 0:
-                logger.error(
-                    'Unknown boto error. Status: "{0}". '
-                    'Reason: "{1}". Message: {2}'.format(
-                        error.status,
-                        error.reason,
-                        error.message))
-                logger.error(
-                    'Please bug report if this error persists')
-                boto_server_error_retries -= 1
-                continue
-
-            else:
-                raise
-
+        logger.debug("Table: " + table_name)
+        execute_in_thread(table_name, table_key)
     # Sleep between the checks
     if not get_global_option('run_once'):
-        logger.debug('Sleeping {0} seconds until next check'.format(
-            get_global_option('check_interval')))
-        time.sleep(get_global_option('check_interval'))
+        logger.debug('Sleeping {0} seconds until next thread check'.format(60))
+        time.sleep(60)

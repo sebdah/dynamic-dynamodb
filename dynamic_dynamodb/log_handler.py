@@ -20,6 +20,7 @@ limitations under the License.
 import logging
 import os.path
 import sys
+import copy
 
 from logutils import dictconfig
 
@@ -102,5 +103,34 @@ else:
         sys.exit(1)
     except:
         raise
+        
+def getTableLogger(table_name):
+    LOG_CONFIG['handlers']['{}_file'.format(table_name)] = {
+        'level': 'DEBUG',
+        'class': 'logging.handlers.TimedRotatingFileHandler',
+        'formatter': 'standard',
+        'filename': os.path.expanduser('./logs/{}-table.log'.format(table_name)),
+        'when': 'midnight',
+        'backupCount': 5
+    }
+    if config_handler.get_global_option('dry_run'):
+        LOG_CONFIG['handlers']['{}_file'.format(table_name)]['formatter'] = 'dry-run'
+    if config_handler.get_logging_option('log_level'):
+        level = config_handler.get_logging_option('log_level').upper()
+    else:
+        level = 'DEBUG'
+    LOG_CONFIG['loggers']['{}_table'.format(table_name)] = {
+        'handlers': ['{}_file'.format(table_name)],
+        'level': level,
+        'propagate': False
+    }
+    try:
+        dictconfig.dictConfig(LOG_CONFIG)
+    except ValueError as error:
+        print('Error configuring logger: {0}'.format(error))
+        sys.exit(1)
+    except:
+        raise
+    return logging.getLogger('{}_table'.format(table_name))
 
 LOGGER = logging.getLogger('dynamic-dynamodb')

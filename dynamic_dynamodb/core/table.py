@@ -6,14 +6,14 @@ from dynamic_dynamodb import calculators
 from dynamic_dynamodb.aws import dynamodb, sns
 from dynamic_dynamodb.core import circuit_breaker
 from dynamic_dynamodb.statistics import table as table_stats
-from dynamic_dynamodb.log_handler import LOGGER as logger
+#from dynamic_dynamodb.log_handler import LOGGER as default_logger
 from dynamic_dynamodb.config_handler import get_table_option, get_global_option
-
 
 def ensure_provisioning(
         table_name, key_name,
         num_consec_read_checks,
-        num_consec_write_checks):
+        num_consec_write_checks,
+        logger):
     """ Ensure that provisioning is correct
 
     :type table_name: str
@@ -34,19 +34,19 @@ def ensure_provisioning(
             return (0, 0)
 
     # Handle throughput alarm checks
-    __ensure_provisioning_alarm(table_name, key_name)
+    __ensure_provisioning_alarm(table_name, key_name, logger)
 
     try:
         read_update_needed, updated_read_units, num_consec_read_checks = \
             __ensure_provisioning_reads(
                 table_name,
                 key_name,
-                num_consec_read_checks)
+                num_consec_read_checks, logger)
         write_update_needed, updated_write_units, num_consec_write_checks = \
             __ensure_provisioning_writes(
                 table_name,
                 key_name,
-                num_consec_write_checks)
+                num_consec_write_checks, logger)
 
         if read_update_needed:
             num_consec_read_checks = 0
@@ -66,7 +66,7 @@ def ensure_provisioning(
                 table_name,
                 key_name,
                 updated_read_units,
-                updated_write_units)
+                updated_write_units, logger)
         else:
             logger.info('{0} - No need to change provisioning'.format(
                 table_name))
@@ -80,7 +80,8 @@ def ensure_provisioning(
 
 def __calculate_always_decrease_rw_values(
         table_name, read_units, provisioned_reads,
-        write_units, provisioned_writes):
+        write_units, provisioned_writes,
+        logger):
     """ Calculate values for always-decrease-rw-together
 
     This will only return reads and writes decreases if both reads and writes
@@ -121,7 +122,7 @@ def __calculate_always_decrease_rw_values(
     return (read_units, write_units)
 
 
-def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
+def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks, logger):
     """ Ensure that provisioning is correct
 
     :type table_name: str
@@ -146,16 +147,16 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         current_read_units = dynamodb.get_provisioned_table_read_units(
             table_name)
         consumed_read_units_percent = \
-            table_stats.get_consumed_read_units_percent(
+            table_stats.get_consumed_read_units_percent(logger,
                 table_name, lookback_window_start, lookback_period)
         throttled_read_count = \
-            table_stats.get_throttled_read_event_count(
+            table_stats.get_throttled_read_event_count(logger,
                 table_name, lookback_window_start, lookback_period)
         throttled_by_provisioned_read_percent = \
-            table_stats.get_throttled_by_provisioned_read_event_percent(
+            table_stats.get_throttled_by_provisioned_read_event_percent(logger,
                 table_name, lookback_window_start, lookback_period)
         throttled_by_consumed_read_percent = \
-            table_stats.get_throttled_by_consumed_read_percent(
+            table_stats.get_throttled_by_consumed_read_percent(logger,
                 table_name, lookback_window_start, lookback_period)
         reads_upper_threshold = \
             get_table_option(key_name, 'reads_upper_threshold')
@@ -249,13 +250,13 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         # Initialise variables to store calculated provisioning
         throttled_by_provisioned_calculated_provisioning = scale_reader(
             increase_throttled_by_provisioned_reads_scale,
-            throttled_by_provisioned_read_percent)
+            throttled_by_provisioned_read_percent, logger)
         throttled_by_consumed_calculated_provisioning = scale_reader(
             increase_throttled_by_consumed_reads_scale,
-            throttled_by_consumed_read_percent)
+            throttled_by_consumed_read_percent, logger)
         consumed_calculated_provisioning = scale_reader(
             increase_consumed_reads_scale,
-            consumed_read_units_percent)
+            consumed_read_units_percent, logger)
         throttled_count_calculated_provisioning = 0
         calculated_provisioning = 0
 
@@ -404,7 +405,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
         # Initialise variables to store calculated provisioning
         consumed_calculated_provisioning = scale_reader_decrease(
             decrease_consumed_reads_scale,
-            consumed_read_units_percent)
+            consumed_read_units_percent, logger)
         calculated_provisioning = None
 
         # Exit if down scaling has been disabled
@@ -504,7 +505,7 @@ def __ensure_provisioning_reads(table_name, key_name, num_consec_read_checks):
 
 
 def __ensure_provisioning_writes(
-        table_name, key_name, num_consec_write_checks):
+        table_name, key_name, num_consec_write_checks, logger):
     """ Ensure that provisioning of writes is correct
 
     :type table_name: str
@@ -529,16 +530,16 @@ def __ensure_provisioning_writes(
         current_write_units = dynamodb.get_provisioned_table_write_units(
             table_name)
         consumed_write_units_percent = \
-            table_stats.get_consumed_write_units_percent(
+            table_stats.get_consumed_write_units_percent(logger,
                 table_name, lookback_window_start, lookback_period)
         throttled_write_count = \
-            table_stats.get_throttled_write_event_count(
+            table_stats.get_throttled_write_event_count(logger,
                 table_name, lookback_window_start, lookback_period)
         throttled_by_provisioned_write_percent = \
-            table_stats.get_throttled_by_provisioned_write_event_percent(
+            table_stats.get_throttled_by_provisioned_write_event_percent(logger,
                 table_name, lookback_window_start, lookback_period)
         throttled_by_consumed_write_percent = \
-            table_stats.get_throttled_by_consumed_write_percent(
+            table_stats.get_throttled_by_consumed_write_percent(logger,
                 table_name, lookback_window_start, lookback_period)
         writes_upper_threshold = \
             get_table_option(key_name, 'writes_upper_threshold')
@@ -634,12 +635,12 @@ def __ensure_provisioning_writes(
         # Initialise variables to store calculated provisioning
         throttled_by_provisioned_calculated_provisioning = scale_reader(
             increase_throttled_by_provisioned_writes_scale,
-            throttled_by_provisioned_write_percent)
+            throttled_by_provisioned_write_percent, logger)
         throttled_by_consumed_calculated_provisioning = scale_reader(
             increase_throttled_by_consumed_writes_scale,
-            throttled_by_consumed_write_percent)
+            throttled_by_consumed_write_percent, logger)
         consumed_calculated_provisioning = scale_reader(
-            increase_consumed_writes_scale, consumed_write_units_percent)
+            increase_consumed_writes_scale, consumed_write_units_percent, logger)
         throttled_count_calculated_provisioning = 0
         calculated_provisioning = 0
 
@@ -788,7 +789,7 @@ def __ensure_provisioning_writes(
         # Initialise variables to store calculated provisioning
         consumed_calculated_provisioning = scale_reader_decrease(
             decrease_consumed_writes_scale,
-            consumed_write_units_percent)
+            consumed_write_units_percent, logger)
         calculated_provisioning = None
 
         # Exit if down scaling has been disabled
@@ -888,7 +889,7 @@ def __ensure_provisioning_writes(
     return update_needed, updated_write_units, num_consec_write_checks
 
 
-def __update_throughput(table_name, key_name, read_units, write_units):
+def __update_throughput(table_name, key_name, read_units, write_units, logger):
     """ Update throughput on the DynamoDB table
 
     :type table_name: str
@@ -926,7 +927,7 @@ def __update_throughput(table_name, key_name, read_units, write_units):
             read_units,
             current_ru,
             write_units,
-            current_wu)
+            current_wu, logger)
 
         if read_units == current_ru and write_units == current_wu:
             logger.info('{0} - No changes to perform'.format(table_name))
@@ -939,7 +940,7 @@ def __update_throughput(table_name, key_name, read_units, write_units):
         int(write_units))
 
 
-def __ensure_provisioning_alarm(table_name, key_name):
+def __ensure_provisioning_alarm(table_name, key_name, logger):
     """ Ensure that provisioning alarm threshold is not exceeded
 
     :type table_name: str
@@ -951,9 +952,9 @@ def __ensure_provisioning_alarm(table_name, key_name):
         key_name, 'lookback_window_start')
     lookback_period = get_table_option(key_name, 'lookback_period')
 
-    consumed_read_units_percent = table_stats.get_consumed_read_units_percent(
+    consumed_read_units_percent = table_stats.get_consumed_read_units_percent(logger,
         table_name, lookback_window_start, lookback_period)
-    consumed_write_units_percent = table_stats.get_consumed_write_units_percent(
+    consumed_write_units_percent = table_stats.get_consumed_write_units_percent(logger,
         table_name, lookback_window_start, lookback_period)
 
     reads_upper_alarm_threshold = \
@@ -1033,7 +1034,7 @@ def __ensure_provisioning_alarm(table_name, key_name):
             table_name))
 
 
-def scale_reader(provision_increase_scale, current_value):
+def scale_reader(provision_increase_scale, current_value, logger):
     """
 
     :type provision_increase_scale: dict
@@ -1056,7 +1057,7 @@ def scale_reader(provision_increase_scale, current_value):
         return scale_value
 
 
-def scale_reader_decrease(provision_decrease_scale, current_value):
+def scale_reader_decrease(provision_decrease_scale, current_value, logger):
     """
 
     :type provision_decrease_scale: dict
