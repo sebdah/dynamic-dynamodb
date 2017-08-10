@@ -72,7 +72,7 @@ increase-consumed-writes-scale                  ``dict``                        
 
                                                                                       Detailed information on the scale dict can be found `here <http://dynamic-dynamodb.readthedocs.org/en/latest/granular_scaling.html>`__.
 
-                                                                                      If this is specified it will override ``increase-consumed-reads-with``
+                                                                                      If this is specified it will override ``increase-consumed-writes-with``
 increase-reads-unit                             ``str``   ``percent``                 Set if we should scale up reads in ``units`` or ``percent``
 increase-reads-with                             ``int``   50                          Number of ``units`` or ``percent`` we should scale up the read provisioning with. Choose entity with ``increase-reads-unit``.
 increase-throttled-by-consumed-reads-unit       ``str``   ``increase-reads-unit``     Set if we should scale up reads based on throttled events with respect to consumption in ``units`` or ``percent``

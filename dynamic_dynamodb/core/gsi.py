@@ -67,8 +67,8 @@ def ensure_provisioning(
         # Handle throughput updates
         if read_update_needed or write_update_needed:
             logger.info(
-                '{0} - GSI: {1} - Changing provisioning to {2:f} '
-                'read units and {3:f} write units'.format(
+                '{0} - GSI: {1} - Changing provisioning to {2:d} '
+                'read units and {3:d} write units'.format(
                     table_name,
                     gsi_name,
                     int(updated_read_units),

@@ -805,6 +805,12 @@ def __ensure_provisioning_writes(
                 '{0} - Down scaling event detected. No action taken as scaling'
                 ' down writes is not done when usage is at 0%'.format(
                     table_name))
+        # Exit if writes are still throttled
+        elif (throttled_writes_upper_threshold
+              and throttled_write_count > throttled_writes_upper_threshold):
+            logger.info(
+                '{0} - Down scaling event detected. No action taken as there'
+                ' are still throttled writes'.format(table_name))
         else:
             if consumed_calculated_provisioning:
                 if decrease_consumed_writes_unit == 'percent':
