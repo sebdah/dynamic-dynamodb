@@ -1,6 +1,16 @@
 Release notes
 =============
 
+2.5.0
+-----
+
+**Release date** 2017-08-10
+
+- Prevents scaling down write capacity as long as there are throttled write requests (`#319 <https://github.com/sebdah/dynamic-dynamodb/pull/319>`__).
+- Print GSI changes as integers instead of floats (`#323 <https://github.com/sebdah/dynamic-dynamodb/pull/323>`__).
+- Log table name together with the GSI name for uniqueness (`#331 <https://github.com/sebdah/dynamic-dynamodb/pull/331>`__).
+- Documentation fixes (`#329 <https://github.com/sebdah/dynamic-dynamodb/pull/329>`__)
+
 2.4.0
 -----
 
