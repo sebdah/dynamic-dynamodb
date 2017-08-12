@@ -27,7 +27,7 @@
     },
 
     "InstanceType" : {
-      "Default" : "t1.micro",
+      "Default" : "t2.micro",
       "Description" : "AWS EC2 instance type",
       "Type" : "String"
     }
