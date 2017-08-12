@@ -1,6 +1,13 @@
 Release notes
 =============
 
+2.5.1
+-----
+
+**Release date** 2017-08-12
+
+- Fix `logutils` version to 0.3.3 to prevent pip bug (`#324 <https://github.com/sebdah/dynamic-dynamodb/issues/324>`__).
+
 2.5.0
 -----
 
