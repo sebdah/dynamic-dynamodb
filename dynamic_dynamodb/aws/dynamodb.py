@@ -296,7 +296,7 @@ def update_table_provisioning(
     table = get_table(table_name)
     # If table has autoscale enabled, don't touch it, log a warning.
     if get_dynamodb_table_scaling_policy_enabled(table_name):
-        logger.warn('Table {} has autoscale enabled.'.format(table_name))
+        logger.warning('Table {} has autoscale enabled. Canceling provision change.'.format(table_name))
         return
 
     current_reads = int(get_provisioned_table_read_units(table_name))

@@ -18,6 +18,7 @@ Features in short
 - Gives you control over how much reads and writes you want to scale up and down with
 - Dynamic DynamoDB has support for max and min limits so that you always knows how much money you spend at most and how much capacity you can be guaranteed
 - Support for circuit breaker API call. If your service is experiencing disturbances, Dynamic DynamoDB will not scale down your DynamoDB tables
+- Check to prevent dynamid-dynamodb from fighting with the auto-scale API and provisioning tables that are already autoscaling
 
 Documentation
 -------------
@@ -72,6 +73,7 @@ If you want to set up a separate IAM user for Dynamic DynamoDB, then you need to
 * `dynamodb:ListTables`
 * `dynamodb:UpdateTable`
 * `sns:Publish` (used by the SNS notifications feature)
+* `application-autoscaling:DescribeScalingPolicies` (used to prevent dynamic-dynamodb from changing provisioning on an autoscaled table)
 
 An example policy could look like this:
 
@@ -84,6 +86,7 @@ An example policy could look like this:
             "dynamodb:DescribeTable",
             "dynamodb:ListTables",
             "dynamodb:UpdateTable",
+            "application-autoscaling:DescribeScalingPolicies",
             "cloudwatch:GetMetricStatistics"
           ],
           "Resource": [
