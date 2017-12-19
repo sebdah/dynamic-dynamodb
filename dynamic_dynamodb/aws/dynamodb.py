@@ -118,8 +118,6 @@ def get_dynamodb_table_scaling_policy_enabled(table_name):
         return True
     elif not scaling_policy['ScalingPolicies']:
         return False
-    else:
-        logger.error('Something went wrong trying to determine if {} has an autoscale policy enabled'.format(table_name))
 
 
 def get_provisioned_gsi_read_units(table_name, gsi_name):
@@ -313,7 +311,7 @@ def update_table_provisioning(
             writes = current_writes
 
         # Return if we do not need to scale at all
-        if (reads == current_reads and writes == current_writes):
+        if reads == current_reads and writes == current_writes:
             logger.info(
                 '{0} - No need to scale up reads nor writes'.format(
                     table_name))
