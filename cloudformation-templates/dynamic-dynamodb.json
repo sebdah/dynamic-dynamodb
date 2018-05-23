@@ -36,47 +36,47 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-fb8e9292",
+        "AMI": "ami-467ca739",
         "IamRoleServiceHost": "ec2.amazonaws.com",
         "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "us-west-1": {
-        "AMI": "ami-7aba833f",
+        "AMI": "ami-46e1f226",
         "IamRoleServiceHost": "ec2.amazonaws.com",
         "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "us-west-2": {
-        "AMI": "ami-043a5034",
+        "AMI": "ami-6b8cef13",
         "IamRoleServiceHost": "ec2.amazonaws.com",
         "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "eu-west-1": {
-        "AMI": "ami-2918e35e",
+        "AMI": "ami-9cbe9be5",
         "IamRoleServiceHost": "ec2.amazonaws.com",
         "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "sa-east-1": {
-        "AMI": "ami-215dff3c",
+        "AMI": "ami-f09dcc9c",
         "IamRoleServiceHost": "ec2.amazonaws.com",
         "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "ap-southeast-1": {
-        "AMI": "ami-b40d5ee6",
+        "AMI": "ami-64260718",
         "IamRoleServiceHost": "ec2.amazonaws.com",
         "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "ap-southeast-2": {
-        "AMI": "ami-3b4bd301",
+        "AMI": "ami-60a26a02",
         "IamRoleServiceHost": "ec2.amazonaws.com",
         "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "ap-northeast-1": {
-        "AMI": "ami-c9562fc8",
+        "AMI": "ami-28ddc154",
         "IamRoleServiceHost": "ec2.amazonaws.com",
         "IamRolePolicySnsResource": "arn:aws:sns:*::dynamic-dynamodb"
       },
       "cn-north-1": {
-        "AMI": "ami-0637ff6b",
+        "AMI": "ami-3d3ee150",
         "IamRoleServiceHost": "ec2.amazonaws.com.cn",
         "IamRolePolicySnsResource": "arn:aws-cn:sns:*::dynamic-dynamodb"
       }
