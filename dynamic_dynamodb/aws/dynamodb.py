@@ -120,6 +120,23 @@ def get_dynamodb_table_scaling_policy_enabled(table_name):
         return False
 
 
+def get_dynamodb_gsi_scaling_policy_enabled(table_name, index):
+    """
+    Returns boolean value of if autoscale is enabled or not for a given table and index
+    :param table_name: dynamodb table name 
+    :param index: global secondary index of given table
+    :return: Bool - True if enabled, false if not.
+    """
+    scaling_policy = AUTO_SCALE_CLIENT.describe_scaling_policies(
+                                                                ServiceNamespace='dynamodb',
+                                                                ResourceId='table/{}/index/{}'.format(table_name,
+                                                                                                      index))
+    if scaling_policy['ScalingPolicies']:
+        return True
+    elif not scaling_policy['ScalingPolicies']:
+        return False
+
+
 def get_provisioned_gsi_read_units(table_name, gsi_name):
     """ Returns the number of provisioned read units for the table
 
@@ -459,6 +476,11 @@ def update_gsi_provisioning(
     :type retry_with_only_increase: bool
     :param retry_with_only_increase: Set to True to ensure only increases
     """
+    # If the index has autoscale enabled, then we should skip it
+    if get_dynamodb_gsi_scaling_policy_enabled(table_name, gsi_name):
+        logger.warning('Table {} - GSI {} has autoscale enabled. Canceling provision change.'.format(table_name))
+        return
+
     current_reads = int(get_provisioned_gsi_read_units(table_name, gsi_name))
     current_writes = int(get_provisioned_gsi_write_units(table_name, gsi_name))
 
