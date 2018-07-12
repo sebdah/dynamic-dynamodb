@@ -478,7 +478,8 @@ def update_gsi_provisioning(
     """
     # If the index has autoscale enabled, then we should skip it
     if get_dynamodb_gsi_scaling_policy_enabled(table_name, gsi_name):
-        logger.warning('Table {} - GSI {} has autoscale enabled. Canceling provision change.'.format(table_name))
+        logger.warning('Table {} - GSI {} has autoscale enabled. Canceling provision change.'.format(table_name,
+                                                                                                     gsi_name))
         return
 
     current_reads = int(get_provisioned_gsi_read_units(table_name, gsi_name))
