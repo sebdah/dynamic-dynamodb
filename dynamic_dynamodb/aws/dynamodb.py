@@ -8,6 +8,7 @@ import datetime
 from boto import dynamodb2
 from boto.dynamodb2.table import Table
 from boto.exception import DynamoDBResponseError, JSONResponseError
+import boto3
 
 from dynamic_dynamodb.log_handler import LOGGER as logger
 from dynamic_dynamodb.config_handler import (
@@ -102,6 +103,38 @@ def get_gsi_status(table_name, gsi_name):
     for gsi in desc[u'Table'][u'GlobalSecondaryIndexes']:
         if gsi[u'IndexName'] == gsi_name:
             return gsi[u'IndexStatus']
+
+
+def get_dynamodb_table_scaling_policy_enabled(table_name):
+    """
+    Returns boolean value of if autoscale is enabled or not for a given table
+    :param table_name: 
+    :return: Bool - True if enabled, false if not.
+    """
+    scaling_policy = AUTO_SCALE_CLIENT.describe_scaling_policies(
+                                                                ServiceNamespace='dynamodb',
+                                                                ResourceId='table/{}'.format(table_name))
+    if scaling_policy['ScalingPolicies']:
+        return True
+    elif not scaling_policy['ScalingPolicies']:
+        return False
+
+
+def get_dynamodb_gsi_scaling_policy_enabled(table_name, index):
+    """
+    Returns boolean value of if autoscale is enabled or not for a given table and index
+    :param table_name: dynamodb table name 
+    :param index: global secondary index of given table
+    :return: Bool - True if enabled, false if not.
+    """
+    scaling_policy = AUTO_SCALE_CLIENT.describe_scaling_policies(
+                                                                ServiceNamespace='dynamodb',
+                                                                ResourceId='table/{}/index/{}'.format(table_name,
+                                                                                                      index))
+    if scaling_policy['ScalingPolicies']:
+        return True
+    elif not scaling_policy['ScalingPolicies']:
+        return False
 
 
 def get_provisioned_gsi_read_units(table_name, gsi_name):
@@ -276,6 +309,11 @@ def update_table_provisioning(
     :param retry_with_only_increase: Set to True to ensure only increases
     """
     table = get_table(table_name)
+    # If table has autoscale enabled, don't touch it, log a warning.
+    if get_dynamodb_table_scaling_policy_enabled(table_name):
+        logger.warning('Table {} has autoscale enabled. Canceling provision change.'.format(table_name))
+        return
+
     current_reads = int(get_provisioned_table_read_units(table_name))
     current_writes = int(get_provisioned_table_write_units(table_name))
 
@@ -438,6 +476,12 @@ def update_gsi_provisioning(
     :type retry_with_only_increase: bool
     :param retry_with_only_increase: Set to True to ensure only increases
     """
+    # If the index has autoscale enabled, then we should skip it
+    if get_dynamodb_gsi_scaling_policy_enabled(table_name, gsi_name):
+        logger.warning('Table {} - GSI {} has autoscale enabled. Canceling provision change.'.format(table_name,
+                                                                                                     gsi_name))
+        return
+
     current_reads = int(get_provisioned_gsi_read_units(table_name, gsi_name))
     current_writes = int(get_provisioned_gsi_write_units(table_name, gsi_name))
 
@@ -616,6 +660,45 @@ def table_gsis(table_name):
 
     return []
 
+def __get_connection_autoscale(retries=3):
+    """ Ensure connection to AutoScale
+
+        :type retries: int
+        :param retries: Number of times to retry to connect to AutoScale
+        """
+    connected = False
+    region = get_global_option('region')
+
+    while not connected:
+        if (get_global_option('aws_access_key_id') and
+                get_global_option('aws_secret_access_key')):
+            logger.debug(
+                'Authenticating to ApplicationAutoScaling using '
+                'credentials in configuration file')
+            connection = boto3.client('application-autoscaling',
+                                      region_name=region,
+                                      aws_access_key_id=get_global_option('aws_access_key_id'),
+                                      aws_secret_access_key=get_global_option('aws_secret_access_key'))
+        else:
+            logger.debug(
+                'Authenticating using boto3\'s authentication handler')
+            connection = boto3.client('application-autoscaling', region_name=region)
+
+        if not connection:
+            if retries == 0:
+                logger.error('Failed to connect to ApplicationAutoScaling. Giving up.')
+                raise
+            else:
+                logger.error(
+                    'Failed to connect to ApplicationAutoScaling. Retrying in 5 seconds')
+                retries -= 1
+                time.sleep(5)
+        else:
+            connected = True
+            logger.debug('Connected to ApplicationAutoScaling in {0}'.format(region))
+
+    return connection
+
 
 def __get_connection_dynamodb(retries=3):
     """ Ensure connection to DynamoDB
@@ -723,3 +806,4 @@ def __is_table_maintenance_window(table_name, maintenance_windows):
     return False
 
 DYNAMODB_CONNECTION = __get_connection_dynamodb()
+AUTO_SCALE_CLIENT = __get_connection_autoscale()
