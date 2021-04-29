@@ -57,7 +57,7 @@ def main():
     """ Main function called from dynamic-dynamodb """
     try:
         if get_global_option('show_config'):
-            print json.dumps(config.get_configuration(), indent=2)
+            print(json.dumps(config.get_configuration(), indent=2))
         elif get_global_option('daemon'):
             daemon = DynamicDynamoDBDaemon(
                 '{0}/dynamic-dynamodb.{1}.pid'.format(
@@ -141,10 +141,10 @@ def execute():
             gsi_names = set()
             # Add regexp table names
             for gst_instance in dynamodb.table_gsis(table_name):
-                gsi_name = gst_instance[u'IndexName']
+                gsi_name = gst_instance['IndexName']
 
                 try:
-                    gsi_keys = get_table_option(table_key, 'gsis').keys()
+                    gsi_keys = list(get_table_option(table_key, 'gsis').keys())
 
                 except AttributeError:
                     # Continue if there are not GSIs configured
