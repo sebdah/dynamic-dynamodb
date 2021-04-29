@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Configuration handler """
-from . import config
+import config
 
 CONFIGURATION = config.get_configuration()
 
