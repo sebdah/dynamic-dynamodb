@@ -11,7 +11,7 @@ def get_configured_tables():
     :returns: list -- List of tables
     """
     try:
-        return CONFIGURATION['tables'].keys()
+        return list(CONFIGURATION['tables'].keys())
     except KeyError:
         return []
 
