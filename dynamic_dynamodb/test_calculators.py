@@ -2,7 +2,7 @@
 """ Testing the Dynamic DynamoDB calculators """
 import unittest
 
-import calculators
+from . import calculators
 
 
 class TestCalculators(unittest.TestCase):

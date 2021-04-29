@@ -2,7 +2,7 @@
 import os
 import sys
 from setuptools import setup
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
 settings = SafeConfigParser()
 settings.read(os.path.realpath('dynamic_dynamodb/dynamic-dynamodb.conf'))

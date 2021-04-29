@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Configuration handler """
-import config
+from . import config
 
 CONFIGURATION = config.get_configuration()
 
@@ -11,7 +11,7 @@ def get_configured_tables():
     :returns: list -- List of tables
     """
     try:
-        return CONFIGURATION['tables'].keys()
+        return list(CONFIGURATION['tables'].keys())
     except KeyError:
         return []
 

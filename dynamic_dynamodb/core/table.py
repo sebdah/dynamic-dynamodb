@@ -1074,7 +1074,7 @@ def scale_reader_decrease(provision_decrease_scale, current_value):
     """
     scale_value = 0
     if provision_decrease_scale:
-        for limits in sorted(provision_decrease_scale.keys(), reverse=True):
+        for limits in sorted(list(provision_decrease_scale.keys()), reverse=True):
             if current_value > limits:
                 return scale_value
             else:

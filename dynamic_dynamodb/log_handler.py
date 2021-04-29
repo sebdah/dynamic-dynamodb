@@ -23,7 +23,7 @@ import sys
 
 from logutils import dictconfig
 
-import config_handler
+from . import config_handler
 
 LOG_CONFIG = {
     'version': 1,
